@@ -10,7 +10,7 @@ using namespace std;
 #include "defs/province.h"
 #include "defs/unit.h"
 #include "defs/nation.h"
-#include "object.h"
+#include "defs/object.h"
 
 #define MAX_RESTRICTED_GAME_SPEED 2000
 

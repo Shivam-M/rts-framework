@@ -24,28 +24,33 @@ Nation* createNation(string name) { return new Nation(NationCount++, name); }
 int main() {
     vector<Nation*> nations;
     Province* prov_paris = createProvince("Paris");
-    Nation* nation_france = createNation("France");
-    nation_france->setColour(Colour(0, 0, 255));
-    nation_france->setMoney(10000);
-    nation_france->hireUnit(1000);
-    nation_france->addProvince(prov_paris);
-    nation_france->setCapital(prov_paris);
     prov_paris->setLocation(100, 100);
     prov_paris->setValue(0.42);
 
+    Nation* nation_france = createNation("France");
+    nation_france->setColour(Colour(0, 0, 255));
+    nation_france->setMoney(10000);
+    nation_france->addProvince(prov_paris);
+    nation_france->setCapital(prov_paris);
+    nation_france->hireUnit(1000);
+    
     Province* prov_berlin = createProvince("Berlin");
     Province* prov_hamburg = createProvince("Hamburg");
-    Nation* nation_germany = createNation("Germany");
-    nation_germany->setColour(Colour(255, 0, 255));
-    nation_germany->setMoney(7800);
-    nation_germany->hireUnit(2250);
-    nation_germany->addProvince(prov_hamburg);
-    nation_germany->addProvince(prov_berlin);
-    nation_germany->setCapital(prov_berlin);
     prov_berlin->setLocation(400, 100);
     prov_berlin->setValue(0.35);
     prov_hamburg->setLocation(400, 200);
     prov_hamburg->setValue(0.20);
+
+    Nation* nation_germany = createNation("Germany");
+    nation_germany->setColour(Colour(255, 0, 255));
+    nation_germany->setMoney(7800);
+    nation_germany->addProvince(prov_hamburg);
+    nation_germany->addProvince(prov_berlin);
+    nation_germany->setCapital(prov_berlin);
+    nation_germany->hireUnit(2250);
+    
+    nation_germany->getOwnedUnits()[0]->setTarget(prov_paris);
+    Province* prov = nation_germany->getOwnedUnits()[0]->getTarget();
 
     nations.push_back(nation_france);
     nations.push_back(nation_germany);
@@ -54,12 +59,16 @@ int main() {
     int elapsed_days = 0;
 
     while (true) {
-        cout << "Day #" << elapsed_days << endl;
+        cout << "* Day #" << elapsed_days << endl;
         for (Nation* nation : nations) {
             nation->evaluate();
             cout << nation->getName() << "\t" << nation->getCapital()->getName() << " (" << nation->getNumberProvinces() << ")\tMoney: " << nation->getMoney() << " [" << nation->getIncome() << "]\t";
             for (Province* province : nation->getOwnedProvinces()) {
                 cout << province->getName() << ", ";
+            } cout << endl;
+            for (Unit* unit : nation->getOwnedUnits()) {
+                string target_name = unit->getTarget() ? unit->getTarget()->getName() : "None";
+                cout << "Unit #" << unit->getID() << "\t Location: " << unit->getX() << ", " << unit->getY() << "\tProvince: " << unit->getProvince()->getName() << "\t\tTarget: " << target_name << endl;
             } cout << endl;
         } cout << endl;
         elapsed_days++;

@@ -2,9 +2,7 @@
 #include <vector>
 
 static double UNIT_COST = 0.02;
-
-// class Province;
-// class Unit;
+static int UnitCount = 0;
 
 enum NATION_FLAGS {
 	AT_WAR,
@@ -93,7 +91,7 @@ class Nation {
 			double cost = size * UNIT_COST * skill;
 			if (money_ <= cost) return false;
 			addMoney(-cost);
-			addUnit(new Unit(size, skill, getCapital()));
+			addUnit(new Unit(UnitCount++, size, skill, getCapital()));
 			return true;
 		}
 

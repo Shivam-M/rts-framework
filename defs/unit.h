@@ -68,9 +68,9 @@ class Unit {
 			switch (getState()) {
 				case FIGHTING:
 					enemy_unit_->takeFatalities(125 * skill_factor_ /* x randomess */);
-					if (enemy_unit_->getState() == DEAD) enemy_unit_ = nullptr;
+					if (enemy_unit_->getState() == DEAD) enemy_unit_ = nullptr; // Temp: check if the enemy unit has been defeated
 					if (enemy_unit_ == nullptr)
-						if (target_province_) setState(TRAVELLING);
+						if (target_province_) setState(TRAVELLING); // Resume travel if a target province is set
 						else setState(NORMAL);
 					break;
 				case SIEGING:

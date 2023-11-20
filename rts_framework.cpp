@@ -50,7 +50,7 @@ int main() {
     nation_germany->hireUnit(2250);
     
     nation_germany->getOwnedUnits()[0]->setTarget(prov_paris);
-    Province* prov = nation_germany->getOwnedUnits()[0]->getTarget();
+    nation_germany->getOwnedUnits()[0]->initiateBattle(nation_france->getOwnedUnits()[0]);
 
     nations.push_back(nation_france);
     nations.push_back(nation_germany);
@@ -68,7 +68,7 @@ int main() {
             } cout << endl;
             for (Unit* unit : nation->getOwnedUnits()) {
                 string target_name = unit->getTarget() ? unit->getTarget()->getName() : "None";
-                cout << "Unit #" << unit->getID() << "\t Location: " << unit->getX() << ", " << unit->getY() << "\tProvince: " << unit->getProvince()->getName() << "\t\tTarget: " << target_name << endl;
+                cout << "Unit #" << unit->getID() << "\tSize: " << unit->getSize() << "\t Location : " << unit->getX() << ", " << unit->getY() << "\tProvince : " << unit->getProvince()->getName() << "\t\tTarget: " << target_name << endl;
             } cout << endl;
         } cout << endl;
         elapsed_days++;

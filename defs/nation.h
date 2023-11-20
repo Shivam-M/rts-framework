@@ -91,11 +91,12 @@ class Nation {
 			double cost = size * UNIT_COST * skill;
 			if (money_ <= cost) return false;
 			addMoney(-cost);
-			addUnit(new Unit(UnitCount++, size, skill, getCapital()));
+			addUnit(new Unit(UnitCount++, this, size, skill, getCapital()));
 			return true;
 		}
 
 		void dismissUnit(Unit* unit) {
 			owned_army_units_.erase(remove(owned_army_units_.begin(), owned_army_units_.end(), unit), owned_army_units_.end());
+			delete unit;
 		}
 };

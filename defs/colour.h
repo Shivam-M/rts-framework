@@ -1,5 +1,6 @@
 #pragma once
 
+
 class Vector3 {
 	private:
 		int x_, y_, z_;
@@ -18,6 +19,8 @@ class Vector3 {
 		void setAll(int x, int y, int z) { x_ = x; y_ = y; z_ = z; }
 
 		bool operator==(const Vector3& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_; }
+		Vector3 operator/(const Vector3& other) const { return Vector3(x_ / other.x_, y_ / other.y_, z_ / other.z_); }
+		Vector3 operator/(const double& number) const { return Vector3(x_ / number, y_ / number, z_ / number); }
 };
 
 class Colour {
@@ -45,6 +48,14 @@ class Colour {
 		string getHex() { return ""; }
 		Vector3 getRGB() { return rgba_; }
 		Vector3 getRGBA() { return rgba_; }
+		Vector3 getRGBf() { return rgba_ / 255.0; }
+		Vector3 getRGBAf() { return rgba_ / 255.0; }
 
 		bool operator==(const Colour& other) const { return rgba_ == other.rgba_; }
+};
+
+// Temp
+class Vector2 : Vector3 {
+public:
+	Vector2(int x, int y) : Vector3(x, y, 0) {}
 };

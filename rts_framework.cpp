@@ -12,6 +12,8 @@ using namespace std;
 #include "defs/nation.h"
 #include "defs/object.h"
 
+#include "include/GLFW/glfw3.h"
+
 #define MAX_RESTRICTED_GAME_SPEED 2000
 
 static int ProvinceCount = 0;
@@ -20,9 +22,44 @@ static int NationCount = 0;
 Province* createProvince(string name) { return new Province(ProvinceCount++, name); }
 Nation* createNation(string name) { return new Nation(NationCount++, name); }
 
+vector<Nation*> nations;
+GLFWwindow* window;
+
+
+void draw_quad(double x, double y, double width, double height, Vector3 colour) {
+    glColor3d(colour.getX(), colour.getY(), colour.getZ());
+    glBegin(GL_QUADS);
+
+    x /= 1280, y /= 720;
+
+    // Convert coordinates
+    x = x < 0.5 ? -1 + (x * 2) : x > 0.5 ? ((x - 0.5) * 2) : 0;
+    y = y < 0.5 ? (-1 + (y * 2)) * -1 : y > 0.5 ? ((y - 0.5) * 2) * -1 : 0;
+
+    glVertex2d(x, y);
+    glVertex2d(x, y + height);
+    glVertex2d(x + width, y + height);
+    glVertex2d(x + width, y);
+
+    glEnd();
+}
+
+void render_window() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    int location[2];
+    for (Nation* nation : nations) {
+        for (Province* province : nation->getOwnedProvinces()) {
+            province->getLocation(&location[0], &location[1]);
+            draw_quad(location[0], location[1], 0.05, 0.05, province->getColour().getRGBf());
+        }
+        for (Unit* unit : nation->getOwnedUnits()) {
+            draw_quad(unit->getX(), unit->getY(), 0.05, 0.05, nation->getColour().getRGBf());
+        }
+    }
+    glfwSwapBuffers(window);
+}
 
 int main() {
-    vector<Nation*> nations;
     Province* prov_paris = createProvince("Paris");
     prov_paris->setLocation(100, 100);
     prov_paris->setValue(0.42);
@@ -49,16 +86,31 @@ int main() {
     nation_germany->setCapital(prov_berlin);
     nation_germany->hireUnit(2250);
     
+    nation_germany->getOwnedUnits()[0]->setProvince(prov_hamburg);
     nation_germany->getOwnedUnits()[0]->setTarget(prov_paris);
     nation_germany->getOwnedUnits()[0]->initiateBattle(nation_france->getOwnedUnits()[0]);
 
     nations.push_back(nation_france);
     nations.push_back(nation_germany);
 
-    double game_speed = 2.5;
+    double game_speed = 5;
     int elapsed_days = 0;
 
+    if (!glfwInit()) return -1;
+
+    if (!(window = glfwCreateWindow(1280, 720, "RTS", NULL, NULL))) {
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+    glClearColor(0.155, 0.155, 0.155, 0);
+
+    render_window();
+
     while (true) {
+        glfwPollEvents();
+        render_window();
         cout << "* Day #" << elapsed_days << endl;
         for (Nation* nation : nations) {
             nation->evaluate();

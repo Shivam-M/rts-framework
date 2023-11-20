@@ -38,11 +38,7 @@ class Nation {
 		void setColour(Colour colour) { colour_ = colour; }
 
 		Province* getCapital() { return capital_province_; }
-		void setCapital(Province* province) {
-			if (ownsProvince(province)) {
-				capital_province_ = province;
-			}
-		}
+		void setCapital(Province* province) { if (ownsProvince(province)) capital_province_ = province; }
 
 		vector<Province*> getOwnedProvinces() { return owned_provinces_; }
 		int getNumberProvinces() { return owned_provinces_.size(); }
@@ -52,7 +48,7 @@ class Nation {
 			if (ownsProvince(province)) {
 				if (getCapital() != province) {
 					owned_provinces_.erase(remove(owned_provinces_.begin(), owned_provinces_.end(), province), owned_provinces_.end());
-				} else if (getNumberProvinces() > 1) {
+				} else if (getNumberProvinces() > 1) { // Can relocate capital if the nation owns multiple provinces
 					owned_provinces_.erase(remove(owned_provinces_.begin(), owned_provinces_.end(), province), owned_provinces_.end());
 					setCapital(getOwnedProvinces()[0]);
 				}
@@ -77,7 +73,7 @@ class Nation {
 		bool isInDebt() { return in_debt_; }
 
 		void evaluate() {
-			double final_income = income_;
+			double final_income = income_; // Final income is base income plus value from all owned provinces
 			for (Province* province : getOwnedProvinces()) {
 				province->evaluate();
 				final_income += province->getValue();

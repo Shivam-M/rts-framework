@@ -11,6 +11,7 @@ class Unit {
 		double skill_factor_ = 1.00;
 		double speed_ = 0.05;
 		int location_[2] = { 0, 0 };
+		Vector2 _location = Vector2(0, 0);
 		Nation* nation_ = nullptr;
 		Province* province_ = nullptr;
 		Province* target_province_ = nullptr;

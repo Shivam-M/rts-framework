@@ -3,27 +3,27 @@
 
 class Vector3 {
 	private:
-		int x_, y_, z_;
+		double x_, y_, z_;
 
 	public:
-		Vector3(int x, int y, int z) : x_(x), y_(y), z_(z) {}
+		Vector3(double x, double y, double z) : x_(x), y_(y), z_(z) {}
 
-		int getX() { return x_; }
-		int getY() { return y_; }
-		int getZ() { return z_; }
+		double getX() { return x_; }
+		double getY() { return y_; }
+		double getZ() { return z_; }
 
-		void setX(int x) { x_ = x; }
-		void setY(int y) { y_ = y; }
-		void setZ(int z) { z_ = z; }
+		void setX(double x) { x_ = x; }
+		void setY(double y) { y_ = y; }
+		void setZ(double z) { z_ = z; }
 
-		void setAll(int x, int y, int z) { x_ = x; y_ = y; z_ = z; }
+		void setAll(double x, double y, double z) { x_ = x; y_ = y; z_ = z; }
 
 		bool operator==(const Vector3& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_; }
 		Vector3 operator/(const Vector3& other) const { return Vector3(x_ / other.x_, y_ / other.y_, z_ / other.z_); }
 		Vector3 operator/(const double& number) const { return Vector3(x_ / number, y_ / number, z_ / number); }
 };
 
-class Colour {
+class Colour { // Make child of Vector3?
 	private:
 		Vector3 rgba_ = { 0, 0, 0 };
 
@@ -57,5 +57,5 @@ class Colour {
 // Temp
 class Vector2 : Vector3 {
 public:
-	Vector2(int x, int y) : Vector3(x, y, 0) {}
+	Vector2(double x, double y) : Vector3(x, y, 0) {}
 };

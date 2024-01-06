@@ -1,0 +1,19 @@
+Preloading textures...
+
+TEXTURE:images/singhs/singh1.png
+TEXTURE:images/singhs/singh3.png
+TEXTURE:images/singhs/singh4.png
+TEXTURE:images/singhs/singh5.png
+TEXTURE:images/singhs/singh6.png
+
+TEXTURE:images/singhs/singh1.png
+WAIT: 0.25
+TEXTURE:images/singhs/singh3.png
+WAIT: 0.25
+TEXTURE:images/singhs/singh4.png
+WAIT: 0.25
+TEXTURE:images/singhs/singh5.png
+WAIT: 0.25
+TEXTURE:images/singhs/singh6.png
+WAIT: 0.25
+JUMP: 7

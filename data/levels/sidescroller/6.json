@@ -1,0 +1,9 @@
+{
+  "level_name": "Example",
+  "background": "0099FF",
+  "background_alpha": 0.31,
+  "alt_background": "00A8FF",
+  "alt_background_alpha": 0.31,
+  "foreground": "FFFFFF",
+  "objects": []
+}

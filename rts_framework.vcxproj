@@ -107,11 +107,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>include/;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>lib-vc2022\glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib; glew32s.lib;opengl32.lib;freeglut.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>libraries/;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,14 +133,68 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="assets\collidable.cpp" />
+    <ClCompile Include="assets\enemy.cpp" />
+    <ClCompile Include="assets\moveable.cpp" />
+    <ClCompile Include="assets\planet.cpp" />
+    <ClCompile Include="assets\player.cpp" />
+    <ClCompile Include="assets\text.cpp" />
+    <ClCompile Include="effects\fire.cpp" />
+    <ClCompile Include="effects\ice.cpp" />
+    <ClCompile Include="effects\stars.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="io\gamepad.cpp" />
+    <ClCompile Include="io\keyboard.cpp" />
+    <ClCompile Include="io\mouse.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="rts_framework.cpp" />
+    <ClCompile Include="shapes\circle.cpp" />
+    <ClCompile Include="shapes\square.cpp" />
+    <ClCompile Include="tools\colour.cpp" />
+    <ClCompile Include="tools\common.cpp" />
+    <ClCompile Include="tools\console.cpp" />
+    <ClCompile Include="tools\fonts.cpp" />
+    <ClCompile Include="tools\image.cpp" />
+    <ClCompile Include="tools\loader.cpp" />
+    <ClCompile Include="tools\render.cpp" />
+    <ClCompile Include="tools\render2.cpp" />
+    <ClCompile Include="tools\TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assets\collidable.h" />
+    <ClInclude Include="assets\enemy.h" />
+    <ClInclude Include="assets\moveable.h" />
+    <ClInclude Include="assets\planet.h" />
+    <ClInclude Include="assets\player.h" />
+    <ClInclude Include="assets\text.h" />
     <ClInclude Include="defs\colour.h" />
     <ClInclude Include="defs\nation.h" />
+    <ClInclude Include="defs\object.h" />
     <ClInclude Include="defs\province.h" />
+    <ClInclude Include="defs\province_mv.h" />
     <ClInclude Include="defs\unit.h" />
+    <ClInclude Include="effects\fire.h" />
+    <ClInclude Include="effects\ice.h" />
+    <ClInclude Include="effects\stars.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\stb_image_write.h" />
+    <ClInclude Include="io\gamepad.h" />
+    <ClInclude Include="io\keyboard.h" />
+    <ClInclude Include="io\mouse.h" />
+    <ClInclude Include="shapes\circle.h" />
+    <ClInclude Include="shapes\square.h" />
+    <ClInclude Include="tools\colour.h" />
+    <ClInclude Include="tools\common.h" />
+    <ClInclude Include="tools\console.h" />
+    <ClInclude Include="tools\fonts.h" />
+    <ClInclude Include="tools\image.h" />
+    <ClInclude Include="tools\loader.h" />
+    <ClInclude Include="tools\render.h" />
+    <ClInclude Include="tools\stb_image.h" />
+    <ClInclude Include="tools\structs.h" />
+    <ClInclude Include="tools\TextRenderer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,21 @@
+{
+  "level_name": "Example",
+  "background": "273c75",
+  "background_alpha": 0.31,
+  "alt_background": "40739e",
+  "alt_background_alpha": 0.31,
+  "foreground": "FFFFFF",
+  "objects": [
+    {
+      "type": "QUAD",
+      "points": [
+        [ 0.31, 0.43, 0.59, 0.74 ],
+        [ 0.25, 0.52, 0.80, 0.74 ]
+      ],
+      "colour": "FFFFFF",
+      "alt_colour": "FFFFFF",
+      "alpha": 1.0,
+      "alt_alpha": 0.0
+    }
+  ]
+}

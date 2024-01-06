@@ -4,7 +4,7 @@ class Object {
 	private:
 		int identifier_ = -1;
 		string name_ = "Generic Object";
-		Colour colour_ = Colour(255, 255, 255);
+		Colour2 colour_ = Colour2(255, 255, 255);
 
 	public:
 		void setID(int identifier) { identifier_ = identifier; }
@@ -13,8 +13,8 @@ class Object {
 		string getName() { return name_; }
 		void setName(string name) { name_ = name; }
 
-		Colour getColour() { return colour_; }
-		void setColour(Colour colour) { colour_ = colour; }
+		Colour2 getColour() { return colour_; }
+		void setColour(Colour2 colour) { colour_ = colour; }
 
 		void evaluate();
 };

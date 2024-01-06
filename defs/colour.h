@@ -18,24 +18,40 @@ class Vector3 {
 
 		void setAll(double x, double y, double z) { x_ = x; y_ = y; z_ = z; }
 
-		bool operator==(const Vector3& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_; }
+		Vector3 operator+(const Vector3& other) const { return Vector3(x_ + other.x_, y_ + other.y_, z_ + other.z_); }
+		Vector3 operator+(const double& number) const { return Vector3(x_ + number, y_ + number, z_ + number); }
+
+		Vector3 operator-(const Vector3& other) const { return Vector3(x_ - other.x_, y_ - other.y_, z_ - other.z_); }
+		Vector3 operator-(const double& number) const { return Vector3(x_ - number, y_ - number, z_ - number); }
+
+		Vector3 operator*(const Vector3& other) const { return Vector3(x_ * other.x_, y_ * other.y_, z_ * other.z_); }
+		Vector3 operator*(const double& number) const { return Vector3(x_ * number, y_ * number, z_ * number); }
+
 		Vector3 operator/(const Vector3& other) const { return Vector3(x_ / other.x_, y_ / other.y_, z_ / other.z_); }
 		Vector3 operator/(const double& number) const { return Vector3(x_ / number, y_ / number, z_ / number); }
+		bool operator==(const Vector3& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_; }
+
+		double magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_); }
+
+		Vector3 normalise() {
+			double mag = magnitude();
+			return (mag != 0.0) ? *this / mag : *this;
+		}
 };
 
-class Colour { // Make child of Vector3?
+class Colour2 { 
 	private:
-		Vector3 rgba_ = { 0, 0, 0 };
+		Vector3 rgba_ = { 0, 0, 0};
 
 	public:
 		static Vector3 HexToRGB(string hex) { return Vector3(0, 0, 0); }
 		static string RGBToHex(Vector3 rgb) { return ""; }
 
-		Colour(string hex) {
+		Colour2(string hex) {
 			setHex(hex);
 		}
 
-		Colour(int r, int g, int b, int a = 255) {
+		Colour2(int r, int g, int b, int a = 255) {
 			rgba_.setX(r);
 			rgba_.setY(g);
 			rgba_.setZ(b);
@@ -51,11 +67,12 @@ class Colour { // Make child of Vector3?
 		Vector3 getRGBf() { return rgba_ / 255.0; }
 		Vector3 getRGBAf() { return rgba_ / 255.0; }
 
-		bool operator==(const Colour& other) const { return rgba_ == other.rgba_; }
+		bool operator==(const Colour2& other) const { return rgba_ == other.rgba_; }
 };
 
 // Temp
 class Vector2 : Vector3 {
 public:
 	Vector2(double x, double y) : Vector3(x, y, 0) {}
+
 };

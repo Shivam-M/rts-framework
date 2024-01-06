@@ -1,0 +1,28 @@
+{
+  "level_name": "Example",
+  "background": "222F3E",
+  "background_alpha": 0.31,
+  "alt_background": "222F3E",
+  "alt_background_alpha": 0.31,
+  "foreground": "FFFFFF",
+  "variables": {
+    "g_colour": "FF00FF"
+  },
+  "objects": [
+    {
+      "type": "UNIT",
+      "size": 1000,
+      "skill":  1.00,
+      "x": 0.3,
+      "y": 0.15,
+      "width": 0.075,
+      "height": 0.10,
+      "texture": "images/unit.png",
+      "colour": "&g_colour",
+      "alt_colour": "&g_colour",
+      "province": 5,
+      "id": 1,
+      "name": "Mercia Starting Unit"
+    }
+  ]
+}

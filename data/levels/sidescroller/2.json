@@ -1,0 +1,68 @@
+{
+  "level_name": "Jump intro",
+  "background": "222f3e",
+  "background_alpha": 0.31,
+  "alt_background": "222f3e",
+  "alt_background_alpha": 0.31,
+  "foreground": "FFFFFF",
+  "variables": {
+    "m_colour": "ECF0F1"
+  },
+  "objects": [
+    {
+      "type": "COLLIDABLE",
+      "x": 0.0,
+      "y": 0.85,
+      "width": 0.125,
+      "height": 0.15,
+      "colour": "ECF0F1",
+      "alt_colour": "ECF0F1",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    },
+    {
+      "type": "SLIDER",
+      "x": 0.25,
+      "y": 0.85,
+      "width": 0.1,
+      "height": 0.005,
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    },
+    {
+      "type": "COLLIDABLE",
+      "x": 0.475,
+      "y": 0.85,
+      "width": 0.10,
+      "height": 0.15,
+      "colour": "ECF0F1",
+      "alt_colour": "ECF0F1",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    },
+    {
+      "type": "SLIDER",
+      "x": 0.7,
+      "y": 0.85,
+      "width": 0.05,
+      "height": 0.005,
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    },
+    {
+      "type": "COLLIDABLE",
+      "x": 0.875,
+      "y": 0.85,
+      "width": 0.125,
+      "height": 0.15,
+      "colour": "ECF0F1",
+      "alt_colour": "ECF0F1",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    }
+  ]
+}

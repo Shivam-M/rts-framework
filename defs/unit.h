@@ -2,26 +2,28 @@
 
 class Nation;
 
-class Unit {
+class Unit: public Moveable {
 	enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD};
 
 	private:
 		int identifier_ = -1;
 		int size_ = 1;
 		double skill_factor_ = 1.00;
-		double speed_ = 0.05;
+		double speed_ = 0.01;
 		int location_[2] = { 0, 0 };
 		Vector2 _location = Vector2(0, 0);
 		Nation* nation_ = nullptr;
-		Province* province_ = nullptr;
-		Province* target_province_ = nullptr;
-		Province** travel_path_ = nullptr;
+		ProvinceMV* province_ = nullptr;
+		ProvinceMV* target_province_ = nullptr;
+		vector<ProvinceMV*> travel_path_;
 		Unit* enemy_unit_ = nullptr;
 		UNIT_STATE state_ = NORMAL;
 
 	public:
-		Unit(int identifier, Nation* nation, int size, double skill = 1.00, Province* province = nullptr) :
-			identifier_(identifier), nation_(nation), size_(size), skill_factor_(skill) { setProvince(province); }
+		Unit(int identifier, Nation* nation, int size, double skill = 1.00, ProvinceMV* province = nullptr) :
+			identifier_(identifier), nation_(nation), size_(size), skill_factor_(skill) {
+			setProvince(province); addFlag(TEXTURED); setTexture(Image::getImage("images/unit.png")); Moveable::setSize(0.075, 0.10);
+		}
 
 		void setID(int identifier) { identifier_ = identifier; }
 		int getID() { return identifier_; }
@@ -41,15 +43,32 @@ class Unit {
 		UNIT_STATE getState() { return state_; }
 		void setState(UNIT_STATE state) { state_ = state; }
 
-		Province* getProvince() { return province_; }
-		void setProvince(Province* province) {
+		ProvinceMV* getProvince() { return province_; }
+		void setProvince(ProvinceMV* province) {
 			province_ = province;
 			if (province != nullptr)
 				province->getLocation(&location_[0], &location_[1]);
 		}
 
-		Province* getTarget() { return target_province_; }
-		void setTarget(Province* province) { target_province_ = province; }
+		ProvinceMV* getTarget() { return target_province_; }
+		void setTarget(ProvinceMV* province) { target_province_ = province; }
+
+		vector<ProvinceMV*> getPath() {
+			return travel_path_;
+		}
+
+		void setPath(vector<ProvinceMV*> path) {
+			travel_path_ = path;
+			setTarget(travel_path_.at(0));
+			setState(TRAVELLING);
+		}
+
+		void advancePath() {
+			travel_path_.erase(travel_path_.begin());
+			if (getPath().size() != 0) {
+				setTarget(travel_path_.at(0));
+			}
+		}
 
 		void takeFatalities(int amount) {
 			size_ -= amount;
@@ -66,6 +85,7 @@ class Unit {
 		}
 
 		void evaluate() {
+			setLocation(location_[0] / 1280.0, location_[1] / 720.0);
 			switch (getState()) {
 				case FIGHTING:
 					enemy_unit_->takeFatalities(125 * skill_factor_ /* x randomess */);
@@ -85,8 +105,16 @@ class Unit {
 					if (location_[0] == target_location[0] && location_[1] == target_location[1]) { // Add small variance/'magnet' zone for rounding
 						province_ = target_province_;
 						target_province_ = nullptr; // Get new from path
-						setState(NORMAL);
+						if (travel_path_.size() > 1) {
+							advancePath();
+						}
+						else {
+							travel_path_.clear();
+							setState(NORMAL);
+						}
 					}
+
+					
 					break;
 				case NORMAL:
 					break;

@@ -1,0 +1,81 @@
+{
+  "level_name": "Example",
+  "background": "6D214F",
+  "background_alpha": 0.31,
+  "alt_background": "222F3E",
+  "alt_background_alpha": 0.31,
+  "image":  "images/t.jpg",
+  "foreground": "FFFFFF",
+  "variables": {
+    "m_colour": "ECF0F1",
+    "g_colour": "ECF0F1",
+    "t_colour": "222F3E"
+  },
+  "objects": [
+    {
+      "type": "COLLIDABLE",
+      "x": 0.0,
+      "y": 0.85,
+      "width": 1.00,
+      "height": 0.15,
+      "colour": "&g_colour",
+      "alt_colour": "&g_colour",
+      "alpha": 0.69,
+      "alt_alpha": 0.69,
+      "name": "Ground 0"
+    },
+    {
+      "type": "MOVEABLE",
+      "x": 0.1,
+      "y": 0.25,
+      "width": 0.2,
+      "height": 0.1,
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.0,
+      "alt_alpha": 0.55
+    },
+    {
+      "type": "MOVEABLE",
+      "x": 0.7,
+      "y": 0.25,
+      "width": 0.2,
+      "height": 0.1,
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.55,
+      "alt_alpha": 0.00
+    },
+    {
+      "type": "MOVEABLE",
+      "x": 0.3,
+      "y": 0.25,
+      "width": 0.4,
+      "height": 0.1,
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.55,
+      "alt_alpha": 0.55
+    },
+    {
+      "type": "TEXT",
+      "font": "BAHNSCHRIFT.ttf",
+      "font_custom": 0,
+      "size": 32,
+      "content": "USE THE ARROW KEYS TO MOVE",
+      "x": 0.24,
+      "y": 0.325,
+      "colour": "&t_colour",
+      "alpha": 0.75
+    },
+    {
+      "type": "STARS",
+      "x": 0,
+      "y": 0,
+      "width": 1,
+      "height": 0.85,
+      "alpha": 0,
+      "alt_alpha": 0
+    }
+  ]
+}

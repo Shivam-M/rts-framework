@@ -1,0 +1,46 @@
+{
+  "level_name": "Moving sliders",
+  "background": "222F3E",
+  "background_alpha": 0.31,
+  "alt_background": "1ABC9C",
+  "alt_background_alpha": 0.31,
+  "foreground": "FFFFFF",
+  "variables": {
+    "m_colour": "ECF0F1"
+  },
+  "objects": [
+    {
+      "type": "QUAD",
+      "points": [
+        [ 0.00, 0.35, 0.35, 0.00 ],
+        [ 0.85, 0.65, 1.00, 1.00 ]
+      ],
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    },
+    {
+      "type": "QUAD",
+      "points": [
+        [ 0.45, 0.80, 0.80, 0.45 ],
+        [ 0.60, 0.40, 1.00, 1.00 ]
+      ],
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    },
+    {
+      "type": "COLLIDABLE",
+      "x": 0.80,
+      "y": 0.40,
+      "width": 0.20,
+      "height": 0.60,
+      "colour": "&m_colour",
+      "alt_colour": "&m_colour",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    }
+  ]
+}

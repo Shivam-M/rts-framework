@@ -11,7 +11,7 @@ class Province {
 		double value_ = 0.50;
 
 		string name_ = "Generic Province";
-		Colour colour_ = Colour(255, 255, 255);
+		Colour2 colour_ = Colour2(255, 255, 255);
 		TERRAIN terrain_ = FLAT;
 		PROV_STATE state_ = NORMAL;
 
@@ -34,8 +34,8 @@ class Province {
 		string getName() { return name_; }
 		void setName(string name) { name_ = name; }
 
-		Colour getColour() { return colour_; }
-		void setColour(Colour colour) { colour_ = colour; }
+		Colour2 getColour() { return colour_; }
+		void setColour(Colour2 colour) { colour_ = colour; }
 
 		void setTerrain(TERRAIN terrain) { terrain_ = terrain; }
 		TERRAIN getTerrain() { return terrain_; }

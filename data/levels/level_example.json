@@ -1,0 +1,34 @@
+{
+  "level_name": "Example",
+  "background": "22a6b3",
+  "background_alpha": 0.5,
+  "alt_background": "be2edd",
+  "alt_background_alpha": 0.5,
+  "foreground": "FFFFFF",
+  "objects": [
+    {
+      "type": "COLLIDABLE",
+      "x": 0.1,
+      "y": 0.1,
+      "width": 0.1,
+      "height": 0.1,
+      "colour": "FFFFFF",
+      "alt_colour": "282828",
+      "alpha": 1.0,
+      "alt_alpha": 1.0
+    },
+    {
+      "type": "QUAD",
+      "points": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "colour": "FFFFFF",
+      "alt_colour": "282828",
+      "alpha": 1.0,
+      "alt_alpha": 1.0
+    }
+  ]
+}

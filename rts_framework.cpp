@@ -1,3 +1,4 @@
+/*
 #include <string>
 #include <stdlib.h>
 #include <iostream>
@@ -102,13 +103,13 @@ void mouse_callback(GLFWwindow* window, int button, int action, int mods) {
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {}
 
-int main() {
+int main2() {
     Province* prov_paris = createProvince("Paris");
     prov_paris->setLocation(700, 100);
     prov_paris->setValue(0.42);
 
     Nation* nation_france = createNation("France");
-    nation_france->setColour(Colour(0, 0, 255));
+    nation_france->setColour(Colour2(0, 0, 255));
     nation_france->setMoney(10000);
     nation_france->addProvince(prov_paris);
     nation_france->setCapital(prov_paris);
@@ -122,7 +123,7 @@ int main() {
     prov_hamburg->setValue(0.20);
 
     Nation* nation_germany = createNation("Germany");
-    nation_germany->setColour(Colour(255, 0, 255));
+    nation_germany->setColour(Colour2(255, 0, 255));
     nation_germany->setMoney(7800);
     nation_germany->addProvince(prov_hamburg);
     nation_germany->addProvince(prov_berlin);
@@ -209,3 +210,4 @@ int main() {
     // + Units
     // TODO: Use unique ptrs
 }
+*/

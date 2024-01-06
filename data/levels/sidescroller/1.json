@@ -1,0 +1,33 @@
+{
+  "level_name": "Flat base + stars",
+  "background": "222f3e",
+  "background_alpha": 0.31,
+  "alt_background": "222f3e",
+  "alt_background_alpha": 0.31,
+  "foreground": "FFFFFF",
+  "objects": [
+    {
+      "type": "COLLIDABLE",
+      "x": 0.0,
+      "y": 0.85,
+      "width": 0.45,
+      "height": 0.15,
+      "colour": "ECF0F1",
+      "alt_colour": "ECF0F1",
+      "alpha": 0.69,
+      "alt_alpha": 0.69,
+      "name": "Ground 1"
+    },
+    {
+      "type": "COLLIDABLE",
+      "x": 0.65,
+      "y": 0.85,
+      "width": 0.35,
+      "height": 0.15,
+      "colour": "ECF0F1",
+      "alt_colour": "ECF0F1",
+      "alpha": 0.69,
+      "alt_alpha": 0.69
+    }
+  ]
+}

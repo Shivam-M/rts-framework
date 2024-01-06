@@ -3,6 +3,7 @@
 #include "io/keyboard.h"
 #include "io/gamepad.h"
 #include "io/mouse.h"
+
 #include <windows.h>
 #include <Psapi.h>
 
@@ -13,19 +14,10 @@
 #include "defs/nation.h"
 #include "defs/object.h"
 
-// #include <opencv2/opencv.hpp>
-// #include <thread>
-
 #define MAX_RESTRICTED_GAME_SPEED 2000
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 #define PRINT_DEBUG_
-
-static int ProvinceCount = 0;
-static int NationCount = 0;
-
-ProvinceMV* createProvince(string name) { return new ProvinceMV(ProvinceCount++, name); }
-Nation* createNation(string name) { return new Nation(NationCount++, name); }
 
 vector<Nation*> nations;
 GLFWwindow* window;
@@ -45,7 +37,7 @@ Game::Game(int argc, char** argv) {
 	game = this;
 
 	if (!glfwInit()) return;
-	if (!(window = glfwCreateWindow(1280, 720, "RTS Game", NULL, NULL))) { glfwTerminate(); return; }
+	if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RTS Game", NULL, NULL))) { glfwTerminate(); return; }
 	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -74,7 +66,7 @@ Game::Game(int argc, char** argv) {
 	t_Notification =		Text(0.150, 0.050, font, 189, 195, 199, 255, "");
 
 	int level_counter = 0;
-	registerObject(&player);
+	// registerObject(&player);
 
 	console = new Console(this);
 	console->build();
@@ -129,22 +121,21 @@ Game::Game(int argc, char** argv) {
 	}
 	fclose(neighbours_file);
 
-
-	FILE* file;
-	fopen_s(&file, "data/generated/province_dimensions.txt", "r");
-	if (file == nullptr) {
+	FILE* dimensions_file;
+	fopen_s(&dimensions_file, "data/generated/province_dimensions.txt", "r");
+	if (dimensions_file == nullptr) {
 		info_e("Error loading province map data file.");
 		return;
 	}
 
 	float x, y, w, h;
 	float xoffset = -0.2, yoffset = -0.1;
-	while (fscanf_s(file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
+	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
 		info_i("Loading map position data for province ID... #" + to_string(id));
 		Loader::getProvinceMap()[id]->setSize(w, h);
 		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
 	}
-	fclose(file);
+	fclose(dimensions_file);
 
 	vector<ProvinceMV*> path;
 	// path.push_back(Loader::getProvinceMap()[5]);
@@ -170,18 +161,19 @@ Game::Game(int argc, char** argv) {
 	registerObject(&t_PlayerAcceleration);
 	registerObject(&t_PlayerLocation);
 
+	/*
 	player.setColour(236, 240, 241, 175);
 	player.setLocation(0.075, 0.6);
 	player.setSize(player.getSize()[0] * 4, player.getSize()[1] * 4);
 	player.addFlag(TEXTURED);
 	player.setTexture(Image::getImage("img.png"));
 	player.loadScript("data/switcher.txt"); // preload script img/fonts
+	*/
 
 	for (Text* t : text_objects) t->addFlag(BUTTON);
 
 	keyboard = new Keyboard(this);
 	mouse = new Mouse(this);
-	
 
 	glfwSetKeyCallback(window, keyboard->callback);
 	glfwSetMouseButtonCallback(window, mouse->callback);
@@ -336,6 +328,8 @@ void Game::selectButton(vector<Text*> objects, double x, double y) {
 }
 
 void Game::updateObjects(double modifier) {
+	// Sidescroller movement code
+	/*
 	double x_location = player.getLocation()[0], movement = 0;
 	if ((traversed && x_location <= 0.3) || x_location >= 0.65)
 		if (x_location >= 0.65) {
@@ -348,18 +342,6 @@ void Game::updateObjects(double modifier) {
 			double* location = m->getLocation();
 			m->setLocation(location[0] - movement, location[1]);
 			// render.uoffsets[0] = location[0] - movement;
-
-			if (render.render_method == 1) {
-				if (m->getFlags() & CIRCLE) {
-					Circle* c = (Circle*)m;
-					c->updateMatrix();
-				}
-				else {
-					double* size = m->getSize();
-					if ((location[0] + size[0] < 0) || (location[1] + size[1] < 0) || (location[1] > 1) || (location[0] > 1)) continue;
-					m->updateMatrix2();
-				}
-			}
 
 			if (m->getFlags() & QUAD) {
 				Collidable* c = (Collidable*)m;
@@ -374,6 +356,7 @@ void Game::updateObjects(double modifier) {
 			double* location = t->getLocation();
 			t->setLocation(location[0] - movement, location[1]);
 		}
+	*/
 
 	vector<Moveable*> temp;
 	for (Moveable* m : objects) !m->isActive ? temp.push_back(m) : m->update(modifier);
@@ -434,7 +417,7 @@ int Game::gameLoop() {
 #endif
 			elapsed_days++;
 			updateObjects(60.0 / update_rate);
-			checkCollision();
+			// checkCollision();
 			updateProperties();
 			glfwPollEvents();
 			// checkTimers();

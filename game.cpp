@@ -26,6 +26,8 @@ Unit* selected_unit; ProvinceMV* selected_province;
 double game_speed = 2.5;
 int elapsed_days = 0;
 
+Nation* player_nation = nullptr;
+
 using namespace std;
 
 Game* Game::game = nullptr;
@@ -57,9 +59,9 @@ Game::Game(int argc, char** argv) {
 	font = Fonts::getFont(CONSOLAS_BOLD, 11);
 
 	t_FPSCounter =			Text(0.925, 0.050, font,   0, 206, 201, 255, "FPS: --");
-	t_PlayerLocation =		Text(0.030, 0.050, font,  34, 166, 179, 255, "POS: --");
-	t_PlayerVelocity =		Text(0.030, 0.075, font,  34, 166, 179, 255, "VEL: --");
-	t_PlayerAcceleration =	Text(0.030, 0.100, font,  34, 166, 179, 255, "ACL: --");
+	t_PlayerLocation =		Text(0.030, 0.050, font,  34, 166, 179, 255, "--");
+	t_PlayerVelocity =		Text(0.030, 0.075, font,  34, 166, 179, 255, "--");
+	t_PlayerAcceleration =	Text(0.030, 0.100, font,  34, 166, 179, 255, "--");
 	t_Alt =					Text(0.675, 0.050, font, 223, 249, 251, 255, "ALT: --");
 	t_Alt2 =				Text(0.800, 0.050, font, 223, 249, 251, 255, "ALT: --");
 	t_Alt3 =				Text(0.550, 0.050, font, 223, 249, 251, 255, "ALT: --");
@@ -146,11 +148,14 @@ Game::Game(int argc, char** argv) {
 	path.push_back(Loader::getProvinceMap()[17]);
 	path.push_back(Loader::getProvinceMap()[18]);
 	Loader::getUnitMap()[1]->setPath(path);
+	Loader::getUnitMap()[1]->initiate();
 
 	for (const auto& p : Loader::getNationMap()) {
 		Nation* nation = p.second;
 		nations.push_back(nation);
 	}
+
+	player_nation = nations[0];
 
 	registerObject(&t_FPSCounter);
 	registerObject(&t_Alt);
@@ -181,6 +186,33 @@ Game::Game(int argc, char** argv) {
 
 	info("Took " + to_string(glfwGetTime() - launch_time) + " seconds to load the game.");
 }
+
+vector<Unit*> getUnitsOnProvince(ProvinceMV* province) {
+	vector<Unit*> stationed_units;
+	for (const auto& p : Loader::getUnitMap()) {
+		Unit* unit = p.second;
+		if (unit->getProvince() == province) {
+			stationed_units.push_back(unit);
+		}
+	}
+	return stationed_units;
+}
+
+/*
+void gameLogic() {
+	for (const auto& p : Loader::getProvinceMap()) {
+		ProvinceMV* province = p.second;
+		vector<Unit*> province_units = getUnitsOnProvince(province);
+		if (province_units.size() >= 2) {
+			for (Unit* unit : province_units) {
+				for (Unit* other_unit : province_units) {
+					if (unit->getNation() != other_unit->getNation)
+				}
+			}
+		}
+	}
+}
+*/
 
 Player* Game::getPlayer() { return &player; }
 
@@ -278,9 +310,20 @@ void Game::updateStatistics(int f, int u) {
 	// t_PlayerAcceleration.setContent("ACL: " + to_string(player.getAcceleration()[0]) + ", " + to_string(player.getAcceleration()[1]));
 	// t_PlayerVelocity .setContent("VEL: " + to_string(player.getVelocity()[0]) + ", " + to_string(player.getVelocity()[1]));
 	// t_Notification.setContent("");
+
+	string nation_string = "-- [X]";
+	if (player_nation) {
+		nation_string = player_nation->getName() + " [" + to_string(player_nation->getID()) + "]";
+		t_PlayerAcceleration.setColour(player_nation->colour[0], player_nation->colour[1], player_nation->colour[2], 255);
+	}
+
+	// font_data font = Fonts::getFont("data/fonts/brockscript.ttf", 25, true);
+	// t_PlayerAcceleration.setFont(font);
+
+
 	t_PlayerLocation.setContent("Day #" + to_string(elapsed_days));
 	t_PlayerVelocity.setContent("Money: 0.00");
-	t_PlayerAcceleration.setContent("Playing as: -- [X]");
+	t_PlayerAcceleration.setContent("Playing as: " + nation_string);
 	info(ss << "FPS: " << f << " \tUpdates: " << u << " \tGame time: " << update_time_ << "ms \t[" << (int)(1 / update_time_) << "]");
 }
 

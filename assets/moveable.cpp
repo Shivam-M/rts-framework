@@ -11,6 +11,12 @@ double* Moveable::getAcceleration() { return acceleration; }
 double* Moveable::getVelocity() { return velocity; }
 double* Moveable::getLocation() { return location; }
 double* Moveable::getSize() { return size; }
+double* Moveable::getCentre() {
+	centre_[0] = location[0] + size[0] / 2;
+	centre_[1] = location[1] + size[1] / 2;
+	
+	return centre_;
+}
 double* Moveable::getGLColour() { return gl_colour; }
 short*	Moveable::getColour() { return colour; }
 int		Moveable::getFlags() { return flags; }

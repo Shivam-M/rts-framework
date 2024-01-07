@@ -48,6 +48,8 @@ class Unit: public Moveable {
 			province_ = province;
 			if (province != nullptr)
 				province->getLocation(&location_[0], &location_[1]);
+			 Moveable::setLocation(province->Moveable::getLocation()[0], province->Moveable::getLocation()[1]); // err: done before provinces are mapped with coords
+			 if (true);
 		}
 
 		ProvinceMV* getTarget() { return target_province_; }
@@ -84,8 +86,26 @@ class Unit: public Moveable {
 			enemy_unit_ = unit;
 		}
 
+		void initiate() {
+			Moveable::setLocation(province_->Moveable::getCentre()[0], province_->Moveable::getCentre()[1]);
+		}
+
 		void evaluate() {
-			setLocation(location_[0] / 1280.0, location_[1] / 720.0);
+			// return;
+			double* home_location = province_->Moveable::getLocation();
+			double* target_location = province_->Moveable::getLocation();
+			double magnet = 0.01;
+
+			// target_province_->getCentre(target_location);
+			home_location = province_->Moveable::getCentre();
+			if (target_province_) {
+				target_location = target_province_->Moveable::getCentre();
+				// target_location[0] -= size[0] / 2;
+				// target_location[1] -= size[1] / 2;
+			}
+
+			// setLocation(location_[0] / 1280.0, location_[1] / 720.0);
+			double distance[2] = { 0, 0 };
 			switch (getState()) {
 				case FIGHTING:
 					enemy_unit_->takeFatalities(125 * skill_factor_ /* x randomess */);
@@ -97,27 +117,42 @@ class Unit: public Moveable {
 				case SIEGING:
 					break;
 				case TRAVELLING:
-					int home_location[2], target_location[2];
-					province_->getLocation(&home_location[0], &home_location[1]);
-					target_province_->getLocation(&target_location[0], &target_location[1]);
-					location_[0] += (target_location[0] - home_location[0]) * speed_;
-					location_[1] += (target_location[1] - home_location[1]) * speed_;
-					if (location_[0] == target_location[0] && location_[1] == target_location[1]) { // Add small variance/'magnet' zone for rounding
+
+					// home_location[0] -= size[0] / 2;
+					// home_location[1] -= size[1] / 2;
+
+					location[0] += (target_location[0] - home_location[0]) * speed_;
+					location[1] += (target_location[1] - home_location[1]) * speed_;
+					
+					distance[0] = abs(target_location[0] - location[0]);
+					distance[1] = abs(target_location[1] - location[1]);
+
+					magnet = 0.001;
+
+					if (location[0] == target_location[0] && location[1] == target_location[1] || (distance[0] < magnet && distance[1] < magnet)) {
 						province_ = target_province_;
 						target_province_ = nullptr; // Get new from path
 						if (travel_path_.size() > 1) {
 							advancePath();
-						}
-						else {
+						} else {
 							travel_path_.clear();
 							setState(NORMAL);
 						}
 					}
 
+					// location[0] -= size[0] / 2;
+					// location[1] -= size[1] / 2;
 					
 					break;
 				case NORMAL:
 					break;
+			}
+
+
+
+			if (text != nullptr) {
+				text->setLocation(Moveable::getLocation()[0] + bounds[0], Moveable::getLocation()[1] + bounds[1]);
+				text->setContent(getName() + " - " + to_string(getSize()));
 			}
 		}
 };

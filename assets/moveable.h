@@ -43,6 +43,8 @@ class Moveable {
 		double gl_colour[4] = { 1.0, 1.0, 1.0, 1.0 };
 		double gl_gradient[4] = { -1.0, -1.0, -1.0, -1.0 };
 
+		double centre_[2] = {0.0, 0.0};
+
 		short colour[4] = { 255, 255, 255, 255 };
 		short default_colour[4] = { 255, 255, 255, 255 };
 		short alternate_colour[4] = { 255, 255, 255, 255 };
@@ -60,6 +62,7 @@ class Moveable {
 		double* getVelocity();
 		double* getLocation();
 		double* getSize();
+		double* getCentre();
 		double* getBounds();
 		int getFlags();
 

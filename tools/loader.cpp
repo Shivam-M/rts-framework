@@ -183,6 +183,12 @@ Unit* Loader::parseUnit(json properties) {
 	double* loc = unit->Moveable::getLocation();
 	unit->Moveable::setLocation(loc[0] - 1, loc[1]);
 	unit->Moveable::setName(getString(properties, "name"));
+
+	font_data font = Fonts::getFont(CONSOLAS_BOLD, 8);
+	unit->setText(new Text(unit->Moveable::getLocation()[0], unit->Moveable::getLocation()[1], font, 189, 195, 199, 250, unit->getName()));
+	unit->setBounds(0, -0.0025);
+
+
 	unit_map[getInt(properties, "id")] = unit;
 	return unit;
 }
@@ -208,6 +214,7 @@ Nation* Loader::parseNation(json properties) {
 		Unit* unit =  unit_map[(int)element];
 		if (unit == nullptr) continue;
 		nation->addUnit(unit);
+		unit->Moveable::setColour(nation->Moveable::getColour());
 		stringstream ss;
 		info(ss << "Assigned unit '" << unit->getName() << "' (" << unit->getID() << ") to nation '" << nation->getName() << "' (" << nation->getID() << ")");
 	}
@@ -306,7 +313,7 @@ Level* Loader::load(string f, vector <Moveable*>* q, vector<Text*>* t, int ident
 		} else if (type == "UNIT") {
 			Unit* unit = parseUnit(object_data);
 			level->objects.push_back(unit);
-			// level->text_objects.push_back(unit->getText());
+			level->text_objects.push_back(unit->getText());
 		} else if (type == "NATION") {
 			Nation* nation = parseNation(object_data);
 			level->objects.push_back(nation);

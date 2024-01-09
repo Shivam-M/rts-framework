@@ -136,6 +136,7 @@
     <ClCompile Include="assets\collidable.cpp" />
     <ClCompile Include="assets\enemy.cpp" />
     <ClCompile Include="assets\moveable.cpp" />
+    <ClCompile Include="assets\moveable_new.cpp" />
     <ClCompile Include="assets\planet.cpp" />
     <ClCompile Include="assets\player.cpp" />
     <ClCompile Include="assets\text.cpp" />
@@ -147,7 +148,6 @@
     <ClCompile Include="io\keyboard.cpp" />
     <ClCompile Include="io\mouse.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="rts_framework.cpp" />
     <ClCompile Include="shapes\circle.cpp" />
     <ClCompile Include="shapes\square.cpp" />
     <ClCompile Include="tools\colour.cpp" />
@@ -164,6 +164,7 @@
     <ClInclude Include="assets\collidable.h" />
     <ClInclude Include="assets\enemy.h" />
     <ClInclude Include="assets\moveable.h" />
+    <ClInclude Include="assets\moveable_new.h" />
     <ClInclude Include="assets\planet.h" />
     <ClInclude Include="assets\player.h" />
     <ClInclude Include="assets\text.h" />

@@ -13,6 +13,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
 #include <fstream>
 
@@ -131,6 +132,8 @@ class Game {
 		void debugMode();
 		int  gameLoop();
 		void fireShot();
+
+		vector<Unit*> getUnitsOnProvince(ProvinceMV* province);
 
 		Player* getPlayer();
 

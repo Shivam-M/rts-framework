@@ -188,6 +188,8 @@ Unit* Loader::parseUnit(json properties) {
 	unit->setText(new Text(unit->Moveable::getLocation()[0], unit->Moveable::getLocation()[1], font, 189, 195, 199, 250, unit->getName()));
 	unit->setBounds(0, -0.0025);
 
+	unit->addFlag(UNIT);
+
 
 	unit_map[getInt(properties, "id")] = unit;
 	return unit;

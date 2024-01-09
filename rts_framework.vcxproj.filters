@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="rts_framework.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="assets\collidable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -91,6 +88,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\moveable_new.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -195,6 +195,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\moveable_new.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

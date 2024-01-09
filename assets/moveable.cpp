@@ -1,5 +1,6 @@
 #include "moveable.h"
 
+Game* Moveable::game_instance = nullptr;
 
 vector<map<double, double>> Moveable::getPoints() { return vector<map<double, double>>(); }
 Text*   Moveable::getText() { return text; }
@@ -56,7 +57,7 @@ glm::mat4 Moveable::getMatrix2() {
 
 void Moveable::setColour(short* colour, short alpha) { setColour(colour[0], colour[1], colour[2], alpha); }
 void Moveable::setGradientColour(short* colour, short alpha) { setGradientColour(colour[0], colour[1], colour[2], alpha); }
-void Moveable::setColourShifting(bool state) { shiftingColour = state; }
+void Moveable::setColourShifting(bool state) { shifting_colour = state; }
 
 void Moveable::setAlphaShifting(bool state, bool oneway) { 
 	shiftingAlpha = state;
@@ -159,7 +160,7 @@ void Moveable::loadScript(string path) {
 }
 
 void Moveable::common(double modifier) {
-	if (shiftingColour) shiftColour(1 * modifier);
+	if (shifting_colour) shiftColour(1 * modifier);
 	if (shiftingAlpha) shiftAlpha(0.01 * modifier);
 	tickTimer(modifier);
 }

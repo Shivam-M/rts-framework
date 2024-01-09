@@ -132,6 +132,12 @@ class Unit: public Moveable {
 					if (location[0] == target_location[0] && location[1] == target_location[1] || (distance[0] < magnet && distance[1] < magnet)) {
 						province_ = target_province_;
 						target_province_ = nullptr; // Get new from path
+
+						// check if an enemy unit is also on the province
+						// game_instance->checkCollision();
+
+
+
 						if (travel_path_.size() > 1) {
 							advancePath();
 						} else {

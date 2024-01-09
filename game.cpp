@@ -1,4 +1,6 @@
 
+
+
 #include "game.h"
 #include "io/keyboard.h"
 #include "io/gamepad.h"
@@ -37,6 +39,8 @@ Game::Game(int argc, char** argv) {
 	double launch_time = glfwGetTime();
 	stringstream ss;
 	game = this;
+
+	Moveable::setGameInstance(this);
 
 	if (!glfwInit()) return;
 	if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RTS Game", NULL, NULL))) { glfwTerminate(); return; }
@@ -187,7 +191,7 @@ Game::Game(int argc, char** argv) {
 	info("Took " + to_string(glfwGetTime() - launch_time) + " seconds to load the game.");
 }
 
-vector<Unit*> getUnitsOnProvince(ProvinceMV* province) {
+vector<Unit*> Game::getUnitsOnProvince(ProvinceMV* province) {
 	vector<Unit*> stationed_units;
 	for (const auto& p : Loader::getUnitMap()) {
 		Unit* unit = p.second;
@@ -341,6 +345,9 @@ void Game::updateProperties() {
 			for (ProvinceMV* neighbour : province->getNeighbours()) {
 				neighbour->Moveable::setColour(255, 0, 255);
 			}
+		}
+		else if (selected_object->getFlags() & UNIT) { // t: enable flag in loader
+
 		}
 	}
 

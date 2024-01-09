@@ -41,6 +41,7 @@ enum {
 	FIXED_POS	= 1 << 22,
 	BOUND		= 1 << 23,
 	PROVINCE	= 1 << 24,
+	UNIT		= 1 << 25,
 };
 
 enum {

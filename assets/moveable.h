@@ -19,6 +19,7 @@
 
 using namespace std;
 class Text;
+class Game;
 
 
 class Moveable {
@@ -28,6 +29,7 @@ class Moveable {
 		Texture* texture;
 		glm::mat4 matrix2;
 		Text* text;
+		static Game* game_instance;
 
 		int type = 0;
 		int script_line = 0;
@@ -52,7 +54,7 @@ class Moveable {
 
 		short alpha_limit = 255;
 
-		bool shiftingColour = false, shiftingAlpha = false, alphaDownwards = true, oneWay = false, isActive = true;
+		bool shifting_colour = false, shiftingAlpha = false, alphaDownwards = true, oneWay = false, isActive = true;
 
 		Text* getText();
 		Texture* getTexture();
@@ -105,6 +107,10 @@ class Moveable {
 
 		void common(double);
 		virtual void update(double = 1.0);
+
+		static void setGameInstance(Game* game) {
+			game_instance = game;
+		}
 
 };
 

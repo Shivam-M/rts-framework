@@ -42,6 +42,8 @@ Game::Game(int argc, char** argv) {
 
 	Moveable::setGameInstance(this);
 
+	// debug_log("This", "Is", "A ", 2.2, "", 1, " test");
+
 	if (!glfwInit()) return;
 	if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RTS Game", NULL, NULL))) { glfwTerminate(); return; }
 	

@@ -40,6 +40,7 @@ class Vector4 {
 		Vector4 operator/(const Vector4& other) const { return Vector4(x_ / other.x_, y_ / other.y_, z_ / other.z_, w_ / other.w_); }
 		Vector4 operator/(const double& number) const { return Vector4(x_ / number, y_ / number, z_ / number, w_ / number); }
 		bool operator==(const Vector4& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_ && w_ == other.w_; }
+		bool operator!=(const Vector4& other) const { return x_ != other.x_ || y_ != other.y_ || z_ != other.z_ || w_ != other.w_; }
 
 		double magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_); }
 
@@ -54,7 +55,9 @@ class Colour2: public Vector4 {
 		static Vector4 HexToRGB(string hex) { return Vector4(0, 0, 0, 255); }
 		static string RGBToHex(Vector4 rgb) { return ""; }
 
-		Colour2();
+		Colour2(const Vector4& vec) : Vector4(vec) {}
+
+		Colour2() {}
 
 		Colour2(string hex) {
 			setHex(hex);

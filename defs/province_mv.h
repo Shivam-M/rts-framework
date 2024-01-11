@@ -19,7 +19,7 @@ private:
 	PROV_STATE state_ = NORMAL;
 	vector<ProvinceMV*> neighbours_;
 
-	public:
+public:
 	ProvinceMV(int identifier, string name) : identifier_(identifier), name_(name) {}
 
 	void setID(int identifier) { identifier_ = identifier; }

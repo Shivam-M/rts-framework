@@ -52,7 +52,7 @@ class Vector4 {
 
 class Colour2: public Vector4 { 
 	public:
-		static Vector4 HexToRGB(string hex) { return Vector4(0, 0, 0, 255); }
+		static Colour2 HexToRGB(string hex, double alpha = 1) { return Vector4(0, 0, 0, alpha * 255); }
 		static string RGBToHex(Vector4 rgb) { return ""; }
 
 		Colour2(const Vector4& vec) : Vector4(vec) {}
@@ -60,7 +60,7 @@ class Colour2: public Vector4 {
 		Colour2() {}
 
 		Colour2(string hex) {
-			setHex(hex);
+			*this = HexToRGB(hex);
 		}
 
 		Colour2(short r, short g, short b, short a = 255) {
@@ -68,10 +68,6 @@ class Colour2: public Vector4 {
 			setY(g);
 			setZ(b);
 			setW(a);
-		}
-
-		void setHex(string hex) {
-			// rgba_ = HexToRGB(hex);
 		}
 
 		string getHex() { return ""; }

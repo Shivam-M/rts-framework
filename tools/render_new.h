@@ -2,21 +2,13 @@
 #define RENDER_NEW_H
 #pragma once
 
-#define GL_GLEXT_PROTOTYPES
-#define GL_GLEXT_PROTOTYPES 1
-#define GL3_PROTOTYPES 1
-#define GLEW_STATIC
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <vector>
 
-#include "TextRenderer.hpp" // 06/08/2021 - new text renderer from https://github.com/benhj/glfreetype
-#include "../assets/text.h"
 #include "common.h"
 #include "image.h"
 
-class Circle;
+class CircleNew;
+class TextNew;
 
 using namespace std;
 using namespace glfreetype;
@@ -25,7 +17,7 @@ class RenderNew {
 	private:
 		GLFWwindow* window_;
 		vector<MoveableNew*>* objects_;
-		vector<Text*>* text_objects_;
+		vector<TextNew*>* text_objects_;
 		Vector2 resolution = { 1280, 720 };
 		bool fullscreen_ = false;
 		bool debug_ = false;
@@ -33,7 +25,7 @@ class RenderNew {
 
 	public:
 		RenderNew() {}
-		RenderNew(GLFWwindow*, vector<MoveableNew*>*, vector<Text*>*);
+		RenderNew(GLFWwindow*, vector<MoveableNew*>*, vector<TextNew*>*);
 
 		void drawQuad(Vector2 location, Vector2 size, Colour2 colour, Colour2 gradient);
 
@@ -45,7 +37,7 @@ class RenderNew {
 
 		void drawText(Vector2 location, string message, font_data font, Colour2 colour);
 
-		void drawCircle(Circle*);
+		void drawCircle(CircleNew*);
 		void drawCircle(Vector2 location, Colour2 colour, Colour2 gradient, double radius, double generality);
 
 		void renderWindow();

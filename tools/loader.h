@@ -28,7 +28,11 @@ class Unit;
 using namespace nlohmann;
 using namespace std;
 
-
+struct Level {
+	double player_position[2];
+	vector<Moveable*> objects;
+	vector<Text*> text_objects;
+};
 
 class Loader {
 	private:

@@ -30,8 +30,9 @@ void MoveableNew::shiftColour(int speed) {
 }
 */
 
-void MoveableNew::shiftColour(int speed) {
-	// Colour2 change = (colour - alternate_colour) * speed;
+void MoveableNew::shiftColour(double speed) {
+	Colour2 change = (colour - alternate_colour) * speed;
+	colour = colour + (change * speed);
 }
 
 /*
@@ -63,6 +64,13 @@ float* getDecimals(string a) {
 	return values;
 }*/
 
+void setValues(Vector2& vector, string values) {
+	size_t splitter = values.find(',');
+	string first = values.substr(0, splitter);
+	string second = values.substr(splitter + 1);
+	vector.set(stof(first), stof(second));
+}
+
 // Add vars.
 void MoveableNew::tickTimer(double modifier) {
 	if (script_timer > 0) { script_timer -= (1.0 / 60) * modifier; return; }
@@ -76,8 +84,11 @@ void MoveableNew::tickTimer(double modifier) {
 
 	if (action == "WAIT") script_timer = stof(data);
 	// else if (action == "LOCATION") { float* values = getDecimals(data); setLocation(values[0], values[1]); }
+	else if (action == "LOCATION") { setValues(location, data); }
 	// else if (action == "VELOCITY") { float* values = getDecimals(data); setVelocity(values[0], values[1]); }
+	else if (action == "VELOCITY") { setValues(velocity, data); }
 	// else if (action == "ACCELERATION") { float* values = getDecimals(data); setAcceleration(values[0], values[1]); }
+	else if (action == "ACCELERATION") { setValues(acceleration, data); }
 	else if (action == "X") location.x = stof(data);
 	else if (action == "Y") location.y = stof(data);
 	else if (action == "WIDTH") size.x = stof(data);

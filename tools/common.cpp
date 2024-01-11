@@ -1,5 +1,8 @@
 #include "common.h"
 
+#define CON_RED		\033[1;91m
+#define CON_YELLOW	\033[1;33m
+#define CON_CYAN	\033[1;32m
 
 void info(std::ostream& out) {
 	std::stringstream ss;

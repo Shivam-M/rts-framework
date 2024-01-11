@@ -259,6 +259,7 @@ void Render::drawTexture(double* location, double* size, Texture* texture, doubl
 
 void Render::drawTexture(double x, double y, double width, double height, Texture* texture, double* colour, bool right) {
     if ((x + width < 0) || (y + height < 0) || (y > 1) || (x > 1)) return;
+
     normaliseCoordinates(&x, &y);
     width *= 2;
     height *= 2;

@@ -158,6 +158,7 @@
     <ClCompile Include="tools\loader.cpp" />
     <ClCompile Include="tools\render.cpp" />
     <ClCompile Include="tools\render2.cpp" />
+    <ClCompile Include="tools\render_new.cpp" />
     <ClCompile Include="tools\TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +194,7 @@
     <ClInclude Include="tools\image.h" />
     <ClInclude Include="tools\loader.h" />
     <ClInclude Include="tools\render.h" />
+    <ClInclude Include="tools\render_new.h" />
     <ClInclude Include="tools\stb_image.h" />
     <ClInclude Include="tools\structs.h" />
     <ClInclude Include="tools\TextRenderer.hpp" />

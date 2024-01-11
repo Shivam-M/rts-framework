@@ -42,6 +42,7 @@ enum {
 	BOUND		= 1 << 23,
 	PROVINCE	= 1 << 24,
 	UNIT		= 1 << 25,
+	CUSTOM		= 1 << 26
 };
 
 enum {

@@ -85,14 +85,12 @@ class MoveableNew {
 		void setDefaultColour(Colour2 col) { alternate_colour = col; }
 		void setAlternateColour(Colour2 col) { default_colour = col; }
 		void setGradientColour(Colour2 col) { gradient_colour = col; }
-		void updateColour(short*, int, int = 1);
 		void resetColour() { colour = default_colour; }
 		void tickTimer(double modifier);
 
 		void setColourShifting(bool state) { shifting_colour = state; }
 		void setDownwardsShifting(bool state) { shifting_downwards = state; }
-		void shiftColour(int = 1);
-		void shiftAlpha(double = 0.01);
+		void shiftColour(double speed = 0.01);
 
 		void loadScript(string script_path);
 

@@ -93,6 +93,9 @@
     <ClCompile Include="assets\moveable_new.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tools\render_new.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defs\colour.h">
@@ -198,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="assets\moveable_new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\render_new.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

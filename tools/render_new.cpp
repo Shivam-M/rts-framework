@@ -69,7 +69,7 @@ void RenderNew::drawCircle(Vector2 location, Colour2 colour, Colour2 gradient, d
 }
 
 void RenderNew::drawText(Vector2 location, string message, font_data font, Colour2 colour) {
-    glColor4i(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
+    glColor4d(colour.getX() / 255, colour.getY() / 255, colour.getZ() / 255, colour.getW() / 255);
     location.x *= resolution.x;
     location.y = resolution.y - location.y * resolution.y;
     print(font, location.x, location.y, message);
@@ -82,10 +82,13 @@ void RenderNew::drawQuad(Vector2 location, Vector2 size, Colour2 colour, Colour2
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glColor4i(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
+
+    // glColor4d(1.0, 1.0, 1.0, 1.0);
+
+    glColor4d(colour.getX() / 255, colour.getY() / 255, colour.getZ() / 255, colour.getW() / 255);
     glVertex2d(location.x, location.y);
     glVertex2d(location.x, location.y + size.y);
-    if (colour != gradient) glColor4i(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
+    // if (colour != gradient) glColor4i(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
     glVertex2d(location.x + size.x, location.y + size.y);
     glVertex2d(location.x + size.x, location.y);
     glEnd();
@@ -125,7 +128,7 @@ void RenderNew::drawTexture(Vector2 location, Vector2 size, Texture* texture, Co
     glBindTexture(GL_TEXTURE_2D, texture->data);
     glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
-    glColor4i(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
+    glColor4d(colour.getX() / 255, colour.getY() / 255, colour.getZ() / 255, colour.getW() / 255);
     glTexCoord2i(flip, 1);     glVertex2d(location.x, location.y);
     glTexCoord2i(flip, 0);     glVertex2d(location.x, location.y + size.y);
     glTexCoord2i(1 - flip, 0); glVertex2d(location.x + size.x, location.y + size.y);
@@ -163,6 +166,12 @@ void RenderNew::renderWindow() {
     for (MoveableNew* moveable: *objects_) {
         if (moveable->getFlags() & DISABLED) continue;
         if ((moveable->location.x + moveable->size.x < 0) || (moveable->location.y + moveable->size.y < 0) || (moveable->location.x > 1) || (moveable->location.y > 1)) continue;
+        
+        if (moveable->getFlags() & TEXTURED) {
+            drawTexture(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
+            continue;
+        }
+        
         switch (moveable->getFlags()) {
             case CUSTOM:
                 drawCustom(moveable->getPoints(), moveable->getColour(), moveable->getGradientColour());

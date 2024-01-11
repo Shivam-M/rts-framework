@@ -22,9 +22,9 @@
 using namespace nlohmann;
 using namespace std;
 
-class ProvinceMV;
-class Nation;
-class Unit;
+class ProvinceNew;
+class NationNew;
+class UnitNew;
 class MoveableNew;
 class CircleNew;
 class TextNew;
@@ -47,9 +47,9 @@ class LoaderNew {
 		static string getVariable(string);
 		static TextNew* parseText();
 		static CollidableNew* parseSlider();
-		static ProvinceMV* parseProvince();
-		static Nation* parseNation();
-		static Unit* parseUnit();
+		static ProvinceNew* parseProvince();
+		static NationNew* parseNation();
+		static UnitNew* parseUnit();
 
 		static void parseCommon(MoveableNew*);
 
@@ -62,9 +62,9 @@ class LoaderNew {
 
 	public:
 		static Level2* load(string, vector<MoveableNew*>*, vector<TextNew*>*, int);
-		static map<int, ProvinceMV*> getProvinceMap();
-		static map<int, Nation*> getNationMap();
-		static map<int, Unit*> getUnitMap();
+		static map<int, ProvinceNew*> getProvinceMap();
+		static map<int, NationNew*> getNationMap();
+		static map<int, UnitNew*> getUnitMap();
 };
 
 #endif

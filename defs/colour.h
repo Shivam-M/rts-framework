@@ -6,7 +6,7 @@
 struct Vector2 {
 	double x, y;
 	Vector2(double x = 0.0, double y = 0.0) : x(x), y(y) {}
-	void set(double x_value, double y_value) { x = x_value, y_value; }
+	void set(double x_value, double y_value) { x = x_value, y = y_value; }
 };
 
 class Vector4 {
@@ -52,7 +52,11 @@ class Vector4 {
 
 class Colour2: public Vector4 { 
 	public:
-		static Colour2 HexToRGB(string hex, double alpha = 1) { return Vector4(0, 0, 0, alpha * 255); }
+		static Colour2 HexToRGB(string hex, double alpha = 1) { 
+			unsigned int r, g, b;
+			sscanf_s(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
+			return Colour2(r, g, b, alpha * 255); 
+		}
 		static string RGBToHex(Vector4 rgb) { return ""; }
 
 		Colour2(const Vector4& vec) : Vector4(vec) {}

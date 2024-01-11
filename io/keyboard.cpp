@@ -1,6 +1,4 @@
 
-// #include <GL/glew.h>
-// #include <GLFW/glfw3.h>
 #include "keyboard.h"
 
 Game* Keyboard::game = nullptr;

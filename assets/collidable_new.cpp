@@ -21,7 +21,7 @@ void CollidableNew::update(double modifier) {
 			shuffle_size -= 1 * modifier;
 		}
 
-		location.x += velocity.y;
-		location.x += velocity.y;
+		location.x += velocity.x;
+		location.y += velocity.y;
 	}
 }

@@ -146,6 +146,7 @@
     <ClCompile Include="effects\ice.cpp" />
     <ClCompile Include="effects\stars.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="game_new.cpp" />
     <ClCompile Include="io\gamepad.cpp" />
     <ClCompile Include="io\keyboard.cpp" />
     <ClCompile Include="io\mouse.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="tools\colour.cpp" />
     <ClCompile Include="tools\common.cpp" />
     <ClCompile Include="tools\console.cpp" />
+    <ClCompile Include="tools\console_new.cpp" />
     <ClCompile Include="tools\fonts.cpp" />
     <ClCompile Include="tools\image.cpp" />
     <ClCompile Include="tools\loader.cpp" />
@@ -177,14 +179,18 @@
     <ClInclude Include="assets\text_new.h" />
     <ClInclude Include="defs\colour.h" />
     <ClInclude Include="defs\nation.h" />
+    <ClInclude Include="defs\nation_new.h" />
     <ClInclude Include="defs\object.h" />
     <ClInclude Include="defs\province.h" />
     <ClInclude Include="defs\province_mv.h" />
+    <ClInclude Include="defs\province_new.h" />
     <ClInclude Include="defs\unit.h" />
+    <ClInclude Include="defs\unit_new.h" />
     <ClInclude Include="effects\fire.h" />
     <ClInclude Include="effects\ice.h" />
     <ClInclude Include="effects\stars.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="game_new.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\stb_image_write.h" />
@@ -197,6 +203,7 @@
     <ClInclude Include="tools\colour.h" />
     <ClInclude Include="tools\common.h" />
     <ClInclude Include="tools\console.h" />
+    <ClInclude Include="tools\console_new.h" />
     <ClInclude Include="tools\fonts.h" />
     <ClInclude Include="tools\image.h" />
     <ClInclude Include="tools\loader.h" />
@@ -206,6 +213,9 @@
     <ClInclude Include="tools\stb_image.h" />
     <ClInclude Include="tools\structs.h" />
     <ClInclude Include="tools\TextRenderer.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gen_neighbours.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

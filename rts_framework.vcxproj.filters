@@ -108,6 +108,12 @@
     <ClCompile Include="assets\collidable_new.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game_new.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\console_new.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defs\colour.h">
@@ -230,5 +236,23 @@
     <ClInclude Include="assets\collidable_new.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="game_new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\console_new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defs\province_new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defs\unit_new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defs\nation_new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gen_neighbours.py" />
   </ItemGroup>
 </Project>

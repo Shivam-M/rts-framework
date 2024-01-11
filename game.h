@@ -108,7 +108,7 @@ class Game {
 
 		Player player;
 
-		int fpsLimit = 200;
+		int fpsLimit = 0;
 		int update_rate = 144;
 
 		bool isWithin(Moveable*, double, double);

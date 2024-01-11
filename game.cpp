@@ -1,6 +1,3 @@
-
-
-
 #include "game.h"
 #include "io/keyboard.h"
 #include "io/gamepad.h"

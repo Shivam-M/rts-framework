@@ -13,7 +13,7 @@
 #include "../defs/colour.h"
 
 using namespace std;
-class Text;
+class TextNew;
 
 struct ColourShift {
 	ColourShift(Colour2 first, Colour2 second) : first_colour(first), second_colour(second) {}
@@ -29,7 +29,7 @@ class MoveableNew {
 	public:
 		string name = "Generic Moveable";
 		Texture* texture;
-		Text* text;
+		TextNew* text;
 		vector<string> script;
 		vector<Vector2> points;
 
@@ -57,7 +57,7 @@ class MoveableNew {
 		MoveableNew(Vector2 loc, Vector2 sze, Colour2 col, Colour2 grd) : location(loc), size(sze), colour(col), gradient_colour(col) {}
 
 		virtual vector<Vector2> getPoints() { return points; }
-		Text* getText() { return text; }
+		TextNew* getText() { return text; }
 		Texture* getTexture() { return texture; }
 		string getName() { return name; }
 	
@@ -75,7 +75,7 @@ class MoveableNew {
 		void addFlag(int f) { flags |= f; }
 		void removeFlag(int f) { flags &= ~f; }
 
-		void setText(Text* t) { text = t; }
+		void setText(TextNew* t) { text = t; }
 		void setTextOffset(double x, double y) { text_offset.set(x, y); }
 		void setTexture(Texture* tex) { addFlag(TEXTURED); texture = tex; }
 		void setName(string n) { name = n; }

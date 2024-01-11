@@ -3,7 +3,17 @@
 
 #define PI 3.14159265358979
 
+#define GL_GLEXT_PROTOTYPES
+#define GL_GLEXT_PROTOTYPES 1
+#define GL3_PROTOTYPES 1
+#define GLEW_STATIC
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include "../assets/text_new.h"
 #include "../assets/moveable_new.h"
+#include "../shapes/circle_new.h"
 #include "render_new.h"
 
 #define GLW_SMALL_ROUNDED_CORNER_SLICES 20 
@@ -27,9 +37,7 @@ void alignCoordinates(Vector2* location, Vector2* size) {
     location->y -= size->y;
 }
 
-RenderNew::RenderNew() {}
-
-RenderNew::RenderNew(GLFWwindow* window, vector<MoveableNew*>* objects, vector<Text*>* text_objects) {
+RenderNew::RenderNew(GLFWwindow* window, vector<MoveableNew*>* objects, vector<TextNew*>* text_objects) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     createRoundedCorners(roundedCorners, GLW_SMALL_ROUNDED_CORNER_SLICES);
@@ -38,8 +46,8 @@ RenderNew::RenderNew(GLFWwindow* window, vector<MoveableNew*>* objects, vector<T
     text_objects_ = text_objects;
 }
 
-void RenderNew::drawCircle(Circle* circle) {
-    drawCircle(circle->getLocation(), circle->getColour(), circle->getGradient(), circle->getRadius(), circle->getGenerality());
+void RenderNew::drawCircle(CircleNew* circle) {
+    drawCircle(circle->getLocation(), circle->getColour(), circle->getGradientColour(), circle->getRadius(), circle->getGenerality());
 }
 
 void RenderNew::drawCircle(Vector2 location, Colour2 colour, Colour2 gradient, double radius, double generality) {
@@ -108,7 +116,7 @@ void RenderNew::drawCurvedQuad(Vector2 location, Vector2 size, Colour2 colour, C
     glEnd();
 }
 
-void RenderNew::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour2 colour, bool flip = false) {
+void RenderNew::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour2 colour, bool flip) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
@@ -166,7 +174,7 @@ void RenderNew::renderWindow() {
                 drawTexture(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
                 break;
             case CIRCLE:
-                drawCircle(reinterpret_cast<Circle*>(moveable));
+                drawCircle(reinterpret_cast<CircleNew*>(moveable));
                 break;
             default:
                 drawQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour());
@@ -176,7 +184,7 @@ void RenderNew::renderWindow() {
     draw_times[0] = glfwGetTime() - time_shapes;
 
     double time_text = glfwGetTime();
-    for (Text* text: *text_objects_) if (!(text->getFlags() & DISABLED)) drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour());
+    for (TextNew* text: *text_objects_) if (!(text->getFlags() & DISABLED)) drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour());
     draw_times[1] = glfwGetTime() - time_text;
 
     glfwSwapBuffers(window_);

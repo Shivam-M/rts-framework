@@ -53,6 +53,9 @@ class MoveableNew {
 		short alpha_max = 255, alpha_min = 0;
 		bool shifting_colour = false, shifting_downwards = true, oneWay = false, isActive = true;
 
+		MoveableNew() {}
+		MoveableNew(Vector2 loc, Vector2 sze, Colour2 col, Colour2 grd) : location(loc), size(sze), colour(col), gradient_colour(col) {}
+
 		virtual vector<Vector2> getPoints() { return points; }
 		Text* getText() { return text; }
 		Texture* getTexture() { return texture; }

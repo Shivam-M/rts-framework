@@ -1,6 +1,5 @@
 #include "fonts.h"
 
-
 using namespace std;
 using namespace glfreetype;
 

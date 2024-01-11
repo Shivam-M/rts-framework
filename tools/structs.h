@@ -10,10 +10,6 @@
 using namespace std;
 
 
-struct Level {
-	double player_position[2];
-	std::vector<Moveable*> objects;
-	std::vector<Text*> text_objects;
-};
+
 
 #endif

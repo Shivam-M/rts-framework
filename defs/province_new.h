@@ -1,5 +1,3 @@
-#ifndef PROVINCE_NEW_H
-#define PROVINCE_NEW_H
 #pragma once
 
 #include "../assets/text_new.h"
@@ -62,4 +60,3 @@ public:
 		return identifier_ == other.identifier_ && name_ == other.name_;
 	}
 };
-#endif

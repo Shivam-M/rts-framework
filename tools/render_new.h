@@ -1,5 +1,3 @@
-#ifndef RENDER_NEW_H
-#define RENDER_NEW_H
 #pragma once
 
 #include <vector>
@@ -48,5 +46,3 @@ class RenderNew {
 		double draw_times[3];
 		Vector2 offsets;
 };
-
-#endif

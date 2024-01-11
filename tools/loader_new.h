@@ -1,5 +1,3 @@
-#ifndef LOADER_NEW_H
-#define LOADER_NEW_H
 #pragma once
 
 // #include <vector>
@@ -66,5 +64,3 @@ class LoaderNew {
 		static map<int, NationNew*> getNationMap();
 		static map<int, UnitNew*> getUnitMap();
 };
-
-#endif

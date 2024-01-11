@@ -1,9 +1,6 @@
-#ifndef COLLIDABLE_NEW_H
-#define COLLIDABLE_NEW_H
 #pragma once
 
 #include "moveable_new.h"
-#include <vector>   
 
 using namespace std;
 
@@ -18,5 +15,3 @@ class CollidableNew : public MoveableNew {
 
 		CollidableNew();
 };
-
-#endif

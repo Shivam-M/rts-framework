@@ -1,5 +1,3 @@
-#ifndef COMMON_H
-#define COMMON_H
 #pragma once
 
 #include <iostream>
@@ -59,5 +57,3 @@ void info_i(std::string);
 void info_e(std::string);
 
 short* rgb(std::string);
-
-#endif

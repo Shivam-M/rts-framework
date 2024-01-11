@@ -1,11 +1,7 @@
-#ifndef MOVEABLE_NEW_H
-#define MOVEABLE_NEW_H
 #pragma once
 
 #include <iostream>
 #include <fstream>
-#include <map>
-#include <vector>
 
 #include "../tools/common.h"
 #include "../tools/image.h"
@@ -100,5 +96,3 @@ class MoveableNew {
 		void common(double);
 		virtual void update(double = 1.0);
 };
-
-#endif

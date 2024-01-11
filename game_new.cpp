@@ -1,6 +1,3 @@
-
-
-
 #include "game_new.h"
 // #include "io/keyboard.h"
 // #include "io/gamepad.h"
@@ -168,7 +165,7 @@ GameNew::GameNew(int argc, char** argv) {
 	info("Took " + to_string(glfwGetTime() - launch_time) + " seconds to load the game.");
 }
 
-Player* GameNew::getPlayer() { return &player; }
+// Player* GameNew::getPlayer() { return &player; }
 
 void GameNew::checkCollision() {
 	/*

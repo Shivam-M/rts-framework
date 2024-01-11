@@ -1,5 +1,3 @@
-#ifndef FONTS_H
-#define FONTS_H
 #pragma once
 
 // #include <iostream>
@@ -155,5 +153,3 @@ class Fonts {
 
 #define INCONSOLATA_REGULAR			"Inconsolata-Regular.ttf"
 #define INCONSOLATA_BOLD			"Inconsolata-Bold.ttf"
-
-#endif

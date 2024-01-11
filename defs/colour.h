@@ -1,7 +1,4 @@
-#ifndef COLOUR_2_H
-#define COLOUR_2_H
 #pragma once
-
 
 struct Vector2 {
 	double x, y;
@@ -77,5 +74,3 @@ class Colour2: public Vector4 {
 		string getHex() { return ""; }
 		Vector4 getRGBAf() { return *this / 255.0; }
 };
-
-#endif

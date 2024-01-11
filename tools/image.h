@@ -1,5 +1,3 @@
-#ifndef IMAGE_H
-#define IMAGE_H
 #pragma once
 
 #include <iostream>
@@ -21,4 +19,3 @@ class Image {
 		static void loadMap(string, string);
 
 };
-#endif

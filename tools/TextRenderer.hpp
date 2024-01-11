@@ -1,9 +1,6 @@
-#ifndef TEXT_RENDERER
-#define TEXT_RENDERER
 #pragma once
 
 #include <GLFW/glfw3.h>
-//#include <glad/glad.h>
 #include <string>
 #include <vector>
 
@@ -33,5 +30,3 @@ namespace glfreetype {
         std::string const& text);
 
 }
-
-#endif

@@ -1,9 +1,7 @@
-#ifndef TEXT_NEW_H
-#define TEXT_NEW_H
 #pragma once
 
 #include "../tools/TextRenderer.hpp"
-#include "../tools/common.h"
+// #include "../tools/common.h"
 #include "moveable_new.h"
 
 using namespace std;
@@ -24,5 +22,3 @@ class TextNew: public MoveableNew {
 		void setFont(font_data f) { font = f; }
 		void setContent(string c) { content = c; }
 };
-
-#endif

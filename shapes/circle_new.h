@@ -1,7 +1,4 @@
 #pragma once
-#ifndef CIRCLE_NEW_H
-#define CIRCLE_NEW_H
-#pragma once
 #include "../assets/moveable_new.h"
 
 class CircleNew : public MoveableNew {
@@ -25,5 +22,3 @@ public:
 
 	// void update(double modifier = 1.0);
 };
-
-#endif

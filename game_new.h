@@ -1,5 +1,3 @@
-#ifndef GAME_NEW_H
-#define GAME_NEW_H
 #pragma once
 
 #define RENDER_2
@@ -96,7 +94,7 @@ class GameNew {
 		enum Direction { LEFT = -1, RIGHT = 1, UP = 2, DOWN = 3 };
 		enum Action { PRESS = -1, RELEASE = 1 };
 
-		Player player;
+		// Player player;
 
 		int fpsLimit = 0;
 		int update_rate = 144;
@@ -115,11 +113,9 @@ class GameNew {
 		int  gameLoop();
 		void fireShot();
 
-		Player* getPlayer();
+		// Player* getPlayer();
 
 		GameNew();
 		GameNew(int, char**);
 
 };
-
-#endif

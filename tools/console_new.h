@@ -1,5 +1,3 @@
-#ifndef CONSOLE_NEW_H
-#define CONSOLE_NEW_H
 #pragma once
 #include <functional>
 #include <vector>
@@ -41,5 +39,3 @@ public:
 	void rText(TextNew*);
 	void rMoveable(MoveableNew*);
 };
-#endif
-

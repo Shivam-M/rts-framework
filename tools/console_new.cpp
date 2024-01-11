@@ -107,7 +107,7 @@ void ConsoleNew::execute() {
 			feedback("Set update rate to " + args[1]);
 		}
 		else if (args[0] == "ANGLE") {
-			game->player.rotation = stoi(args[1]);
+			// game->player.rotation = stoi(args[1]);
 			feedback("Rotation angle set to " + args[1]);
 		}
 		else if (args[0] == "RESET") {
@@ -115,11 +115,11 @@ void ConsoleNew::execute() {
 			feedback("Reset view offsets");
 		}
 		else if (args[0] == "DEFAULT") {
-			game->player.switchMode(DEFAULT);
+			// game->player.switchMode(DEFAULT);
 			feedback("Switched player physics to default.");
 		}
 		else if (args[0] == "PLANET") {
-			game->player.switchMode(PLANET);
+			// game->player.switchMode(PLANET);
 			feedback("Switched player physics to use planet physics.");
 		}
 		else if (args[0] == "CLEAR") {

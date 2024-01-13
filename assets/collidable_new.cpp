@@ -4,7 +4,7 @@ CollidableNew::CollidableNew() {
 	addFlag(COLLIDABLE);
 }
 
-void CollidableNew::update(double modifier) {
+void CollidableNew::update(float modifier) {
 	common(modifier);
 
 	if (getFlags() & MOVING) {

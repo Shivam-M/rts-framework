@@ -1,56 +1,58 @@
 #pragma once
 
 struct Vector2 {
-	double x, y;
-	Vector2(double x = 0.0, double y = 0.0) : x(x), y(y) {}
-	void set(double x_value, double y_value) { x = x_value, y = y_value; }
+	float x, y;
+	Vector2(float x = 0.0, float y = 0.0) : x(x), y(y) {}
+	void set(float x_value, float y_value) { x = x_value, y = y_value; }
 };
 
 class Vector4 {
 	private:
-		double x_, y_, z_, w_;
+		
 
 	public:
-		Vector4(double x = 0.0, double y = 0.0, double z = 0.0, double w = 0.0) : x_(x), y_(y), z_(z), w_(w) {}
+		float x_, y_, z_, w_;
 
-		double getX() { return x_; }
-		double getY() { return y_; }
-		double getZ() { return z_; }
-		double getW() { return w_; }
+		Vector4(float x = 0.0, float y = 0.0, float z = 0.0, float w = 0.0) : x_(x), y_(y), z_(z), w_(w) {}
 
-		void setX(double x) { x_ = x; }
-		void setY(double y) { y_ = y; }
-		void setZ(double z) { z_ = z; }
-		void setW(double w) { w_ = w; }
+		float getX() { return x_; }
+		float getY() { return y_; }
+		float getZ() { return z_; }
+		float getW() { return w_; }
 
-		void setAll(double x, double y, double z, double w) { x_ = x; y_ = y; z_ = z; w_ = w; }
+		void setX(float x) { x_ = x; }
+		void setY(float y) { y_ = y; }
+		void setZ(float z) { z_ = z; }
+		void setW(float w) { w_ = w; }
+
+		void setAll(float x, float y, float z, float w) { x_ = x; y_ = y; z_ = z; w_ = w; }
 
 		Vector4 operator+(const Vector4& other) const { return Vector4(x_ + other.x_, y_ + other.y_, z_ + other.z_, w_ + other.w_); }
-		Vector4 operator+(const double& number) const { return Vector4(x_ + number, y_ + number, z_ + number, w_ + number); }
+		Vector4 operator+(const float& number) const { return Vector4(x_ + number, y_ + number, z_ + number, w_ + number); }
 
 		Vector4 operator-(const Vector4& other) const { return Vector4(x_ - other.x_, y_ - other.y_, z_ - other.z_, w_ - other.w_); }
-		Vector4 operator-(const double& number) const { return Vector4(x_ - number, y_ - number, z_ - number, w_ - number); }
+		Vector4 operator-(const float& number) const { return Vector4(x_ - number, y_ - number, z_ - number, w_ - number); }
 
 		Vector4 operator*(const Vector4& other) const { return Vector4(x_ * other.x_, y_ * other.y_, z_ * other.z_, w_ * other.w_); }
-		Vector4 operator*(const double& number) const { return Vector4(x_ * number, y_ * number, z_ * number, w_ * number); }
+		Vector4 operator*(const float& number) const { return Vector4(x_ * number, y_ * number, z_ * number, w_ * number); }
 
 		Vector4 operator/(const Vector4& other) const { return Vector4(x_ / other.x_, y_ / other.y_, z_ / other.z_, w_ / other.w_); }
-		Vector4 operator/(const double& number) const { return Vector4(x_ / number, y_ / number, z_ / number, w_ / number); }
+		Vector4 operator/(const float& number) const { return Vector4(x_ / number, y_ / number, z_ / number, w_ / number); }
 		bool operator==(const Vector4& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_ && w_ == other.w_; }
 		bool operator!=(const Vector4& other) const { return x_ != other.x_ || y_ != other.y_ || z_ != other.z_ || w_ != other.w_; }
 
-		double magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_); }
+		float magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_); }
 
 		Vector4 normalise() {
-			double mag = magnitude();
+			float mag = magnitude();
 			return (mag != 0.0) ? *this / mag : *this;
 		}
 };
 
 class Colour2: public Vector4 { 
 	public:
-		static Colour2 HexToRGB(string hex, double alpha = 1) { 
-			unsigned int r, g, b;
+		static Colour2 HexToRGB(string hex, float alpha = 1) { 
+			int r, g, b;
 			sscanf_s(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
 			return Colour2(r, g, b, alpha * 255); 
 		}
@@ -64,11 +66,18 @@ class Colour2: public Vector4 {
 			*this = HexToRGB(hex);
 		}
 
-		Colour2(short r, short g, short b, short a = 255) {
+		Colour2(float r, float g, float b, float a = 255) {
 			setX(r);
 			setY(g);
 			setZ(b);
 			setW(a);
+		}
+
+		void getGLColour(float* rgba[4]) {
+			*rgba[0] = getX() / 255;
+			*rgba[1] = getY() / 255;
+			*rgba[2] = getZ() / 255;
+			*rgba[3] = getW() / 255;
 		}
 
 		string getHex() { return ""; }

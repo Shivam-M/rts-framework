@@ -1,8 +1,5 @@
-
-#ifndef STRUCTS_H
-#define STRUCTS_H
+/*
 #pragma once
-
 
 #include "../assets/moveable.h"
 #include "../assets/text.h"
@@ -11,8 +8,5 @@
 
 using namespace std;
 
-
-
-
-
 #endif
+*/

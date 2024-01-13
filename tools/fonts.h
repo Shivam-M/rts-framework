@@ -1,7 +1,5 @@
 #pragma once
 
-// #include <iostream>
-// #include <vector>
 #include <map>
 #include "common.h"
 #include "TextRenderer.hpp"

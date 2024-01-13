@@ -223,20 +223,16 @@ void Render::drawCurvedQuad(double x, double y, float width, float height, float
     // Draw left rounded side.
     for (int i = 0; i < GLW_SMALL_ROUNDED_CORNER_SLICES; ++i) {
         glColor4d(colour[0], colour[1], colour[2], colour[3]);
-        glVertex2f(left + radius - radius * glwRoundedCorners[i].x,
-            bottom - radius + radius * glwRoundedCorners[i].y);
+        glVertex2f(left + radius - radius * glwRoundedCorners[i].x, bottom - radius + radius * glwRoundedCorners[i].y);
         glColor4d(gradient_colour[0], gradient_colour[1], gradient_colour[2], gradient_colour[3]);
-        glVertex2f(left + radius - radius * glwRoundedCorners[i].x,
-            top + radius - radius * glwRoundedCorners[i].y);
+        glVertex2f(left + radius - radius * glwRoundedCorners[i].x, top + radius - radius * glwRoundedCorners[i].y);
     }
     // Draw right rounded side.
     for (int i = GLW_SMALL_ROUNDED_CORNER_SLICES - 1; i >= 0; --i) {
         glColor4d(colour[0], colour[1], colour[2], colour[3]);
-        glVertex2f(right - radius + radius * glwRoundedCorners[i].x,
-            bottom - radius + radius * glwRoundedCorners[i].y);
+        glVertex2f(right - radius + radius * glwRoundedCorners[i].x, bottom - radius + radius * glwRoundedCorners[i].y);
         glColor4d(gradient_colour[0], gradient_colour[1], gradient_colour[2], gradient_colour[3]);
-        glVertex2f(right - radius + radius * glwRoundedCorners[i].x,
-            top + radius - radius * glwRoundedCorners[i].y);
+        glVertex2f(right - radius + radius * glwRoundedCorners[i].x, top + radius - radius * glwRoundedCorners[i].y);
     }
     glEnd();
 }

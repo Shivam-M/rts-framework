@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include <ctime>
 #include <string>
 #include <sstream>
 
@@ -57,3 +56,4 @@ void info_i(std::string);
 void info_e(std::string);
 
 short* rgb(std::string);
+ 

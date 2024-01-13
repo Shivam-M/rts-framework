@@ -30,13 +30,13 @@ void MoveableNew::shiftColour(int speed) {
 }
 */
 
-void MoveableNew::shiftColour(double speed) {
+void MoveableNew::shiftColour(float speed) {
 	Colour2 change = (colour - alternate_colour) * speed;
 	colour = colour + (change * speed);
 }
 
 /*
-void MoveableNew::shiftAlpha(double s) {
+void MoveableNew::shiftAlpha(float s) {
 	short* new_colour = getColour();
 	if (alphaDownwards) {
 		if (new_colour[3] <= 0) {
@@ -72,7 +72,7 @@ void setValues(Vector2& vector, string values) {
 }
 
 // Add vars.
-void MoveableNew::tickTimer(double modifier) {
+void MoveableNew::tickTimer(float modifier) {
 	if (script_timer > 0) { script_timer -= (1.0 / 60) * modifier; return; }
 	if (script_line >= script.size()) return;
 
@@ -110,13 +110,13 @@ void MoveableNew::loadScript(string path) {
 	while (getline(in, line)) if (line.size() > 0) script.push_back(line);
 }
 
-void MoveableNew::common(double modifier) {
+void MoveableNew::common(float modifier) {
 	if (shifting_colour) shiftColour(1 * modifier);
 	// if (shiftingAlpha) shiftAlpha(0.01 * modifier);
 	tickTimer(modifier);
 }
 
-void MoveableNew::update(double modifier) {
+void MoveableNew::update(float modifier) {
 	common(modifier);
 
 	velocity.x += acceleration.x;

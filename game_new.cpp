@@ -6,16 +6,17 @@
 #include <windows.h>
 #include <Psapi.h>
 
-#include "defs/colour.h"
 #include "defs/province_new.h"
 #include "defs/unit_new.h"
 #include "defs/nation_new.h"
-#include "defs/object.h"
+#include "io/mouse_new.h"
+#include "io/keyboard_new.h"
 
 #define MAX_RESTRICTED_GAME_SPEED 2000
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 #define PRINT_DEBUG_
+// #define DEBUG_PROFILING
 
 using namespace std;
 
@@ -23,15 +24,12 @@ GameNew* GameNew::game = nullptr;
 GameNew::GameNew() {}
 
 GameNew::GameNew(int argc, char** argv) {
-	double launch_time = glfwGetTime();
+	float launch_time = glfwGetTime();
 	game = this;
 
 	if (!glfwInit()) return;
 	if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RTS Game", NULL, NULL))) { glfwTerminate(); return; }
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwSetWindowPos(window, 100, 100);
 	glfwMakeContextCurrent(window);
 	glClearColor(0.155f, 0.155f, 0.155f, 0.f);
@@ -43,9 +41,7 @@ GameNew::GameNew(int argc, char** argv) {
 
 	render = RenderNew(window, &objects, &text_objects);
 
-	font_data font = Fonts::getFont("data/fonts/sindelar.otf", 11, true);
-	font = Fonts::getFont(CONSOLAS_BOLD, 11);
-
+	font_data font = Fonts::getFont(CONSOLAS_BOLD, 11);
 	t_FPSCounter =			TextNew({0.925, 0.050}, font, Colour2(0, 206, 201, 255), "FPS: --");
 	t_PlayerLocation =		TextNew({0.030, 0.050}, font, Colour2(34, 166, 179, 255), "--");
 	t_PlayerVelocity =		TextNew({0.030, 0.075}, font, Colour2(34, 166, 179, 255), "--");
@@ -54,22 +50,15 @@ GameNew::GameNew(int argc, char** argv) {
 	t_Alt2 =				TextNew({0.800, 0.050}, font, Colour2(223, 249, 251, 255), "ALT: --");
 	t_Alt3 =				TextNew({0.550, 0.050}, font, Colour2(223, 249, 251, 255), "ALT: --");
 	t_Notification =		TextNew({0.150, 0.050}, font, Colour2(189, 195, 199, 255), "");
-
-	int level_counter = 0;
+	
 	// registerObject(&player);
 
 	console = new ConsoleNew(this);
-	console->build();
-
-	for (Level2 l : levels)
-		for (MoveableNew* m : l.objects) {
-			m->location.x += level_counter - 1;
-			registerObject(m);
-		}
 
 	// One-time load
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 
+	int level_counter = 0;
 	while (true) {
 		ifstream ifs("data/levels/rts/" + to_string(level_counter) + ".json");
 		if (ifs.fail()) break;
@@ -122,7 +111,6 @@ GameNew::GameNew(int argc, char** argv) {
 		info_i("Loading map position data for province ID... #" + to_string(id));
 		LoaderNew::getProvinceMap()[id]->setSize(w, h);
 		LoaderNew::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
-		LoaderNew::getProvinceMap()[id]->addFlag(TEXTURED);
 	}
 	fclose(dimensions_file);
 
@@ -153,14 +141,14 @@ GameNew::GameNew(int argc, char** argv) {
 	registerObject(&t_PlayerAcceleration);
 	registerObject(&t_PlayerLocation);
 
-	for (TextNew* t : text_objects) t->addFlag(BUTTON);
+	keyboard = new KeyboardNew(this);
+	mouse = new MouseNew(this);
 
-	// keyboard = new Keyboard(this);
-	// mouse = new Mouse(this);
-
-	// glfwSetKeyCallback(window, keyboard->callback);
-	// glfwSetMouseButtonCallback(window, mouse->callback);
+	glfwSetKeyCallback(window, keyboard->callback);
+	glfwSetMouseButtonCallback(window, mouse->callback);
 	// glfwSetScrollCallback(window, mouse->scroll_callback);
+
+	console->build();
 
 	info("Took " + to_string(glfwGetTime() - launch_time) + " seconds to load the game.");
 }
@@ -169,22 +157,22 @@ GameNew::GameNew(int argc, char** argv) {
 
 void GameNew::checkCollision() {
 	/*
-	double* location = player.getLocation();
-	double* size = player.getSize();
-	double x, y;
+	float* location = player.getLocation();
+	float* size = player.getSize();
+	float x, y;
 
 	for (MoveableNew* m : objects) {
-		double* m_location = m->getLocation();
-		double* m_size = m->getSize();
+		float* m_location = m->getLocation();
+		float* m_size = m->getSize();
 		if (m->getFlags() & GHOST) continue;
 		else if (m->getFlags() & QUAD) { // STAIRS
-			map<double, double> first_point = m->getPoints()[0];
-			map<double, double> second_point = m->getPoints()[1];
+			map<float, float> first_point = m->getPoints()[0];
+			map<float, float> second_point = m->getPoints()[1];
 			if (first_point[0] - size[0] / 2 < location[0] && location[0] < second_point[0] - size[0] / 2) {
-				double xdiff = abs(second_point[0] - first_point[0]);
-				double ydiff = abs(second_point[1] - first_point[1]);
-				double relx = abs((location[0] + size[0] / 2) - first_point[0]) / xdiff;
-				double ground = (first_point[1] - (ydiff * relx)) - size[1];
+				float xdiff = abs(second_point[0] - first_point[0]);
+				float ydiff = abs(second_point[1] - first_point[1]);
+				float relx = abs((location[0] + size[0] / 2) - first_point[0]) / xdiff;
+				float ground = (first_point[1] - (ydiff * relx)) - size[1];
 				if (location[1] >= ground) {
 					player.setLocation(location[0] + m->getVelocity()[0], ground + m->getVelocity()[1]);
 					player.setVelocity(player.getVelocity()[0], 0);
@@ -223,12 +211,7 @@ void GameNew::fireShot() {
 }
 
 void GameNew::debugMode() {
-	// render.render_level = 2;
-}
-
-void GameNew::checkTimers() {
-	double current_time = glfwGetTime();
-	for (map<double, int> timed_task : timers_);
+	// render.setRenderLevel(2);
 }
 
 void GameNew::updateStatistics(int f, int u) {
@@ -255,20 +238,14 @@ void GameNew::updateStatistics(int f, int u) {
 	t_PlayerLocation.setContent("Day #" + to_string(elapsed_days));
 	t_PlayerVelocity.setContent("Money: 0.00");
 	t_PlayerAcceleration.setContent("Playing as: " + nation_string);
-	info(ss << "FPS: " << f << " \tUpdates: " << u << " \tGame time: " << update_time_ << "ms \t[" << (int)(1 / update_time_) << "]");
+	info(ss << "FPS: " << f << " \tUpdates: " << u << " \tGame time: " << update_time_ << "s \t[" << (int)(1 / update_time_) << "]");
 }
 
 void GameNew::updateProperties() {
-	// double x, y, relx, rely;
-	int dimensions[2] = { 1280, 720 };
-	// glfwGetWindowSize(window, &dimensions[0], &dimensions[1]);
-	// glfwGetCursorPos(window, &x, &y);
-	// relx = x / dimensions[0], rely = y / dimensions[1];
-
 	if (selected_object) {
 		if (selected_object->getFlags() & PROVINCE) {
 			selected_object->setColour(Colour2(255, 255, 0));
-			ProvinceNew* province = (ProvinceNew*)selected_object;
+			ProvinceNew* province = reinterpret_cast<ProvinceNew*>(selected_object);
 			for (ProvinceNew* neighbour : province->getNeighbours()) {
 				neighbour->setColour(Colour2(255, 0, 255));
 			}
@@ -280,20 +257,20 @@ void GameNew::updateProperties() {
 	if (rbDown && selected_object) {
 		double x, y, relx, rely;
 		glfwGetCursorPos(window, &x, &y);
-		relx = x / dimensions[0], rely = y / dimensions[1];
-		Vector2 new_size = abs(game->mouse_position.x - relx), abs(game->mouse_position.y - rely);
+		relx = x / render.resolution.x, rely = y / render.resolution.y;
+		Vector2 new_size = (abs(game->mouse_position.x - relx), abs(game->mouse_position.y - rely));
 		selected_object->setSize(new_size.x, new_size.y);
 		t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 	}
 	if (mbDown) {
 		double x, y, relx, rely;
 		glfwGetCursorPos(window, &x, &y);
-		relx = x / dimensions[0], rely = y / dimensions[1];
+		relx = x / render.resolution.x, rely = y / render.resolution.y;
 		render.offsets.x += (relx - original_position.x) * 0.01, render.offsets.y += (rely - original_position.y) * 0.01;
 	}
 }
 
-void GameNew::updateObjects(double modifier) {
+void GameNew::updateObjects(float modifier) {
 	vector<MoveableNew*> inactive_objects;
 	for (MoveableNew* m : objects) !m->isActive ? inactive_objects.push_back(m) : m->update(modifier);
 
@@ -313,11 +290,15 @@ void GameNew::registerObject(TextNew* t) { text_objects.push_back(t); }
 int GameNew::gameLoop() {
 	update_rate = 60;
 	int frames = 0, updates = 0, frame_count = 0;
-	double average_frames = 0;
-	double limit = 1.0 / update_rate;
-	double last_time = glfwGetTime(), timer = last_time;
-	double delta_time = 0, current_time = 0;
-	double last_frame_time = glfwGetTime();
+	float average_frames = 0;
+	float limit = 1.0 / update_rate;
+	float last_time = glfwGetTime(), timer = last_time;
+	float delta_time = 0, current_time = 0;
+	float last_frame_time = glfwGetTime();
+
+	vector<float> temp_profiling_u;
+	vector<float> temp_profiling_t;
+	vector<float> temp_profiling_s;
 
 	while (!glfwWindowShouldClose(window)) {
 		current_time = glfwGetTime();
@@ -327,7 +308,7 @@ int GameNew::gameLoop() {
 
 		while (delta_time >= 1.0) {
 
-			double update_time = glfwGetTime();
+			float update_time = glfwGetTime();
 #ifdef PRINT_DEBUG
 			cout << "* Day #" << elapsed_days << endl;
 			for (Nation* nation : nations) {
@@ -349,13 +330,12 @@ int GameNew::gameLoop() {
 			// checkCollision();
 			updateProperties();
 			glfwPollEvents();
-			// checkTimers();
 			updates++;
 			delta_time--;
 			update_time_ = glfwGetTime() - update_time;
 		}
 
-		if (fpsLimit == 0 || glfwGetTime() - last_frame_time >= (1.0 / fpsLimit)) {
+		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0 / fps_limit)) {
 			last_frame_time = glfwGetTime();
 			render.renderWindow();
 			frames++;
@@ -367,6 +347,12 @@ int GameNew::gameLoop() {
 			frame_count += 1;
 			updateStatistics(frames, updates);
 			updates = 0, frames = 0;
+#ifdef DEBUG_PROFILING
+			temp_profiling_u.push_back(update_time_);
+			temp_profiling_s.push_back(render.draw_times[0]);
+			temp_profiling_t.push_back(render.draw_times[1]);
+			if (frame_count == 10) break;
+#endif
 		}
 	} glfwTerminate();
 
@@ -382,6 +368,15 @@ int GameNew::gameLoop() {
 		delete[] texture->image;
 		delete texture;
 	}
+
+	float average = accumulate(temp_profiling_u.begin(), temp_profiling_u.end(), 0.0) / temp_profiling_u.size();
+	cout << "Average update time: " << average * 1000 << endl;
+
+	average = accumulate(temp_profiling_s.begin(), temp_profiling_s.end(), 0.0) / temp_profiling_s.size();
+	cout << "Average shapes time: " << average * 1000 << endl;
+
+	average = accumulate(temp_profiling_t.begin(), temp_profiling_t.end(), 0.0) / temp_profiling_t.size();
+	cout << "Average text time: " << average * 1000 << endl;
 
 	info(ss << "Average FPS after " << frame_count << " seconds: " << average_frames);
 	return 0;

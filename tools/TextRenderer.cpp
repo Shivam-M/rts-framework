@@ -1,21 +1,9 @@
 #include "TextRenderer.hpp"
 
-
-#include <ft2build.h>
 #include <freetype/freetype.h>
 #include <freetype/ftglyph.h>
-#include <freetype/ftoutln.h>
-#include <freetype/fttrigon.h>
-#include FT_FREETYPE_H
-#include <GLFW/glfw3.h>
-//#include <GLFW/glu.h>
-#include <GL/freeglut.h>
-// #include <glad/glad.h>
-
-#include <iostream>
-#include <string>
 #include <sstream>
-#include <vector>
+
 
 // All ideas here ripped from a NEHE tutorial
 // http://nehe.gamedev.net/tutorial/freetype_fonts_in_opengl/24001/
@@ -160,11 +148,11 @@ namespace glfreetype {
         // All The Textures And Display Lists Which We
         // Are About To Create. 
         list_base = glGenLists(128);
-        glGenTextures(128, &textures.front());
+        glGenTextures(128, &textures[0]);
 
         // This Is Where We Actually Create Each Of The Fonts Display Lists.
         for (unsigned char i = 0; i < 128; i++) {
-            make_dlist(face, i, list_base, &textures.front());
+            make_dlist(face, i, list_base, &textures[0]);
         }
 
         // We Don't Need The Face Information Now That The Display
@@ -223,12 +211,12 @@ namespace glfreetype {
         }
 
         glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TRANSFORM_BIT);
-        glMatrixMode(GL_MODELVIEW);
-        glDisable(GL_LIGHTING);
+        // glMatrixMode(GL_MODELVIEW);
+        // glDisable(GL_LIGHTING);
         glEnable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // glDisable(GL_DEPTH_TEST);
+        // glEnable(GL_BLEND);
+        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glListBase(font);
 

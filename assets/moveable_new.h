@@ -1,14 +1,12 @@
 #pragma once
 
-#include <iostream>
+using namespace std;
+
 #include <fstream>
 
-#include "../tools/common.h"
 #include "../tools/image.h"
-
 #include "../defs/colour.h"
 
-using namespace std;
 class TextNew;
 
 struct ColourShift {
@@ -17,7 +15,7 @@ struct ColourShift {
 	DIRECTION direction = DOWN;
 	Colour2 first_colour, second_colour;
 	bool loop = true, fade_to_death = false;
-	double speed = 1.0;
+	float speed = 1.0;
 	short alpha_limits[2] = { 0, 255 };
 };
 
@@ -29,7 +27,7 @@ class MoveableNew {
 		vector<string> script;
 		vector<Vector2> points;
 
-		double script_timer = 0;
+		float script_timer = 0;
 		int script_line = 0;
 		int flags = ENABLED;
 
@@ -65,34 +63,34 @@ class MoveableNew {
 		Vector2 getTextOffset() { return text_offset; }
 
 		Colour2 getColour() { return colour; }
-		Vector4 getGradientColour() { return colour.getRGBAf(); }
+		Colour2 getGradientColour() { return gradient_colour; }
 
 		int getFlags() { return flags; }
 		void addFlag(int f) { flags |= f; }
 		void removeFlag(int f) { flags &= ~f; }
 
 		void setText(TextNew* t) { text = t; }
-		void setTextOffset(double x, double y) { text_offset.set(x, y); }
+		void setTextOffset(float x, float y) { text_offset.set(x, y); }
 		void setTexture(Texture* tex) { addFlag(TEXTURED); texture = tex; }
 		void setName(string n) { name = n; }
-		void setAcceleration(double x, double y) { acceleration.set(x, y); }
-		void setVelocity(double x, double y) { velocity.set(x, y); }
-		virtual void setLocation(double x, double y) { location.set(x, y); }
-		virtual void setSize(double x, double y) { size.set(x, y); }
+		void setAcceleration(float x, float y) { acceleration.set(x, y); }
+		void setVelocity(float x, float y) { velocity.set(x, y); }
+		virtual void setLocation(float x, float y) { location.set(x, y); }
+		virtual void setSize(float x, float y) { size.set(x, y); }
 
 		void setColour(Colour2 col) { colour = col; }
 		void setDefaultColour(Colour2 col) { alternate_colour = col; }
 		void setAlternateColour(Colour2 col) { default_colour = col; }
 		void setGradientColour(Colour2 col) { gradient_colour = col; }
 		void resetColour() { colour = default_colour; }
-		void tickTimer(double modifier);
+		void tickTimer(float modifier);
 
 		void setColourShifting(bool state) { shifting_colour = state; }
 		void setDownwardsShifting(bool state) { shifting_downwards = state; }
-		void shiftColour(double speed = 0.01);
+		void shiftColour(float speed = 0.01);
 
 		void loadScript(string script_path);
 
-		void common(double);
-		virtual void update(double = 1.0);
+		void common(float);
+		virtual void update(float = 1.0);
 };

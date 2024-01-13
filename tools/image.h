@@ -1,8 +1,6 @@
 #pragma once
 
-#include <iostream>
 #include <map>
-#include <GLFW/glfw3.h>
 #include <json.hpp>
 #include "common.h"
 

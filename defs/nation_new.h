@@ -1,6 +1,6 @@
 #pragma once
 
-static double UNIT_COST = 0.02;
+static float UNIT_COST = 0.02;
 static int UnitCount = 0;
 
 enum NATION_FLAGS {
@@ -18,9 +18,9 @@ class NationNew : public MoveableNew {
 		ProvinceNew* capital_province_;
 		vector<ProvinceNew*> owned_provinces_;
 		vector<UnitNew*> owned_army_units_;
-		double money_ = 1.00;
-		double income_ = 0.00;
-		double outgoings_ = 0.00;
+		float money_ = 1.00;
+		float income_ = 0.00;
+		float outgoings_ = 0.00;
 		bool in_debt_ = false;
 		int flags = 0;
 
@@ -52,22 +52,22 @@ class NationNew : public MoveableNew {
 		vector<UnitNew*> getOwnedUnits() { return owned_army_units_; }
 		void addUnit(UnitNew* unit) { owned_army_units_.push_back(unit); }
 
-		double getMoney() { return money_; }
-		void setMoney(double money) { money_ = money; }
-		void addMoney(double amount) { money_ += amount; }
+		float getMoney() { return money_; }
+		void setMoney(float money) { money_ = money; }
+		void addMoney(float amount) { money_ += amount; }
 
-		double getIncome() { return income_; }
-		void setIncome(double income) { income_ = income; }
-		void addIncome(double amount) { income_ += amount; }
+		float getIncome() { return income_; }
+		void setIncome(float income) { income_ = income; }
+		void addIncome(float amount) { income_ += amount; }
 
-		double getOutgoings() { return outgoings_; }
-		void setOutgoings(double outgoings) { outgoings_ = outgoings; }
-		void addOutgoing(double amount) { outgoings_ += amount; }
+		float getOutgoings() { return outgoings_; }
+		void setOutgoings(float outgoings) { outgoings_ = outgoings; }
+		void addOutgoing(float amount) { outgoings_ += amount; }
 
 		bool isInDebt() { return in_debt_; }
 
 		void evaluate() {
-			double final_income = income_; // Final income is base income plus value from all owned provinces
+			float final_income = income_; // Final income is base income plus value from all owned provinces
 			for (ProvinceNew* province : getOwnedProvinces()) {
 				province->evaluate();
 				final_income += province->getValue();
@@ -79,8 +79,8 @@ class NationNew : public MoveableNew {
 			in_debt_ = money_ < 0.00 ? true : false;
 		}
 
-		bool hireUnit(int size, double skill = 1.00) {
-			double cost = size * UNIT_COST * skill;
+		bool hireUnit(int size, float skill = 1.00) {
+			float cost = size * UNIT_COST * skill;
 			if (money_ <= cost) return false;
 			addMoney(-cost);
 			addUnit(new UnitNew(UnitCount++, this, size, skill, getCapital()));

@@ -4,43 +4,27 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <map>
 
-#include <iostream>
-#include <fstream>
-
-#include "assets/enemy.h"
-#include "assets/player.h"
 #include "assets/collidable_new.h"
 #include "assets/text_new.h"
-#include "assets/planet.h"
-
-#include "shapes/square.h"
-
-#include "effects/fire.h"
-#include "effects/stars.h"
-#include "effects/ice.h"
 
 #include "tools/render_new.h"
 #include "tools/loader_new.h"
-#include "tools/structs.h"
-#include "tools/fonts.h"
-#include "tools/common.h"
-
 #include "tools/console_new.h"
-#include "tools/colour.h"
+#include "tools/fonts.h"
 
-class Keyboard;
+class KeyboardNew;
 class Gamepad;
-class Mouse;
+class MouseNew;
 
 using namespace std;
 
 class GameNew {
 	public:
-
-
-		double game_speed = 2.5;
+		float game_speed = 2.5;
 		int elapsed_days = 0;
+		map<int, int> button_map;
 
 		vector<NationNew*> nations;
 
@@ -49,38 +33,35 @@ class GameNew {
 
 		NationNew* player_nation = nullptr;
 
+		const float GRAVITY = 0.004;
 
-		const double GRAVITY = 0.004;
+		Vector2 mouse_position;
+		Vector2 original_position;
 
-		Vector2 mouse_position = { -1, -1 };
-		Vector2 original_position = { -1, -1 };
-		Vector2 offset_position;
-
-		Mouse* mouse;
-		Keyboard* keyboard;
+		MouseNew* mouse;
+		KeyboardNew* keyboard;
 		Gamepad* gamepad;
 		ConsoleNew* console;
 
-		double update_time_ = 0;
+		float update_time_ = 0;
 
 		bool god_mode = true;
 
 		GLFWwindow* window = nullptr;
 		MoveableNew* selected_object = nullptr;
-		TextNew* selected_button = nullptr;
 		LoaderNew loader;
 		Level2 current_level;
 		vector<Level2> levels;
 
 		int level_index = 0;
-		double scroll_size = 1;
+		float scroll_size = 1;
 
 		bool rbDown = false, mbDown = false;
 
 		vector<TextNew*> text_objects;
 		vector<MoveableNew*> queue_objects;
 		vector<MoveableNew*> objects;
-		vector<map<double, int>> timers_;
+		vector<map<float, int>> timers_;
 
 		TextNew t_FPSCounter, t_PlayerLocation, t_PlayerVelocity, t_PlayerAcceleration, t_Alt, t_Alt2, t_Alt3, t_Notification, t_Hint, t_Hint2;
 
@@ -96,26 +77,23 @@ class GameNew {
 
 		// Player player;
 
-		int fpsLimit = 0;
+		int fps_limit = 0;
 		int update_rate = 144;
-
-		void checkCollision();
-		void checkTimers();
-		void toggleConsole();
-		void consoleEntry(int);
-		void consoleExecute();
+		
 		void registerObject(MoveableNew*);
 		void registerObject(TextNew*);
-		void updateObjects(double = 1.0);
+		void updateObjects(float = 1.0);
 		void updateStatistics(int, int);
 		void updateProperties();
+		void checkCollision();
 		void debugMode();
-		int  gameLoop();
 		void fireShot();
-
+		void setButton(int button, int state) { button_map[button] = state; }
+		int  getButton(int button) { return button_map[button]; }
+		int  gameLoop();
+		
 		// Player* getPlayer();
 
 		GameNew();
 		GameNew(int, char**);
-
 };

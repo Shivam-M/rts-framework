@@ -6,7 +6,7 @@ CircleNew::CircleNew() {
 	addFlag(CIRCLE);
 }
 
-CircleNew::CircleNew(Vector2 loc, Colour2 col, double radius) {
+CircleNew::CircleNew(Vector2 loc, Colour2 col, float radius) {
 	CircleNew();
 	location = loc;
 	colour = col;

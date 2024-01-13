@@ -1,24 +1,12 @@
 #pragma once
 
-// #include <vector>
-// #include "../assets/moveable.h"
 #include <json.hpp>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <ctime>
-
-#include "../shapes/circle_new.h"
-#include "../effects/stars.h"
-#include "../effects/fire.h"
-#include "../assets/collidable_new.h"
-
-#include "../tools/structs.h"
-#include "../tools/common.h"
-#include "../tools/fonts.h"
 
 using namespace nlohmann;
 using namespace std;
+
+#include "../defs/colour.h"
+#include "../tools/fonts.h"
 
 class ProvinceNew;
 class NationNew;
@@ -26,6 +14,7 @@ class UnitNew;
 class MoveableNew;
 class CircleNew;
 class TextNew;
+class CollidableNew;
 
 struct Level2 {
 	Vector2 player_position;
@@ -35,12 +24,12 @@ struct Level2 {
 
 class LoaderNew {
 	private:
-		static Fire* parseFire();
-		static Stars* parseStars();
+		// static Fire* parseFire();
+		// static Stars* parseStars();
 		static CollidableNew* parseCollidable();
 		static CollidableNew* parseCustom();
 		static MoveableNew* parseMoveable();
-		static Square* parseSquare();
+		// static Square* parseSquare();
 		static CircleNew* parseCircle();
 		static string getVariable(string);
 		static TextNew* parseText();
@@ -52,7 +41,7 @@ class LoaderNew {
 		static void parseCommon(MoveableNew*);
 
 		static json::array_t getArray(string);
-		static double getDouble(string);
+		static float getFloat(string);
 		static int getInt(string);
 		static string getString(string, string = "");
 

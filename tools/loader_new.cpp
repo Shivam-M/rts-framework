@@ -1,9 +1,12 @@
 #include "loader_new.h"
-#include "../defs/colour.h"
+
 #include "../defs/province_new.h"
 #include "../defs/unit_new.h"
 #include "../defs/nation_new.h"
+
 #include "../assets/text_new.h"
+#include "../shapes/circle_new.h"
+#include "../assets/collidable_new.h"
 
 json LoaderNew::ldata;
 
@@ -39,22 +42,23 @@ static map<int, NationNew*> nation_map;
 static map<int, UnitNew*> unit_map;
 
 static json properties;
-
-static json item_data;
+stringstream ss;
 
 void LoaderNew::parseCommon(MoveableNew* moveable) {
 	string script = getString("script");
 
 	if (script != "") moveable->loadScript(script);
-	moveable->setSize(getDouble("width"), getDouble("height"));
-	moveable->setLocation(getDouble("x"), getDouble("y"));
-	moveable->setColour(Colour2::HexToRGB(getString("colour"), (getDouble("alpha"))));
+	moveable->setName(getString("name"));
+	moveable->setSize(getFloat("width"), getFloat("height"));
+	moveable->setLocation(getFloat("x"), getFloat("y"));
+	moveable->setColour(Colour2::HexToRGB(getString("colour"), (getFloat("alpha"))));
 	if (getString("alt_colour") != "") {
-		moveable->setColour(Colour2::HexToRGB(getString("alt_colour"), (getDouble("alt_alpha"))));
+		moveable->setColour(Colour2::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
 	}
 
 }
 
+/*
 Fire* LoaderNew::parseFire() {
 	return nullptr;
 }
@@ -66,6 +70,7 @@ Stars* LoaderNew::parseStars() {
 Square* LoaderNew::parseSquare() {
 	return nullptr;
 }
+*/
 
 CircleNew* LoaderNew::parseCircle() {
 	CircleNew* circle = new CircleNew();
@@ -76,7 +81,6 @@ CircleNew* LoaderNew::parseCircle() {
 CollidableNew* LoaderNew::parseCollidable() {
 	CollidableNew* collidable = new CollidableNew();
 	parseCommon(collidable);
-	collidable->setName(getString("name", "Default Collidable"));
 	return collidable;
 }
 
@@ -95,8 +99,8 @@ CollidableNew* LoaderNew::parseCustom() {
 	int c, d = 0;
 	for (auto& points_data : properties["points"].items()) {
 		c = 0;
-		map<double, double> point = {};
-		for (double point : points_data.value()) {
+		map<float, float> point = {};
+		for (float point : points_data.value()) {
 			points[c][d] = point;
 			c++;
 		} d++;
@@ -115,10 +119,10 @@ CollidableNew* LoaderNew::parseCustom() {
 
 TextNew* LoaderNew::parseText() {
 	TextNew* text = new TextNew();
-	text->setColour(Colour2::HexToRGB(getString("colour"), (getDouble("alpha"))));
+	text->setColour(Colour2::HexToRGB(getString("colour"), (getFloat("alpha"))));
 	text->setContent(getString("content"));
 	text->setFont(Fonts::getFont(getString("font"), getInt( "size"), getInt("font_custom")));
-	text->setLocation(getDouble("x"), getDouble("y"));
+	text->setLocation(getFloat("x"), getFloat("y"));
 	return text;
 }
 
@@ -142,7 +146,7 @@ ProvinceNew* LoaderNew::parseProvince() {
 	parseCommon(province);
 	province->addFlag(TEXTURED);
 	province->setTexture(Image::getImage("data/generated/" + to_string(province->getID()) + "_province.png"));
-	province->setValue(getDouble("value"));
+	province->setValue(getFloat("value"));
 	province->setText(new TextNew(province->getLocation(), font, Colour2(189, 195, 199, 150), province->getName()));
 	// province->setTextOffset(province->getSize()[0] / 4, province->getSize()[1] / 4);
 	province_map[province->getID()] = province;
@@ -155,16 +159,14 @@ ProvinceNew* LoaderNew::parseProvince() {
 }
 
 UnitNew* LoaderNew::parseUnit() {
-	UnitNew* unit = new UnitNew(getInt("id"), nullptr, getInt("size"), getDouble("skill"), province_map[getInt("province")]);
+	UnitNew* unit = new UnitNew(getInt("id"), nullptr, getInt("size"), getFloat("skill"), province_map[getInt("province")]);
 	parseCommon(unit);
 
 	unit->location.x -= 1; // Offset x by -1 (sidescroller levelling)
-	unit->setName(getString("name"));
 
 	font_data font = Fonts::getFont(CONSOLAS_BOLD, 8);
 	unit->setText(new TextNew(unit->getLocation(), font, Colour2(189, 195, 199, 250), unit->getName()));
 	unit->setTextOffset(0, -0.0025);
-
 	unit->addFlag(UNIT);
 
 	unit_map[getInt("id")] = unit;
@@ -173,18 +175,18 @@ UnitNew* LoaderNew::parseUnit() {
 
 NationNew* LoaderNew::parseNation() {
 	NationNew* nation = new NationNew(getInt("id"), getString("name"), province_map[getInt("capital")]);
+	parseCommon(nation);
 
 	for (const auto& element : getArray("provinces")) {
 		ProvinceNew* province = province_map[(int)element];
 		if (province == nullptr) continue;
 
 		short* colour = rgb(getString("colour"));
-		nation->setColour(Colour2::HexToRGB(getString("colour"), getDouble("alpha")));
+		nation->setColour(Colour2::HexToRGB(getString("colour"), getFloat("alpha")));
 
 		nation->addProvince(province);
 		province->setColour(nation->getColour());
 
-		stringstream ss;
 		info(ss << "Assigned province '" << province->getName() << "' (" << province->getID() << ") to nation '" << nation->getName() << "' (" << nation->getID() << ")");
 	}
 
@@ -193,12 +195,10 @@ NationNew* LoaderNew::parseNation() {
 		if (unit == nullptr) continue;
 		nation->addUnit(unit);
 		unit->setColour(nation->getColour());
-		stringstream ss;
 		info(ss << "Assigned unit '" << unit->getName() << "' (" << unit->getID() << ") to nation '" << nation->getName() << "' (" << nation->getID() << ")");
 	}
 
 	nation_map[getInt("id")] = nation;
-
 	return nation;
 }
 
@@ -220,7 +220,7 @@ string LoaderNew::getString(string key, string def) {
 
 int LoaderNew::getInt(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
 
-double LoaderNew::getDouble(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
+float LoaderNew::getFloat(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
 
 json::array_t LoaderNew::getArray(string key) {
 	auto target_value = properties.find(key);
@@ -231,7 +231,6 @@ Level2* LoaderNew::load(string f, vector <MoveableNew*>* q, vector<TextNew*>* t,
 	Level2* level = new Level2();
 	ifstream level_file(f);
 	json level_data = json::parse(level_file);
-	stringstream ss;
 
 	info(ss << "Loading level... " << f << " [" << "PLACEHOLDER TEXT" << "]");
 

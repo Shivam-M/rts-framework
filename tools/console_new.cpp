@@ -2,7 +2,6 @@
 #include "fonts.h"
 #include "../game_new.h"
 
-
 GameNew* ConsoleNew::game = nullptr;
 
 using namespace std;
@@ -14,6 +13,7 @@ ConsoleNew::ConsoleNew(GameNew* g) {
 void ConsoleNew::build() {
 	entry_box = MoveableNew();
 	entry_box.setColour(Colour2(40, 40, 40, 250));
+	entry_box.setGradientColour(Colour2(40, 40, 40, 250));
 	entry_box.setLocation(0.275, 0.4);
 	entry_box.setSize(0.45, 0.1);
 	entry_box.addFlag(CURVED);
@@ -24,6 +24,7 @@ void ConsoleNew::build() {
 	entry_text.addFlag(DISABLED);
 
 	debug_box.setColour(Colour2(20, 20, 20, 250));
+	debug_box.setGradientColour(Colour2(20, 20, 20, 250));
 	debug_box.setLocation(0.275, 0.4);
 	debug_box.setSize(0.45, 0.225);
 	debug_box.addFlag(CURVED);
@@ -91,7 +92,7 @@ void ConsoleNew::execute() {
 
 	try {
 		if (args[0] == "FPSLIMIT") {
-			game->fpsLimit = stoi(args[1]);
+			game->fps_limit = stoi(args[1]);
 			feedback("Changed FPS limit to " + args[1]);
 		}
 		else if (args[0] == "RENDER") {

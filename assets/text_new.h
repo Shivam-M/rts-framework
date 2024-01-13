@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../tools/TextRenderer.hpp"
-// #include "../tools/common.h"
 #include "moveable_new.h"
 
 using namespace std;

@@ -9,7 +9,7 @@ class ProvinceNew : public MoveableNew {
 private:
 	int identifier_ = -1;
 	int level_ = 0;
-	double value_ = 0.50;
+	float value_ = 0.50;
 
 	string name_ = "Generic Province";
 	string name = "Generic Province";
@@ -28,8 +28,8 @@ public:
 	void setLevel(int level) { level_ = level; };
 	int getLevel() { return level_; }
 
-	double getValue() { return value_; }
-	void setValue(double value) { value_ = value; }
+	float getValue() { return value_; }
+	void setValue(float value) { value_ = value; }
 
 	void setTerrain(TERRAIN terrain) { terrain_ = terrain; }
 	TERRAIN getTerrain() { return terrain_; }

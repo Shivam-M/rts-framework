@@ -440,6 +440,10 @@ int Game::gameLoop() {
 	double delta_time = 0, current_time = 0;
 	double last_frame_time = glfwGetTime();
 
+	vector<float> temp_profiling_u;
+	vector<float> temp_profiling_t;
+	vector<float> temp_profiling_s;
+
 	while (!glfwWindowShouldClose(window)) {
 		current_time = glfwGetTime();
 		limit = 1.0 / update_rate;
@@ -487,6 +491,10 @@ int Game::gameLoop() {
 			frame_count += 1;
 			updateStatistics(frames, updates);
 			updates = 0, frames = 0;
+			temp_profiling_u.push_back(update_time_);
+			temp_profiling_s.push_back(render.draw_times[0]);
+			temp_profiling_t.push_back(render.draw_times[1]);
+			if (frame_count == 10) break;
 		}
 	} glfwTerminate();
 
@@ -502,6 +510,15 @@ int Game::gameLoop() {
 		delete[] texture->image;
 		delete texture;
 	}
+
+	float average = accumulate(temp_profiling_u.begin(), temp_profiling_u.end(), 0.0) / temp_profiling_u.size();
+	cout << "Average update time: " << average * 1000 << endl;
+
+	average = accumulate(temp_profiling_s.begin(), temp_profiling_s.end(), 0.0) / temp_profiling_s.size();
+	cout << "Average shapes time: " << average * 1000 << endl;
+
+	average = accumulate(temp_profiling_t.begin(), temp_profiling_t.end(), 0.0) / temp_profiling_t.size();
+	cout << "Average text time: " << average * 1000 << endl;
 
 	stringstream ss;
 	info(ss << "Average FPS after " << frame_count << " seconds: " << average_frames);

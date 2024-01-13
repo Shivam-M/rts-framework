@@ -8,10 +8,10 @@ class CollidableNew : public MoveableNew {
 	public:
 		bool can_collide = true;
 		bool direction_right = true;
-		double shuffle_size = 0;
-		double shuffle_limit = 125;
+		float shuffle_size = 0;
+		float shuffle_limit = 125;
 
-		void update(double = 1.0);
+		void update(float = 1.0);
 
 		CollidableNew();
 };

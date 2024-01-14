@@ -38,6 +38,7 @@ class RenderNew {
 
 		void renderWindow();
 		void toggleFullscreen();
+		void normaliseCoordinates(Vector2* location);
 
 		float setRenderLevel(float level) { render_level_ = level; }
 };

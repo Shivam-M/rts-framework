@@ -1,0 +1,15 @@
+Preloading textures...
+
+TEXTURE:images/province.png
+
+TEXTURE:images/province.png
+WAIT: 0.25
+TEXTURE:images/province.png
+WAIT: 0.25
+TEXTURE:images/province.png
+WAIT: 0.25
+TEXTURE:images/province.png
+WAIT: 0.25
+TEXTURE:images/province.png
+WAIT: 0.25
+JUMP: 7

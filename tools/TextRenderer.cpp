@@ -1,6 +1,5 @@
 #include "TextRenderer.hpp"
 
-#include <freetype/freetype.h>
 #include <freetype/ftglyph.h>
 #include <sstream>
 

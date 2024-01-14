@@ -56,8 +56,6 @@ class GameNew {
 		int level_index = 0;
 		float scroll_size = 1;
 
-		bool rbDown = false, mbDown = false;
-
 		vector<TextNew*> text_objects;
 		vector<MoveableNew*> queue_objects;
 		vector<MoveableNew*> objects;
@@ -88,6 +86,7 @@ class GameNew {
 		void checkCollision();
 		void debugMode();
 		void fireShot();
+		void pauseGame();
 		void setButton(int button, int state) { button_map[button] = state; }
 		int  getButton(int button) { return button_map[button]; }
 		int  gameLoop();

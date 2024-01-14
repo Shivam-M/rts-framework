@@ -234,7 +234,9 @@ Level2* LoaderNew::load(string f, vector <MoveableNew*>* q, vector<TextNew*>* t,
 
 	info(ss << "Loading level... " << f << " [" << "PLACEHOLDER TEXT" << "]");
 
-	MoveableNew* background = new MoveableNew(Vector2(), Vector2(1.0, 1.0), Colour2::HexToRGB(level_data["background"], level_data["background_alpha"]), Colour2::HexToRGB(level_data["alt_background"], level_data["alt_background_alpha"]));
+	MoveableNew* background = new MoveableNew(Vector2(), Vector2(1.0, 1.0),
+		Colour2::HexToRGB(level_data["background"], level_data["background_alpha"]), 
+		Colour2::HexToRGB(level_data["alt_background"], level_data["alt_background_alpha"]));
 	background->addFlag(UNEDITABLE);
 	background->setName("Background " + to_string(identifier));
 

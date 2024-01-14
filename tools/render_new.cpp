@@ -1,6 +1,8 @@
 #include "../assets/text_new.h"
 #include "../shapes/circle_new.h"
+
 #include "render_new.h"
+
 
 #define PI 3.14159265358979
 #define GLW_SMALL_ROUNDED_CORNER_SLICES 20 
@@ -10,12 +12,6 @@ static void createRoundedCorners(Vector2* corner_points, int num) {
     float slice = PI / 2 / num;
     float a = 0;
     for (int i = 0; i < num; a += slice, ++i) corner_points[i].set(cosf(a), sinf(a));
-}
-
-static void normaliseCoordinates(Vector2* location) {
-    float x = location->x, y = location->y;
-    location->x = x < 0.5 ? -1 + (x * 2) : x > 0.5 ? ((x - 0.5) * 2) : 0;
-    location->y = y < 0.5 ? (-1 + (y * 2)) * -1 : y > 0.5 ? ((y - 0.5) * 2) * -1 : 0;
 }
 
 static void alignCoordinates(Vector2* location, Vector2* size) {
@@ -31,6 +27,12 @@ RenderNew::RenderNew(GLFWwindow* window, vector<MoveableNew*>* objects, vector<T
     window_ = window;
     objects_ = objects;
     text_objects_ = text_objects;
+}
+
+void RenderNew::normaliseCoordinates(Vector2* location) {
+    float x = location->x + offsets.x, y = location->y + offsets.y;
+    location->x = x < 0.5 ? -1 + (x * 2) : x > 0.5 ? ((x - 0.5) * 2) : 0;
+    location->y = y < 0.5 ? (-1 + (y * 2)) * -1 : y > 0.5 ? ((y - 0.5) * 2) * -1 : 0;
 }
 
 void RenderNew::drawCircle(CircleNew* circle) {

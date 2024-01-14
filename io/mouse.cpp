@@ -1,4 +1,4 @@
-#include "mouse_new.h"
+#include "mouse.h"
 #include <cmath>
 
 Game* Mouse::game = nullptr;

@@ -1,4 +1,4 @@
-#include "collidable_new.h"
+#include "collidable.h"
 
 Collidable::Collidable() {
 	addFlag(COLLIDABLE);

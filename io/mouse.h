@@ -1,5 +1,5 @@
 #pragma once
-#include "../game_new.h"
+#include "../game.h"
 
 class Mouse {
 	private:

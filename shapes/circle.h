@@ -1,5 +1,5 @@
 #pragma once
-#include "../assets/moveable_new.h"
+#include "../assets/moveable.h"
 
 class Circle : public Moveable {
 	private:

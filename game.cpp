@@ -1,12 +1,12 @@
 #include <windows.h>
 #include <Psapi.h>
 
-#include "game_new.h"
-#include "defs/province_new.h"
-#include "defs/unit_new.h"
-#include "defs/nation_new.h"
-#include "io/mouse_new.h"
-#include "io/keyboard_new.h"
+#include "game.h"
+#include "defs/province.h"
+#include "defs/unit.h"
+#include "defs/nation.h"
+#include "io/mouse.h"
+#include "io/keyboard.h"
 
 #define MAX_RESTRICTED_GAME_SPEED 2000
 #define WINDOW_WIDTH 1280

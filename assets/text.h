@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../tools/TextRenderer.hpp"
-#include "moveable_new.h"
+#include "moveable.h"
 
 using namespace std;
 using namespace glfreetype;

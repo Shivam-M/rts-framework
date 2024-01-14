@@ -1,12 +1,12 @@
-#include "loader_new.h"
+#include "loader.h"
 
-#include "../defs/province_new.h"
-#include "../defs/unit_new.h"
-#include "../defs/nation_new.h"
+#include "../defs/province.h"
+#include "../defs/unit.h"
+#include "../defs/nation.h"
 
-#include "../assets/text_new.h"
-#include "../shapes/circle_new.h"
-#include "../assets/collidable_new.h"
+#include "../assets/text.h"
+#include "../shapes/circle.h"
+#include "../assets/collidable.h"
 
 json Loader::ldata;
 

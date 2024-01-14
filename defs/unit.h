@@ -2,7 +2,7 @@
 
 class NationNew;
 
-#include "../assets/text_new.h"
+#include "../assets/text.h"
 
 class Unit: public Moveable {
 	enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };

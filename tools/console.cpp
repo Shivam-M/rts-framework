@@ -1,6 +1,6 @@
-#include "console_new.h"
+#include "console.h"
 #include "fonts.h"
-#include "../game_new.h"
+#include "../game.h"
 
 Game* Console::game = nullptr;
 

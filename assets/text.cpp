@@ -1,4 +1,4 @@
-#include "text_new.h"
+#include "text.h"
 
 Text::Text(Vector2 loc, font_data fon, Colour col, string con) {
 	addFlag(TEXT);

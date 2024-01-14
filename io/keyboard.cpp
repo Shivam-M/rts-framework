@@ -1,4 +1,4 @@
-#include "keyboard_new.h"
+#include "keyboard.h"
 
 Game* Keyboard::game = nullptr;
 Keyboard::Keyboard(Game* instance) { Keyboard::game = instance; }

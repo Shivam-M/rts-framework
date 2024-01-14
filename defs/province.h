@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../assets/text_new.h"
+#include "../assets/text.h"
 
 class Province : public Moveable {
 	enum TERRAIN { FLAT, MOUNTAIN, FOREST, NUM_TERRAINS };

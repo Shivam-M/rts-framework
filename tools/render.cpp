@@ -1,7 +1,7 @@
-#include "../assets/text_new.h"
-#include "../shapes/circle_new.h"
+#include "../assets/text.h"
+#include "../shapes/circle.h"
 
-#include "render_new.h"
+#include "render.h"
 
 #define PI 3.14159265358979
 #define GLW_SMALL_ROUNDED_CORNER_SLICES 20 

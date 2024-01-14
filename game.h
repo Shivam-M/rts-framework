@@ -6,12 +6,12 @@
 #include <GLFW/glfw3.h>
 #include <map>
 
-#include "assets/collidable_new.h"
-#include "assets/text_new.h"
+#include "assets/collidable.h"
+#include "assets/text.h"
 
-#include "tools/render_new.h"
-#include "tools/loader_new.h"
-#include "tools/console_new.h"
+#include "tools/render.h"
+#include "tools/loader.h"
+#include "tools/console.h"
 #include "tools/fonts.h"
 
 class Keyboard;

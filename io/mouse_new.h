@@ -1,12 +1,12 @@
 #pragma once
 #include "../game_new.h"
 
-class MouseNew {
+class Mouse {
 	private:
-		static GameNew* game;
+		static Game* game;
 
 	public:
-		MouseNew(GameNew*);
+		Mouse(Game*);
 
 		static void scroll_callback(GLFWwindow*, double, double);
 		static void callback(GLFWwindow*, int, int, int);

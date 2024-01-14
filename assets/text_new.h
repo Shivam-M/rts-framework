@@ -6,14 +6,14 @@
 using namespace std;
 using namespace glfreetype;
 
-class TextNew: public MoveableNew {
+class Text: public Moveable {
 	private:
 		string content;
 		font_data font;
 
 	public:
-		TextNew();
-		TextNew(Vector2 location, font_data font, Colour2 colour, string content = "");
+		Text();
+		Text(Vector2 location, font_data font, Colour colour, string content = "");
 
 		font_data getFont() { return font; }
 		string getContent() { return content; }

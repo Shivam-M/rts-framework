@@ -37,14 +37,6 @@ void info(double d) {
 	info(std::to_string(d));
 }
 
-short* rgb(std::string hex) {
-	unsigned int r, g, b;
-	sscanf_s(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
-	short nc[3] = { (short)r, (short)g, (short)b };
-	return new short[3]{ (short)r, (short)g, (short)b };
-}
-
-
 void log_impl(std::ostream& os) {
 	os << std::endl;
 }

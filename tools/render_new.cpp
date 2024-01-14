@@ -3,9 +3,9 @@
 
 #include "render_new.h"
 
-
 #define PI 3.14159265358979
 #define GLW_SMALL_ROUNDED_CORNER_SLICES 20 
+
 static Vector2 roundedCorners[GLW_SMALL_ROUNDED_CORNER_SLICES] = { {0} };
 
 static void createRoundedCorners(Vector2* corner_points, int num) {
@@ -20,7 +20,7 @@ static void alignCoordinates(Vector2* location, Vector2* size) {
     location->y -= size->y;
 }
 
-RenderNew::RenderNew(GLFWwindow* window, vector<MoveableNew*>* objects, vector<TextNew*>* text_objects) {
+Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* text_objects) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     createRoundedCorners(roundedCorners, GLW_SMALL_ROUNDED_CORNER_SLICES);
@@ -29,17 +29,17 @@ RenderNew::RenderNew(GLFWwindow* window, vector<MoveableNew*>* objects, vector<T
     text_objects_ = text_objects;
 }
 
-void RenderNew::normaliseCoordinates(Vector2* location) {
+void Render::normaliseCoordinates(Vector2* location) {
     float x = location->x + offsets.x, y = location->y + offsets.y;
     location->x = x < 0.5 ? -1 + (x * 2) : x > 0.5 ? ((x - 0.5) * 2) : 0;
     location->y = y < 0.5 ? (-1 + (y * 2)) * -1 : y > 0.5 ? ((y - 0.5) * 2) * -1 : 0;
 }
 
-void RenderNew::drawCircle(CircleNew* circle) {
+void Render::drawCircle(Circle* circle) {
     drawCircle(circle->getLocation(), circle->getColour(), circle->getGradientColour(), circle->getRadius(), circle->getGenerality());
 }
 
-void RenderNew::drawCircle(Vector2 location, Colour2 colour, Colour2 gradient, float radius, float generality) {
+void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality) {
     Vector2 original_location = location; // Check change
     normaliseCoordinates(&location);
 
@@ -58,14 +58,14 @@ void RenderNew::drawCircle(Vector2 location, Colour2 colour, Colour2 gradient, f
     glEnd();
 }
 
-void RenderNew::drawText(Vector2 location, string message, font_data font, Colour2 colour) {
+void Render::drawText(Vector2 location, string message, font_data font, Colour colour) {
     glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
     location.x *= resolution.x;
     location.y = resolution.y - location.y * resolution.y;
     print(font, location.x, location.y, message);
 }
 
-void RenderNew::drawQuad(Vector2 location, Vector2 size, Colour2 colour, Colour2 gradient) {
+void Render::drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
@@ -82,7 +82,7 @@ void RenderNew::drawQuad(Vector2 location, Vector2 size, Colour2 colour, Colour2
     // glPopMatrix();
 }
 
-void RenderNew::drawCurvedQuad(Vector2 location, Vector2 size, Colour2 colour, Colour2 gradient, float radius) {
+void Render::drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient, float radius) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
@@ -106,7 +106,7 @@ void RenderNew::drawCurvedQuad(Vector2 location, Vector2 size, Colour2 colour, C
     glEnd();
 }
 
-void RenderNew::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour2 colour, bool flip) {
+void Render::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour colour, bool flip) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
@@ -126,7 +126,7 @@ void RenderNew::drawTexture(Vector2 location, Vector2 size, Texture* texture, Co
     // glPopMatrix();
 }
 
-void RenderNew::drawCustom(vector<Vector2> points, Colour2 colour, Colour2 gradient) {
+void Render::drawCustom(vector<Vector2> points, Colour colour, Colour gradient) {
     glBegin(GL_QUADS);
     glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
 
@@ -140,17 +140,17 @@ void RenderNew::drawCustom(vector<Vector2> points, Colour2 colour, Colour2 gradi
     glEnd();
 }
 
-void RenderNew::toggleFullscreen() {
+void Render::toggleFullscreen() {
     fullscreen_ = !fullscreen_;
     glfwSetWindowMonitor(window_, fullscreen_ ? glfwGetPrimaryMonitor() : NULL, 100, 100, resolution.x, resolution.y, GLFW_DONT_CARE);
     renderWindow();
 }
 
-void RenderNew::renderWindow() {
+void Render::renderWindow() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     float time_shapes = glfwGetTime();
-    for (MoveableNew* moveable: *objects_) {
+    for (Moveable* moveable: *objects_) {
         if (moveable->getFlags() & DISABLED) continue;
         if ((moveable->location.x + moveable->size.x < 0) || (moveable->location.y + moveable->size.y < 0) || (moveable->location.x > 1) || (moveable->location.y > 1)) continue;
         
@@ -161,7 +161,7 @@ void RenderNew::renderWindow() {
         } else if (moveable->getFlags() & TEXTURED) {
             drawTexture(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
         } else if (moveable->getFlags() & CIRCLE) {
-            drawCircle(reinterpret_cast<CircleNew*>(moveable));
+            drawCircle(reinterpret_cast<Circle*>(moveable));
         } else {
             drawQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour());
         }
@@ -169,7 +169,7 @@ void RenderNew::renderWindow() {
     draw_times[0] = glfwGetTime() - time_shapes;
 
     float time_text = glfwGetTime();
-    for (TextNew* text: *text_objects_) if (!(text->getFlags() & DISABLED)) drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour());
+    for (Text* text: *text_objects_) if (!(text->getFlags() & DISABLED)) drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour());
     draw_times[1] = glfwGetTime() - time_text;
 
     glfwSwapBuffers(window_);

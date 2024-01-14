@@ -1,14 +1,14 @@
 #pragma once
 #include "../assets/moveable_new.h"
 
-class CircleNew : public MoveableNew {
+class Circle : public Moveable {
 	private:
 		float generality_ = 1.0;
 		float percentage_ = 0.00;
 
 	public:
-		CircleNew();
-		CircleNew(Vector2 location, Colour2 colour, float radius);
+		Circle();
+		Circle(Vector2 location, Colour colour, float radius);
 
 		float radius_;
 

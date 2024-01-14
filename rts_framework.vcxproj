@@ -170,7 +170,6 @@
     <ClInclude Include="tools\image.h" />
     <ClInclude Include="tools\loader_new.h" />
     <ClInclude Include="tools\render_new.h" />
-    <ClInclude Include="tools\stb_image.h" />
     <ClInclude Include="tools\TextRenderer.hpp" />
   </ItemGroup>
   <ItemGroup>

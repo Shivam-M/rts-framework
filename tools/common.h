@@ -63,7 +63,7 @@ template <typename First, typename... Rest>
 void log_impl(std::ostream& os, First&& first, Rest&&... rest) {
 	std::ostringstream ss;
 	ss << std::forward<First>(first);
-	os << ss.str() << " ";
+	os << ss.str();
 	log_impl(os, std::forward<Rest>(rest)...);
 }
 

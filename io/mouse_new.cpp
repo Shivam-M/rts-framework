@@ -14,10 +14,11 @@ void MouseNew::scroll_callback(GLFWwindow* window, double x, double y) {
 
 void MouseNew::callback(GLFWwindow* window, int button, int action, int mods) {
 	double x, y;
-	Vector2 resolution = game->render.resolution;
 	Vector2 cursor;
+	Vector2 resolution = game->render.resolution;
 
 	glfwGetCursorPos(window, &x, &y);
+	game->setButton(button, action);
 	cursor.set(x / resolution.x, y / resolution.y);
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (game->selected_object) {
@@ -28,13 +29,11 @@ void MouseNew::callback(GLFWwindow* window, int button, int action, int mods) {
 	} else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
 		if (action == GLFW_PRESS) {
 			game->original_position = cursor;
-			game->mbDown = true;
 			game->selected_object = nullptr;
 			game->t_Notification.setContent("");
 
 			vector<MoveableNew*> over_objects;
 			float min_distance = 100;
-
 			for (MoveableNew* moveable: game->objects)
 				if (!(moveable->getFlags() & UNEDITABLE || moveable->getFlags() & FIXED_POS)) {
 					Vector2 location = moveable->getLocation(), size = moveable->getSize();
@@ -52,20 +51,8 @@ void MouseNew::callback(GLFWwindow* window, int button, int action, int mods) {
 				game->t_Notification.setContent("Selected " + game->selected_object->getName());
 				info(game->ss << "Selected " + game->selected_object->getName());
 			}
-
 		}
-		else if (action == GLFW_RELEASE) {
-			game->mbDown = false;
-		}
-	}
-	else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-		if (action == GLFW_PRESS) {
-			game->mouse_position.x = cursor.x, game->mouse_position.y = cursor.y;
-			game->rbDown = true;
-		}
-		else if (game->selected_object) {
-			game->rbDown = false;
-			game->mouse_position.x = -1, game->mouse_position.y = -1;
-		}
+	} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+		game->mouse_position = GLFW_PRESS ? cursor : 0;
 	}
 }

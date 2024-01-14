@@ -31,38 +31,12 @@ void MoveableNew::shiftColour(int speed) {
 */
 
 void MoveableNew::shiftColour(float speed) {
-	Colour2 change = (colour - alternate_colour) * speed;
+	if (getFlags() & TEXT) {
+		return;
+	}
+	Colour2 change = (alternate_colour - colour) * speed;
 	colour = colour + (change * speed);
 }
-
-/*
-void MoveableNew::shiftAlpha(float s) {
-	short* new_colour = getColour();
-	if (alphaDownwards) {
-		if (new_colour[3] <= 0) {
-			alphaDownwards = !alphaDownwards; return;
-		}
-		else new_colour[3] -= max((int)(s * alpha_limit), 1);
-	}
-	else {
-		if (new_colour[3] >= alpha_limit) {
-			alphaDownwards = !alphaDownwards; return;
-		}
-		else new_colour[3] += max((int)(s * alpha_limit), 1);
-	}
-	memcpy(colour, new_colour, sizeof(colour));
-	setColour(colour[0], colour[1], colour[2], colour[3]);
-}
-*/
-
-/*
-float* getDecimals(string a) {
-	size_t splitter = a.find(',');
-	string first = a.substr(0, splitter);
-	string second = a.substr(splitter + 1);
-	float values[2] = { stof(first), stof(second) };
-	return values;
-}*/
 
 void setValues(Vector2& vector, string values) {
 	size_t splitter = values.find(',');
@@ -83,19 +57,16 @@ void MoveableNew::tickTimer(float modifier) {
 	for (auto& c : action) c = toupper(c);
 
 	if (action == "WAIT") script_timer = stof(data);
-	// else if (action == "LOCATION") { float* values = getDecimals(data); setLocation(values[0], values[1]); }
 	else if (action == "LOCATION") { setValues(location, data); }
-	// else if (action == "VELOCITY") { float* values = getDecimals(data); setVelocity(values[0], values[1]); }
 	else if (action == "VELOCITY") { setValues(velocity, data); }
-	// else if (action == "ACCELERATION") { float* values = getDecimals(data); setAcceleration(values[0], values[1]); }
 	else if (action == "ACCELERATION") { setValues(acceleration, data); }
 	else if (action == "X") location.x = stof(data);
 	else if (action == "Y") location.y = stof(data);
 	else if (action == "WIDTH") size.x = stof(data);
 	else if (action == "HEIGHT") size.y = stof(data);
-	// else if (action == "COLOUR") setColour(Colour2::HexToRGB(data));
+	else if (action == "COLOUR") setColour(Colour2::HexToRGB(data));
 	else if (action == "ALPHA") colour.setW(stof(data));
-	// else if (action == "GRADIENT") setGradientColour(Colour2::HexToRGB(data));
+	else if (action == "GRADIENT") setGradientColour(Colour2::HexToRGB(data));
 	else if (action == "GRADIENT_ALPHA") gradient_colour.setW(stof(data));
 	else if (action == "JUMP") script_line = stoi(data);
 	else if (action == "TEXTURE") setTexture(Image::getImage(data));
@@ -112,11 +83,11 @@ void MoveableNew::loadScript(string path) {
 
 void MoveableNew::common(float modifier) {
 	if (shifting_colour) shiftColour(1 * modifier);
-	// if (shiftingAlpha) shiftAlpha(0.01 * modifier);
 	tickTimer(modifier);
 }
 
 void MoveableNew::update(float modifier) {
+
 	common(modifier);
 
 	velocity.x += acceleration.x;
@@ -124,6 +95,9 @@ void MoveableNew::update(float modifier) {
 
 	location.x += velocity.x;
 	location.y += velocity.y;
+
+	alternate_colour = Colour2(0, 0, 0, 0);
+	// shiftColour(0.125f);
 
 	/*
 	if (colour[3] <= 0 && oneWay) {

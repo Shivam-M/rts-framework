@@ -57,3 +57,23 @@ void info_e(std::string);
 
 short* rgb(std::string);
  
+void log_impl(std::ostream& os);
+
+template <typename First, typename... Rest>
+void log_impl(std::ostream& os, First&& first, Rest&&... rest) {
+	std::ostringstream ss;
+	ss << std::forward<First>(first);
+	os << ss.str() << " ";
+	log_impl(os, std::forward<Rest>(rest)...);
+}
+
+template <typename... Args>
+void log_t(Args&&... args) {
+	auto t = time(nullptr);
+	tm tm;
+	localtime_s(&tm, &t);
+
+	std::cout << std::put_time(&tm, "\033[1;36m[%d-%m-%Y %H:%M:%S] \033[0m- ");
+
+	log_impl(std::cout, std::forward<Args>(args)...);
+}

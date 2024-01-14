@@ -43,3 +43,8 @@ short* rgb(std::string hex) {
 	short nc[3] = { (short)r, (short)g, (short)b };
 	return new short[3]{ (short)r, (short)g, (short)b };
 }
+
+
+void log_impl(std::ostream& os) {
+	os << std::endl;
+}

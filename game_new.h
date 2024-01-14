@@ -14,13 +14,13 @@
 #include "tools/console_new.h"
 #include "tools/fonts.h"
 
-class KeyboardNew;
+class Keyboard;
 class Gamepad;
-class MouseNew;
+class Mouse;
 
 using namespace std;
 
-class GameNew {
+class Game {
 	public:
 		float game_speed = 2.5;
 		int elapsed_days = 0;
@@ -29,7 +29,7 @@ class GameNew {
 		vector<NationNew*> nations;
 
 		stringstream ss;
-		UnitNew* selected_unit; ProvinceNew* selected_province;
+		Unit* selected_unit; Province* selected_province;
 
 		NationNew* player_nation = nullptr;
 
@@ -38,35 +38,35 @@ class GameNew {
 		Vector2 mouse_position;
 		Vector2 original_position;
 
-		MouseNew* mouse;
-		KeyboardNew* keyboard;
+		Mouse* mouse;
+		Keyboard* keyboard;
 		Gamepad* gamepad;
-		ConsoleNew* console;
+		Console* console;
 
 		float update_time_ = 0;
 
 		bool god_mode = true;
 
 		GLFWwindow* window = nullptr;
-		MoveableNew* selected_object = nullptr;
-		LoaderNew loader;
-		Level2 current_level;
-		vector<Level2> levels;
+		Moveable* selected_object = nullptr;
+		Loader loader;
+		Level current_level;
+		vector<Level> levels;
 
 		int level_index = 0;
 		float scroll_size = 1;
 
-		vector<TextNew*> text_objects;
-		vector<MoveableNew*> queue_objects;
-		vector<MoveableNew*> objects;
+		vector<Text*> text_objects;
+		vector<Moveable*> queue_objects;
+		vector<Moveable*> objects;
 		vector<map<float, int>> timers_;
 
-		TextNew t_FPSCounter, t_PlayerLocation, t_PlayerVelocity, t_PlayerAcceleration, t_Alt, t_Alt2, t_Alt3, t_Notification, t_Hint, t_Hint2;
+		Text t_FPSCounter, t_PlayerLocation, t_PlayerVelocity, t_PlayerAcceleration, t_Alt, t_Alt2, t_Alt3, t_Notification, t_Hint, t_Hint2;
 
-		RenderNew render;
+		Render render;
 
 		// public:
-		static GameNew* game;
+		static Game* game;
 
 		bool show_console = false;
 
@@ -78,8 +78,8 @@ class GameNew {
 		int fps_limit = 0;
 		int update_rate = 144;
 		
-		void registerObject(MoveableNew*);
-		void registerObject(TextNew*);
+		void registerObject(Moveable*);
+		void registerObject(Text*);
 		void updateObjects(float = 1.0);
 		void updateStatistics(int, int);
 		void updateProperties();
@@ -87,12 +87,13 @@ class GameNew {
 		void debugMode();
 		void fireShot();
 		void pauseGame();
+		void setupRTSGame();
 		void setButton(int button, int state) { button_map[button] = state; }
 		int  getButton(int button) { return button_map[button]; }
 		int  gameLoop();
 		
 		// Player* getPlayer();
 
-		GameNew();
-		GameNew(int, char**);
+		Game() {};
+		Game(int, char**);
 };

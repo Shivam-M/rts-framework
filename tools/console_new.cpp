@@ -2,39 +2,39 @@
 #include "fonts.h"
 #include "../game_new.h"
 
-GameNew* ConsoleNew::game = nullptr;
+Game* Console::game = nullptr;
 
 using namespace std;
 
-ConsoleNew::ConsoleNew(GameNew* g) {
+Console::Console(Game* g) {
 	game = g;
 }
 
-void ConsoleNew::build() {
-	entry_box = MoveableNew();
-	entry_box.setColour(Colour2(40, 40, 40, 250));
-	entry_box.setGradientColour(Colour2(40, 40, 40, 250));
+void Console::build() {
+	entry_box = Moveable();
+	entry_box.setColour(Colour(40, 40, 40, 250));
+	entry_box.setGradientColour(Colour(40, 40, 40, 250));
 	entry_box.setLocation(0.275, 0.4);
 	entry_box.setSize(0.45, 0.1);
 	entry_box.addFlag(CURVED);
 	entry_box.addFlag(DISABLED);
 	entry_box.addFlag(FIXED_POS);
 
-	entry_text = TextNew(Vector2(0.30, 0.475), Fonts::getFont(CONSOLAS_BOLD, 30), Colour2(189, 195, 199, 175), "");
+	entry_text = Text(Vector2(0.30, 0.475), Fonts::getFont(CONSOLAS_BOLD, 30), Colour(189, 195, 199, 175), "");
 	entry_text.addFlag(DISABLED);
 
-	debug_box.setColour(Colour2(20, 20, 20, 250));
-	debug_box.setGradientColour(Colour2(20, 20, 20, 250));
+	debug_box.setColour(Colour(20, 20, 20, 250));
+	debug_box.setGradientColour(Colour(20, 20, 20, 250));
 	debug_box.setLocation(0.275, 0.4);
 	debug_box.setSize(0.45, 0.225);
 	debug_box.addFlag(CURVED);
 	debug_box.addFlag(DISABLED);
 	debug_box.addFlag(FIXED_POS);
 
-	debug_text = TextNew(Vector2(0.30, 0.55), Fonts::getFont(CONSOLAS_BOLD, 14), Colour2(22, 160, 133, 175), "");
+	debug_text = Text(Vector2(0.30, 0.55), Fonts::getFont(CONSOLAS_BOLD, 14), Colour(22, 160, 133, 175), "");
 	debug_text.addFlag(DISABLED);
 
-	feedback_text = TextNew(Vector2(0.30, 0.595), Fonts::getFont(CONSOLAS_BOLD, 14), Colour2(26, 188, 156, 175), "");
+	feedback_text = Text(Vector2(0.30, 0.595), Fonts::getFont(CONSOLAS_BOLD, 14), Colour(26, 188, 156, 175), "");
 	feedback_text.addFlag(DISABLED);
 
 	rMoveable(&debug_box);
@@ -45,27 +45,27 @@ void ConsoleNew::build() {
 	rText(&feedback_text);
 }
 
-void ConsoleNew::rText(TextNew* text) {
+void Console::rText(Text* text) {
 	cText.push_back(text);
 	game->registerObject(text);
 }
 
-void ConsoleNew::rMoveable(MoveableNew* moveable) {
+void Console::rMoveable(Moveable* moveable) {
 	cMoveable.push_back(moveable);
 	game->registerObject(moveable);
 }
 
-bool ConsoleNew::visible() {
+bool Console::visible() {
 	return visible_;
 }
 
-void ConsoleNew::toggle() {
+void Console::toggle() {
 	visible_ = !visible_;
-	for (MoveableNew* moveable : cMoveable) visible_ ? moveable->removeFlag(DISABLED) : moveable->addFlag(DISABLED);
-	for (TextNew* text : cText) visible_ ? text->removeFlag(DISABLED) : text->addFlag(DISABLED);
+	for (Moveable* moveable : cMoveable) visible_ ? moveable->removeFlag(DISABLED) : moveable->addFlag(DISABLED);
+	for (Text* text : cText) visible_ ? text->removeFlag(DISABLED) : text->addFlag(DISABLED);
 }
 
-void ConsoleNew::entry(int character) {
+void Console::entry(int character) {
 	string text = entry_text.getContent();
 	if (character == 259) { if (text.size() > 0) text.pop_back(); }
 	else if (character == 32) text.push_back(' ');
@@ -74,16 +74,16 @@ void ConsoleNew::entry(int character) {
 	entry_text.setContent(text);
 }
 
-void ConsoleNew::feedback(string message) {
+void Console::feedback(string message) {
 	feedback_text.setContent(message);
 	info(message);
 }
 
-void ConsoleNew::update(string message) {
+void Console::update(string message) {
 	debug_text.setContent(message);
 }
 
-void ConsoleNew::execute() {
+void Console::execute() {
 	string command = entry_text.getContent(), temp;
 	stringstream ss(command);
 	vector<string> args;
@@ -124,8 +124,8 @@ void ConsoleNew::execute() {
 			feedback("Switched player physics to use planet physics.");
 		}
 		else if (args[0] == "CLEAR") {
-			vector<MoveableNew*> objects = game->objects;
-			for (MoveableNew* m : objects) {
+			vector<Moveable*> objects = game->objects;
+			for (Moveable* m : objects) {
 				if (m->getFlags() & SQUARE) {
 					m->isActive = false;
 				}

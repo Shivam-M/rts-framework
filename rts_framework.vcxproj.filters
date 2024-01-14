@@ -77,9 +77,6 @@
     <ClInclude Include="tools\image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tools\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tools\TextRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

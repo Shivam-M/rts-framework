@@ -6,23 +6,23 @@
 
 using namespace std;
 
-class GameNew;
+class Game;
 
-class ConsoleNew {
+class Console {
 	private:
 		const string ALPHABET{ "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
 
-		static GameNew* game;
-		MoveableNew entry_box, debug_box;
-		TextNew entry_text, debug_text, feedback_text;
+		static Game* game;
+		Moveable entry_box, debug_box;
+		Text entry_text, debug_text, feedback_text;
 
-		vector<MoveableNew*> cMoveable;
-		vector<TextNew*> cText;
+		vector<Moveable*> cMoveable;
+		vector<Text*> cText;
 
 		bool visible_ = false;
 
 	public:
-		ConsoleNew(GameNew*);
+		Console(Game*);
 
 		void build();
 		void toggle();
@@ -33,6 +33,6 @@ class ConsoleNew {
 		void feedback(string);
 		void update(string);
 
-		void rText(TextNew*);
-		void rMoveable(MoveableNew*);
+		void rText(Text*);
+		void rMoveable(Moveable*);
 };

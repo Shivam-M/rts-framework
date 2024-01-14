@@ -4,7 +4,7 @@
 
 using namespace std;
 
-class CollidableNew : public MoveableNew {
+class Collidable : public Moveable {
 	public:
 		bool can_collide = true;
 		bool direction_right = true;
@@ -13,5 +13,5 @@ class CollidableNew : public MoveableNew {
 
 		void update(float = 1.0);
 
-		CollidableNew();
+		Collidable();
 };

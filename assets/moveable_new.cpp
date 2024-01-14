@@ -1,13 +1,13 @@
 #include "moveable_new.h"
 
 /*
-void MoveableNew::setAlphaShifting(bool state, bool oneway) {
+void Moveable::setAlphaShifting(bool state, bool oneway) {
 	shiftingAlpha = state;
 	oneWay = oneway;
 }*/
 
 /*
-void MoveableNew::updateColour(short* c, int i, int s) {
+void Moveable::updateColour(short* c, int i, int s) {
 	int change = (c[i] - alternate_colour[i]) / 255;
 	if (c[i] - alternate_colour[i] < 0) change = 1 ? change == 0 : change;
 	else change = -1 ? change == 0 : change;
@@ -16,7 +16,7 @@ void MoveableNew::updateColour(short* c, int i, int s) {
 	else if (c[i] < 0) c[i] = 0;
 }
 
-void MoveableNew::shiftColour(int speed) {
+void Moveable::shiftColour(int speed) {
 	short* new_colour = getColour();
 	for (int x = 0; x < 4; x++) updateColour(new_colour, x, speed);
 	memcpy(colour, new_colour, sizeof(colour));
@@ -30,11 +30,11 @@ void MoveableNew::shiftColour(int speed) {
 }
 */
 
-void MoveableNew::shiftColour(float speed) {
+void Moveable::shiftColour(float speed) {
 	if (getFlags() & TEXT) {
 		return;
 	}
-	Colour2 change = (alternate_colour - colour) * speed;
+	Colour change = (alternate_colour - colour) * speed;
 	colour = colour + (change * speed);
 }
 
@@ -46,7 +46,7 @@ void setValues(Vector2& vector, string values) {
 }
 
 // Add vars.
-void MoveableNew::tickTimer(float modifier) {
+void Moveable::tickTimer(float modifier) {
 	if (script_timer > 0) { script_timer -= (1.0 / 60) * modifier; return; }
 	if (script_line >= script.size()) return;
 
@@ -64,16 +64,16 @@ void MoveableNew::tickTimer(float modifier) {
 	else if (action == "Y") location.y = stof(data);
 	else if (action == "WIDTH") size.x = stof(data);
 	else if (action == "HEIGHT") size.y = stof(data);
-	else if (action == "COLOUR") setColour(Colour2::HexToRGB(data));
+	else if (action == "COLOUR") setColour(Colour::HexToRGB(data));
 	else if (action == "ALPHA") colour.setW(stof(data));
-	else if (action == "GRADIENT") setGradientColour(Colour2::HexToRGB(data));
+	else if (action == "GRADIENT") setGradientColour(Colour::HexToRGB(data));
 	else if (action == "GRADIENT_ALPHA") gradient_colour.setW(stof(data));
 	else if (action == "JUMP") script_line = stoi(data);
 	else if (action == "TEXTURE") setTexture(Image::getImage(data));
 	script_line++;
 }
 
-void MoveableNew::loadScript(string path) {
+void Moveable::loadScript(string path) {
 	stringstream ss;
 	info(ss << "Loading script... " << path << " [" << getName() << "]");
 	string line;
@@ -81,12 +81,12 @@ void MoveableNew::loadScript(string path) {
 	while (getline(in, line)) if (line.size() > 0) script.push_back(line);
 }
 
-void MoveableNew::common(float modifier) {
+void Moveable::common(float modifier) {
 	if (shifting_colour) shiftColour(1 * modifier);
 	tickTimer(modifier);
 }
 
-void MoveableNew::update(float modifier) {
+void Moveable::update(float modifier) {
 
 	common(modifier);
 
@@ -96,7 +96,7 @@ void MoveableNew::update(float modifier) {
 	location.x += velocity.x;
 	location.y += velocity.y;
 
-	alternate_colour = Colour2(0, 0, 0, 0);
+	alternate_colour = Colour(0, 0, 0, 0);
 	// shiftColour(0.125f);
 
 	/*

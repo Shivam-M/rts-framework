@@ -1,15 +1,7 @@
-
-
-#include "game_new.h"
-// #include "io/keyboard.h"
-// #include "io/gamepad.h"
-// #include "io/mouse.h"
-
-
-
 #include <windows.h>
 #include <Psapi.h>
 
+#include "game_new.h"
 #include "defs/province_new.h"
 #include "defs/unit_new.h"
 #include "defs/nation_new.h"
@@ -24,15 +16,16 @@
 
 using namespace std;
 
-GameNew* GameNew::game = nullptr;
-GameNew::GameNew() {}
+Game* Game::game = nullptr;
 
-GameNew::GameNew(int argc, char** argv) {
+static void loadProvinceNeighbours(string);
+static void loadProvinceAttributes(string);
+
+Game::Game(int argc, char** argv) {
 	float launch_time = glfwGetTime();
 	game = this;
 
 	if (!glfwInit()) return;
-
 	if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RTS Game", NULL, NULL))) { glfwTerminate(); return; }
 
 	glfwSetWindowPos(window, 100, 100);
@@ -42,41 +35,31 @@ GameNew::GameNew(int argc, char** argv) {
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	info(ss << "\033[1;31mOpenGL Version: " << glGetString(GL_VERSION));
+	log_t("\033[1;31mOpenGL Version: ", glGetString(GL_VERSION));
 
-	render = RenderNew(window, &objects, &text_objects);
-
-	font_data font = Fonts::getFont(CONSOLAS_BOLD, 11);
-	t_FPSCounter =			TextNew({0.925, 0.050}, font, Colour2(0, 206, 201, 255), "FPS: --");
-	t_PlayerLocation =		TextNew({0.030, 0.050}, font, Colour2(34, 166, 179, 255), "--");
-	t_PlayerVelocity =		TextNew({0.030, 0.075}, font, Colour2(34, 166, 179, 255), "--");
-	t_PlayerAcceleration =	TextNew({0.030, 0.100}, font, Colour2(34, 166, 179, 255), "--");
-	t_Alt =					TextNew({0.675, 0.050}, font, Colour2(223, 249, 251, 255), "ALT: --");
-	t_Alt2 =				TextNew({0.800, 0.050}, font, Colour2(223, 249, 251, 255), "ALT: --");
-	t_Alt3 =				TextNew({0.550, 0.050}, font, Colour2(223, 249, 251, 255), "ALT: --");
-	t_Notification =		TextNew({0.150, 0.050}, font, Colour2(189, 195, 199, 255), "");
-
-
-	
-
-	// registerObject(&player);
-
-	console = new ConsoleNew(this);
+	font_data debug_font = Fonts::getFont(CONSOLAS_BOLD, 11);
+	t_FPSCounter =			Text({0.925, 0.050}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
+	t_PlayerLocation =		Text({0.030, 0.050}, debug_font, Colour(34, 166, 179, 255), "--");
+	t_PlayerVelocity =		Text({0.030, 0.075}, debug_font, Colour(34, 166, 179, 255), "--");
+	t_PlayerAcceleration =	Text({0.030, 0.100}, debug_font, Colour(34, 166, 179, 255), "--");
+	t_Alt =					Text({0.675, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Alt2 =				Text({0.800, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Alt3 =				Text({0.550, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Notification =		Text({0.150, 0.050}, debug_font, Colour(189, 195, 199, 255), "");
 
 	// One-time load
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 
 	int level_counter = 0;
 	while (true) {
-		ifstream ifs("data/levels/rts/" + to_string(level_counter) + ".json");
-		if (ifs.fail()) break;
-		Level2* level = loader.load("data/levels/rts/" + to_string(level_counter) + ".json", &queue_objects, &text_objects, level_counter);
+		if (ifstream("data/levels/rts/" + to_string(level_counter) + ".json").fail()) break;
+		Level* level = loader.load("data/levels/rts/" + to_string(level_counter) + ".json", &queue_objects, &text_objects, level_counter);
 
-		for (MoveableNew* m : level->objects) {
+		for (Moveable* m : level->objects) {
 			Vector2 location = m->getLocation();
 			if (m->getFlags() & QUAD) {
 				vector<Vector2> points = m->getPoints();
-				CollidableNew* c = (CollidableNew*)(m);
+				Collidable* c = (Collidable*)(m);
 				for (int x = 0; x < 4; x++) points[x].x += level_counter;
 				// c->setPoints(points[0], points[1], points[2], points[3]);
 			}
@@ -84,63 +67,14 @@ GameNew::GameNew(int argc, char** argv) {
 			registerObject(m);
 		}
 
-		for (TextNew* t : level->text_objects) registerObject(t);
+		for (Text* t : level->text_objects) registerObject(t);
 		levels.push_back(*level);
 		level_counter++;
 	}
 
-	FILE* neighbours_file;
-	fopen_s(&neighbours_file, "data/generated/province_neighbours.txt", "r");
-	if (neighbours_file == nullptr) {
-		info_e("Error loading province neighbour pairs file.");
-		return;
-	}
-
-	int id, other_id;
-	while (fscanf_s(neighbours_file, "%d,%d", &id, &other_id) == 2) {
-		ProvinceNew* province = LoaderNew::getProvinceMap()[id];
-		ProvinceNew* other_province = LoaderNew::getProvinceMap()[other_id];
-		province->addNeighbour(other_province);
-		other_province->addNeighbour(province);
-		info(ss << "Assigned province '" << province->getName() << "' (" << province->getID() << ") as a neighbour with '" << other_province->getName() << "' (" << other_province->getID() << ")");
-	}
-	fclose(neighbours_file);
-
-	FILE* dimensions_file;
-	fopen_s(&dimensions_file, "data/generated/province_dimensions.txt", "r");
-	if (dimensions_file == nullptr) {
-		info_e("Error loading province map data file.");
-		return;
-	}
-
-	float x, y, w, h;
-	float xoffset = -0.2, yoffset = -0.1;
-	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
-		info_i("Loading map position data for province ID... #" + to_string(id));
-		LoaderNew::getProvinceMap()[id]->setSize(w, h);
-		LoaderNew::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
-		LoaderNew::getProvinceMap()[id]->setColour(Colour2(0, 0, 0, 80));
-		//  LoaderNew::getProvinceMap()[id]->loadScript("data/scripts/anim.txt");
-	}
-	fclose(dimensions_file);
-
-	vector<ProvinceNew*> path;
-	// path.push_back(LoaderNew::getProvinceMap()[5]);
-	path.push_back(LoaderNew::getProvinceMap()[22]);
-	path.push_back(LoaderNew::getProvinceMap()[21]);
-	path.push_back(LoaderNew::getProvinceMap()[20]);
-	path.push_back(LoaderNew::getProvinceMap()[19]);
-	path.push_back(LoaderNew::getProvinceMap()[17]);
-	path.push_back(LoaderNew::getProvinceMap()[18]);
-	LoaderNew::getUnitMap()[1]->setPath(path);
-	LoaderNew::getUnitMap()[1]->initiate();
-
-	for (const auto& p : LoaderNew::getNationMap()) {
-		NationNew* nation = p.second;
-		nations.push_back(nation);
-	}
-
-	player_nation = nations[0];
+	loadProvinceNeighbours("data/generated/province_neighbours.txt");
+	loadProvinceAttributes("data/generated/province_dimensions.txt");
+	setupRTSGame();
 
 	registerObject(&t_FPSCounter);
 	registerObject(&t_Alt);
@@ -151,45 +85,100 @@ GameNew::GameNew(int argc, char** argv) {
 	registerObject(&t_PlayerAcceleration);
 	registerObject(&t_PlayerLocation);
 
-	keyboard = new KeyboardNew(this);
-	mouse = new MouseNew(this);
+	render = Render(window, &objects, &text_objects);
+	keyboard = new Keyboard(this);
+	mouse = new Mouse(this);
+	console = new Console(this);
+	console->build();
 
 	glfwSetKeyCallback(window, keyboard->callback);
 	glfwSetMouseButtonCallback(window, mouse->callback);
-	// glfwSetScrollCallback(window, mouse->scroll_callback);
+	glfwSetScrollCallback(window, mouse->scroll_callback);
 
-	console->build();
-
-	info("Took " + to_string(glfwGetTime() - launch_time) + " seconds to load the game.");
-	log_t("Multi arg");
+	log_t("Took", glfwGetTime() - launch_time, "seconds to load the game.");
 }
 
-void GameNew::pauseGame() {
-	Colour2 col = objects[0]->getColour();
+void Game::setupRTSGame() {
+	vector<Province*> path;
+	path.push_back(Loader::getProvinceMap()[22]);
+	path.push_back(Loader::getProvinceMap()[21]);
+	path.push_back(Loader::getProvinceMap()[20]);
+	path.push_back(Loader::getProvinceMap()[19]);
+	path.push_back(Loader::getProvinceMap()[17]);
+	path.push_back(Loader::getProvinceMap()[18]);
+	Loader::getUnitMap()[1]->setPath(path);
+	Loader::getUnitMap()[1]->initiate();
+
+	for (const auto& p : Loader::getNationMap()) {
+		NationNew* nation = p.second;
+		nations.push_back(nation);
+	}
+
+	player_nation = nations[0];
+}
+
+void loadProvinceNeighbours(string neighbours) {
+	FILE* neighbours_file;
+	fopen_s(&neighbours_file, neighbours.c_str(), "r");
+	if (neighbours_file == nullptr) {
+		log_t("Error loading province neighbour pairs file.");
+		return;
+	}
+
+	int id, other_id;
+	while (fscanf_s(neighbours_file, "%d,%d", &id, &other_id) == 2) {
+		Province* province = Loader::getProvinceMap()[id];
+		Province* other_province = Loader::getProvinceMap()[other_id];
+		province->addNeighbour(other_province);
+		other_province->addNeighbour(province);
+		log_t("Assigned province '", province->getName(), "' (", province->getID(), ") as a neighbour with '", other_province->getName(), "' (", other_province->getID(), ")");
+	}
+	fclose(neighbours_file);
+}
+
+void loadProvinceAttributes(string attributes) {
+	FILE* dimensions_file;
+	fopen_s(&dimensions_file, attributes.c_str(), "r");
+	if (dimensions_file == nullptr) {
+		log_t("Error loading province map data file.");
+		return;
+	}
+
+	int id;
+	float x, y, w, h, xoffset = -0.2, yoffset = -0.1;
+	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
+		log_t("Loading map position data for province ID... #" + to_string(id));
+		Loader::getProvinceMap()[id]->setSize(w, h);
+		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
+		Loader::getProvinceMap()[id]->setColour(Colour(0, 0, 0, 80));
+		//  Loader::getProvinceMap()[id]->loadScript("data/scripts/anim.txt");
+	}
+	fclose(dimensions_file);
+}
+
+void Game::pauseGame() {
+	Colour col = objects[0]->getColour();
 	col.setW(200);
 
-	TextNew* t_Start = new TextNew({ 0.05, 0.35 }, Fonts::getFont("data/fonts/blkchcry.ttf", 50, true), col, "Resume");
-
+	Text* t_Start = new Text({ 0.05, 0.35 }, Fonts::getFont("data/fonts/blkchcry.ttf", 50, true), col, "Resume");
 	registerObject(t_Start);
 
-	TextNew* t_Reload = new TextNew({ 0.05, 0.425 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Reload scenario");
-
+	Text* t_Reload = new Text({ 0.05, 0.425 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Reload scenario");
 	registerObject(t_Reload);
 
-	TextNew* t_Quit = new TextNew({ 0.05, 0.49 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Quit game");
-
+	Text* t_Quit = new Text({ 0.05, 0.49 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Quit game");
 	registerObject(t_Quit);
 }
 
-// Player* GameNew::getPlayer() { return &player; }
+// Player* Game::getPlayer() { return &player; }
 
-void GameNew::checkCollision() {
+void Game::checkCollision() {
 	/*
 	float* location = player.getLocation();
 	float* size = player.getSize();
 	float x, y;
 
-	for (MoveableNew* m : objects) {
+	for (Moveable* m : objects) {
 		float* m_location = m->getLocation();
 		float* m_size = m->getSize();
 		if (m->getFlags() & GHOST) continue;
@@ -228,7 +217,7 @@ void GameNew::checkCollision() {
 	*/
 }
 
-void GameNew::fireShot() {
+void Game::fireShot() {
 	/*
 	Ice* ice = new Ice();
 	ice->setLocation(player.getLocation()[0], player.getLocation()[1]);
@@ -238,11 +227,11 @@ void GameNew::fireShot() {
 	*/
 }
 
-void GameNew::debugMode() {
-	// render.setRenderLevel(2);
+void Game::debugMode() {
+	render.setRenderLevel(3);
 }
 
-void GameNew::updateStatistics(int f, int u) {
+void Game::updateStatistics(int f, int u) {
 	if (console->visible()) {
 		PROCESS_MEMORY_COUNTERS memCounter;
 		BOOL result = K32GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter));
@@ -269,13 +258,13 @@ void GameNew::updateStatistics(int f, int u) {
 	info(ss << "FPS: " << f << " \tUpdates: " << u << " \tGame time: " << update_time_ << "s \t[" << (int)(1 / update_time_) << "]");
 }
 
-void GameNew::updateProperties() {
+void Game::updateProperties() {
 	if (selected_object) {
 		if (selected_object->getFlags() & PROVINCE) {
-			selected_object->setColour(Colour2(255, 255, 0, 80));
-			ProvinceNew* province = reinterpret_cast<ProvinceNew*>(selected_object);
-			for (ProvinceNew* neighbour : province->getNeighbours()) {
-				neighbour->setColour(Colour2(255, 0, 255, 80));
+			selected_object->setColour(Colour(255, 255, 0, 80));
+			Province* province = reinterpret_cast<Province*>(selected_object);
+			for (Province* neighbour : province->getNeighbours()) {
+				neighbour->setColour(Colour(255, 0, 255, 80));
 			}
 		} else if (selected_object->getFlags() & UNIT) {
 
@@ -298,25 +287,25 @@ void GameNew::updateProperties() {
 	}
 }
 
-void GameNew::updateObjects(float modifier) {
-	vector<MoveableNew*> inactive_objects;
-	for (MoveableNew* m : objects) !m->isActive ? inactive_objects.push_back(m) : m->update(modifier);
-	for (MoveableNew* to : text_objects) !to->isActive ? inactive_objects.push_back(to) : to->update(modifier);
+void Game::updateObjects(float modifier) {
+	vector<Moveable*> inactive_objects;
+	for (Moveable* m : objects) !m->isActive ? inactive_objects.push_back(m) : m->update(modifier);
+	for (Moveable* to : text_objects) !to->isActive ? inactive_objects.push_back(to) : to->update(modifier);
 
-	for (MoveableNew* t : inactive_objects) {
+	for (Moveable* t : inactive_objects) {
 		objects.erase(remove(objects.begin(), objects.end(), t), objects.end());
 		delete t;
 	}
 
-	for (MoveableNew* q : queue_objects) objects.push_back(q);
+	for (Moveable* q : queue_objects) objects.push_back(q);
 	queue_objects.clear();
 }
 
-void GameNew::registerObject(MoveableNew* m) { objects.push_back(m); }
+void Game::registerObject(Moveable* m) { objects.push_back(m); }
 
-void GameNew::registerObject(TextNew* t) { text_objects.push_back(t); }
+void Game::registerObject(Text* t) { text_objects.push_back(t); }
 
-int GameNew::gameLoop() {
+int Game::gameLoop() {
 	update_rate = 60;
 	int frames = 0, updates = 0, frame_count = 0;
 	float average_frames = 0;
@@ -389,7 +378,7 @@ int GameNew::gameLoop() {
 
 	// TODO: Memory management for particles
 	int counter = 0;
-	for (MoveableNew* t : objects) {
+	for (Moveable* t : objects) {
 		if (t->getFlags() & SQUARE) delete t;
 		counter++;
 	} objects.clear();

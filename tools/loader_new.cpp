@@ -8,7 +8,7 @@
 #include "../shapes/circle_new.h"
 #include "../assets/collidable_new.h"
 
-json LoaderNew::ldata;
+json Loader::ldata;
 
 const json DEFAULTS = {
 	{"colour",			"FFFFFF"},
@@ -37,61 +37,60 @@ const json DEFAULTS = {
 	{"neighbours",		json::array()}
 };
 
-static map<int, ProvinceNew*> province_map;
+static map<int, Province*> province_map;
 static map<int, NationNew*> nation_map;
-static map<int, UnitNew*> unit_map;
+static map<int, Unit*> unit_map;
 
 static json properties;
 stringstream ss;
 
-void LoaderNew::parseCommon(MoveableNew* moveable) {
+void Loader::parseCommon(Moveable* moveable) {
 	string script = getString("script");
 
 	if (script != "") moveable->loadScript(script);
 	moveable->setName(getString("name"));
 	moveable->setSize(getFloat("width"), getFloat("height"));
 	moveable->setLocation(getFloat("x"), getFloat("y"));
-	moveable->setColour(Colour2::HexToRGB(getString("colour"), (getFloat("alpha"))));
+	moveable->setColour(Colour::HexToRGB(getString("colour"), (getFloat("alpha"))));
 	if (getString("alt_colour") != "") {
-		moveable->setColour(Colour2::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
+		moveable->setColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
 	}
-
 }
 
 /*
-Fire* LoaderNew::parseFire() {
+Fire* Loader::parseFire() {
 	return nullptr;
 }
 
-Stars* LoaderNew::parseStars() {
+Stars* Loader::parseStars() {
 	return nullptr;
 }
 
-Square* LoaderNew::parseSquare() {
+Square* Loader::parseSquare() {
 	return nullptr;
 }
 */
 
-CircleNew* LoaderNew::parseCircle() {
-	CircleNew* circle = new CircleNew();
+Circle* Loader::parseCircle() {
+	Circle* circle = new Circle();
 	parseCommon(circle);
 	return circle;
 }
 
-CollidableNew* LoaderNew::parseCollidable() {
-	CollidableNew* collidable = new CollidableNew();
+Collidable* Loader::parseCollidable() {
+	Collidable* collidable = new Collidable();
 	parseCommon(collidable);
 	return collidable;
 }
 
-MoveableNew* LoaderNew::parseMoveable() {
-	MoveableNew* moveable = new MoveableNew();
+Moveable* Loader::parseMoveable() {
+	Moveable* moveable = new Moveable();
 	parseCommon(moveable);
 	return moveable;
 }
 
-CollidableNew* LoaderNew::parseCustom() {
-	CollidableNew* quad = new CollidableNew();
+Collidable* Loader::parseCustom() {
+	Collidable* quad = new Collidable();
 	parseCommon(quad);
 
 	/*
@@ -117,37 +116,36 @@ CollidableNew* LoaderNew::parseCustom() {
 	return quad;
 }
 
-TextNew* LoaderNew::parseText() {
-	TextNew* text = new TextNew();
-	text->setColour(Colour2::HexToRGB(getString("colour"), (getFloat("alpha"))));
+Text* Loader::parseText() {
+	Text* text = new Text();
+	text->setColour(Colour::HexToRGB(getString("colour"), (getFloat("alpha"))));
 	text->setContent(getString("content"));
 	text->setFont(Fonts::getFont(getString("font"), getInt( "size"), getInt("font_custom")));
 	text->setLocation(getFloat("x"), getFloat("y"));
 	return text;
 }
 
-CollidableNew* LoaderNew::parseSlider() {
-	CollidableNew* slider = new CollidableNew();
+Collidable* Loader::parseSlider() {
+	Collidable* slider = new Collidable();
 	parseCommon(slider);
 	slider->addFlag(MOVING);
 	return slider;
 }
 
-map<int, ProvinceNew*> LoaderNew::getProvinceMap() { return province_map; }
+map<int, Province*> Loader::getProvinceMap() { return province_map; }
 
-map<int, NationNew*> LoaderNew::getNationMap() { return nation_map; }
+map<int, NationNew*> Loader::getNationMap() { return nation_map; }
 
-map<int, UnitNew*> LoaderNew::getUnitMap() { return unit_map; }
+map<int, Unit*> Loader::getUnitMap() { return unit_map; }
 
-ProvinceNew* LoaderNew::parseProvince() {
-	ProvinceNew* province = new ProvinceNew(getInt("id"), getString("name"));
+Province* Loader::parseProvince() {
+	Province* province = new Province(getInt("id"), getString("name"));
 	font_data font = Fonts::getFont(CONSOLAS_BOLD, 8);
 
 	parseCommon(province);
-	province->addFlag(TEXTURED);
 	province->setTexture(Image::getImage("data/generated/" + to_string(province->getID()) + "_province.png"));
 	province->setValue(getFloat("value"));
-	province->setText(new TextNew(province->getLocation(), font, Colour2(189, 195, 199, 150), province->getName()));
+	province->setText(new Text(province->getLocation(), font, Colour(189, 195, 199, 150), province->getName()));
 	// province->setTextOffset(province->getSize()[0] / 4, province->getSize()[1] / 4);
 	province_map[province->getID()] = province;
 
@@ -158,58 +156,53 @@ ProvinceNew* LoaderNew::parseProvince() {
 	return province;
 }
 
-UnitNew* LoaderNew::parseUnit() {
-	UnitNew* unit = new UnitNew(getInt("id"), nullptr, getInt("size"), getFloat("skill"), province_map[getInt("province")]);
+Unit* Loader::parseUnit() {
+	Unit* unit = new Unit(getInt("id"), nullptr, getInt("size"), getFloat("skill"), province_map[getInt("province")]);
 	parseCommon(unit);
 
-	unit->location.x -= 1; // Offset x by -1 (sidescroller levelling)
-
 	font_data font = Fonts::getFont(CONSOLAS_BOLD, 8);
-	unit->setText(new TextNew(unit->getLocation(), font, Colour2(189, 195, 199, 250), unit->getName()));
+	unit->setText(new Text(unit->getLocation(), font, Colour(189, 195, 199, 250), unit->getName()));
 	unit->setTextOffset(0, -0.0025);
-	unit->addFlag(UNIT);
+	unit->location.x -= 1; // Offset x by -1 (sidescroller levelling)
 
 	unit_map[getInt("id")] = unit;
 	return unit;
 }
 
-NationNew* LoaderNew::parseNation() {
+NationNew* Loader::parseNation() {
 	NationNew* nation = new NationNew(getInt("id"), getString("name"), province_map[getInt("capital")]);
 	parseCommon(nation);
 
 	for (const auto& element : getArray("provinces")) {
-		ProvinceNew* province = province_map[(int)element];
+		Province* province = province_map[(int)element];
 		if (province == nullptr) continue;
 
-		short* colour = rgb(getString("colour"));
-		nation->setColour(Colour2::HexToRGB(getString("colour"), getFloat("alpha")));
-
+		nation->setColour(Colour::HexToRGB(getString("colour"), getFloat("alpha")));
 		nation->addProvince(province);
 		province->setColour(nation->getColour());
-
-		info(ss << "Assigned province '" << province->getName() << "' (" << province->getID() << ") to nation '" << nation->getName() << "' (" << nation->getID() << ")");
+		log_t("Assigned province '", province->getName(), "' (", province->getID(), ") to nation '", nation->getName(), "' (", nation->getID(), ")");
 	}
 
 	for (const auto& element : getArray("units")) {
-		UnitNew* unit = unit_map[(int)element];
+		Unit* unit = unit_map[(int)element];
 		if (unit == nullptr) continue;
 		nation->addUnit(unit);
 		unit->setColour(nation->getColour());
-		info(ss << "Assigned unit '" << unit->getName() << "' (" << unit->getID() << ") to nation '" << nation->getName() << "' (" << nation->getID() << ")");
+		log_t("Assigned unit '", unit->getName(), "' (", unit->getID(), ") to nation '", nation->getName(), "' (", nation->getID(), ")");
 	}
 
 	nation_map[getInt("id")] = nation;
 	return nation;
 }
 
-string LoaderNew::getVariable(string var) {
+string Loader::getVariable(string var) {
 	auto target_value = ldata.find("variables");
 	if (target_value == ldata.end()) return "";
 	json vars = ldata["variables"];
 	return vars[var];
 }
 
-string LoaderNew::getString(string key, string def) {
+string Loader::getString(string key, string def) {
 	if (properties.find(key) != properties.end()) {
 		string value = properties[key];
 		if (value[0] == 38) return getVariable(value.erase(0, 1)); // '&'
@@ -218,31 +211,30 @@ string LoaderNew::getString(string key, string def) {
 	return !def.empty() ? def : (string)DEFAULTS[key];
 }
 
-int LoaderNew::getInt(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
+int Loader::getInt(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
 
-float LoaderNew::getFloat(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
+float Loader::getFloat(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
 
-json::array_t LoaderNew::getArray(string key) {
+json::array_t Loader::getArray(string key) {
 	auto target_value = properties.find(key);
 	return target_value != properties.end() && target_value.value().is_array() ? properties[key] : DEFAULTS[key];
 }
 
-Level2* LoaderNew::load(string f, vector <MoveableNew*>* q, vector<TextNew*>* t, int identifier) {
-	Level2* level = new Level2();
+Level* Loader::load(string f, vector <Moveable*>* q, vector<Text*>* t, int identifier) {
+	Level* level = new Level();
 	ifstream level_file(f);
 	json level_data = json::parse(level_file);
 
-	info(ss << "Loading level... " << f << " [" << "PLACEHOLDER TEXT" << "]");
+	log_t("Loading level... " + f + " [" + "PLACEHOLDER TEXT" + "]");
 
-	MoveableNew* background = new MoveableNew(Vector2(), Vector2(1.0, 1.0),
-		Colour2::HexToRGB(level_data["background"], level_data["background_alpha"]), 
-		Colour2::HexToRGB(level_data["alt_background"], level_data["alt_background_alpha"]));
+	Moveable* background = new Moveable(Vector2(), Vector2(1.0, 1.0),
+		Colour::HexToRGB(level_data["background"], level_data["background_alpha"]), 
+		Colour::HexToRGB(level_data["alt_background"], level_data["alt_background_alpha"]));
 	background->addFlag(UNEDITABLE);
 	background->setName("Background " + to_string(identifier));
 
 	auto target_value = level_data.find("image");
 	if (target_value != level_data.end()) {
-		background->addFlag(TEXTURED);
 		background->setTexture(Image::getImage(level_data["image"]));
 	}
 
@@ -255,14 +247,11 @@ Level2* LoaderNew::load(string f, vector <MoveableNew*>* q, vector<TextNew*>* t,
 
 		if (type == "COLLIDABLE") {
 			level->objects.push_back(parseCollidable());
-		}
-		else if (type == "QUAD") {
+		} else if (type == "QUAD") {
 			level->objects.push_back(parseCustom());
-		}
-		else if (type == "MOVEABLE") {
+		} else if (type == "MOVEABLE") {
 			level->objects.push_back(parseMoveable());
-		}
-		else if (type == "CIRCLE") {
+		} else if (type == "CIRCLE") {
 			level->objects.push_back(parseCircle());
 		}
 		/*
@@ -271,23 +260,18 @@ Level2* LoaderNew::load(string f, vector <MoveableNew*>* q, vector<TextNew*>* t,
 		}*/
 		else if (type == "TEXT") {
 			level->text_objects.push_back(parseText());
-		}
-		else if (type == "SLIDER") {
+		} else if (type == "SLIDER") {
 			level->objects.push_back(parseSlider());
-		}
-		
-		else if (type == "PROVINCE") {
-			ProvinceNew* province = parseProvince();
+		} else if (type == "PROVINCE") {
+			Province* province = parseProvince();
 			province->addFlag(PROVINCE);
 			level->objects.push_back(province);
 			// level->text_objects.push_back(province->getText());
-		}
-		else if (type == "UNIT") {
-			UnitNew* unit = parseUnit();
+		} else if (type == "UNIT") {
+			Unit* unit = parseUnit();
 			level->objects.push_back(unit);
 			level->text_objects.push_back(unit->getText());
-		}
-		else if (type == "NATION") {
+		} else if (type == "NATION") {
 			NationNew* nation = parseNation();
 			level->objects.push_back(nation);
 		}
@@ -307,7 +291,7 @@ Level2* LoaderNew::load(string f, vector <MoveableNew*>* q, vector<TextNew*>* t,
 		}
 	}
 
-	info(ss << "Finished parsing " << level->objects.size() << " object(s).");
+	log_t("Finished parsing ", level->objects.size(), " object(s).");
 	level_file.close();
 	return level;
 }

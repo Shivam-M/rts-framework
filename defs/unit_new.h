@@ -4,7 +4,7 @@ class NationNew;
 
 #include "../assets/text_new.h"
 
-class UnitNew: public MoveableNew {
+class Unit: public Moveable {
 	enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };
 
 private:
@@ -15,16 +15,16 @@ private:
 	int location_[2] = { 0, 0 };
 	Vector2 _location = Vector2(0, 0);
 	NationNew* nation_ = nullptr;
-	ProvinceNew* province_ = nullptr;
-	ProvinceNew* target_province_ = nullptr;
-	vector<ProvinceNew*> travel_path_;
-	UnitNew* enemy_unit_ = nullptr;
+	Province* province_ = nullptr;
+	Province* target_province_ = nullptr;
+	vector<Province*> travel_path_;
+	Unit* enemy_unit_ = nullptr;
 	UNIT_STATE state_ = NORMAL;
 
 public:
-	UnitNew(int identifier, NationNew* nation, int size, float skill = 1.00, ProvinceNew* province = nullptr) :
+	Unit(int identifier, NationNew* nation, int size, float skill = 1.00, Province* province = nullptr) :
 		identifier_(identifier), nation_(nation), size_(size), skill_factor_(skill) {
-		setProvince(province); addFlag(TEXTURED); setTexture(Image::getImage("images/unit.png")); MoveableNew::setSize(0.075, 0.10);
+		setProvince(province); addFlag(TEXTURED | UNIT); setTexture(Image::getImage("images/unit.png")); Moveable::setSize(0.075, 0.10);
 	}
 
 	void setID(int identifier) { identifier_ = identifier; }
@@ -42,17 +42,17 @@ public:
 	UNIT_STATE getState() { return state_; }
 	void setState(UNIT_STATE state) { state_ = state; }
 
-	ProvinceNew* getProvince() { return province_; }
-	void setProvince(ProvinceNew* province) {
+	Province* getProvince() { return province_; }
+	void setProvince(Province* province) {
 		province_ = province;
 	}
 
-	ProvinceNew* getTarget() { return target_province_; }
-	void setTarget(ProvinceNew* province) { target_province_ = province; }
+	Province* getTarget() { return target_province_; }
+	void setTarget(Province* province) { target_province_ = province; }
 
-	vector<ProvinceNew*> getPath() { return travel_path_; }
+	vector<Province*> getPath() { return travel_path_; }
 
-	void setPath(vector<ProvinceNew*> path) {
+	void setPath(vector<Province*> path) {
 		travel_path_ = path;
 		setTarget(travel_path_.at(0));
 		setState(TRAVELLING);
@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	void initiateBattle(UnitNew* unit) {
+	void initiateBattle(Unit* unit) {
 		setState(FIGHTING);
 		enemy_unit_ = unit;
 	}

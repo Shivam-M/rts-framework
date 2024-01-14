@@ -1,13 +1,13 @@
 #include "circle_new.h"
 
-CircleNew::CircleNew() {
-	// MoveableNew();
+Circle::Circle() {
+	// Moveable();
 	name = "Circle";
 	addFlag(CIRCLE);
 }
 
-CircleNew::CircleNew(Vector2 loc, Colour2 col, float radius) {
-	CircleNew();
+Circle::Circle(Vector2 loc, Colour col, float radius) {
+	Circle();
 	location = loc;
 	colour = col;
 	radius_ = radius;

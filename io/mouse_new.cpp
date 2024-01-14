@@ -1,18 +1,18 @@
 #include "mouse_new.h"
 #include <cmath>
 
-GameNew* MouseNew::game = nullptr;
-MouseNew::MouseNew(GameNew* instance) { MouseNew::game = instance; }
+Game* Mouse::game = nullptr;
+Mouse::Mouse(Game* instance) { Mouse::game = instance; }
 
 static bool within(Vector2 location, Vector2 size, Vector2 point) {
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
-void MouseNew::scroll_callback(GLFWwindow* window, double x, double y) {
+void Mouse::scroll_callback(GLFWwindow* window, double x, double y) {
 	game->render.scale += 0.05 * y;
 }
 
-void MouseNew::callback(GLFWwindow* window, int button, int action, int mods) {
+void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 	double x, y;
 	Vector2 cursor;
 	Vector2 resolution = game->render.resolution;
@@ -32,9 +32,9 @@ void MouseNew::callback(GLFWwindow* window, int button, int action, int mods) {
 			game->selected_object = nullptr;
 			game->t_Notification.setContent("");
 
-			vector<MoveableNew*> over_objects;
+			vector<Moveable*> over_objects;
 			float min_distance = 100;
-			for (MoveableNew* moveable: game->objects)
+			for (Moveable* moveable: game->objects)
 				if (!(moveable->getFlags() & UNEDITABLE || moveable->getFlags() & FIXED_POS)) {
 					Vector2 location = moveable->getLocation(), size = moveable->getSize();
 					if (within(location, size, cursor)) {

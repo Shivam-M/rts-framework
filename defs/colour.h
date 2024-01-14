@@ -49,24 +49,24 @@ class Vector4 {
 		}
 };
 
-class Colour2: public Vector4 { 
+class Colour: public Vector4 { 
 	public:
-		static Colour2 HexToRGB(string hex, float alpha = 1) { 
+		static Colour HexToRGB(string hex, float alpha = 1) { 
 			int r, g, b;
 			sscanf_s(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
-			return Colour2(r, g, b, alpha * 255); 
+			return Colour(r, g, b, alpha * 255); 
 		}
 		static string RGBToHex(Vector4 rgb) { return ""; }
 
-		Colour2(const Vector4& vec) : Vector4(vec) {}
+		Colour(const Vector4& vec) : Vector4(vec) {}
 
-		Colour2() {}
+		Colour() {}
 
-		Colour2(string hex) {
-			*this = HexToRGB(hex);
+		Colour(string hex, float alpha = 1) {
+			*this = HexToRGB(hex, alpha);
 		}
 
-		Colour2(float r, float g, float b, float a = 255) {
+		Colour(float r, float g, float b, float a = 255) {
 			setX(r);
 			setY(g);
 			setZ(b);

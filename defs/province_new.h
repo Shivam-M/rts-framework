@@ -2,7 +2,7 @@
 
 #include "../assets/text_new.h"
 
-class ProvinceNew : public MoveableNew {
+class Province : public Moveable {
 	enum TERRAIN { FLAT, MOUNTAIN, FOREST, NUM_TERRAINS };
 	enum PROV_STATE { NORMAL, BESIEGING, UNDER_CONTROL };
 
@@ -13,13 +13,13 @@ private:
 
 	string name_ = "Generic Province";
 	string name = "Generic Province";
-	Colour2 colour_ = Colour2(255, 255, 255);
+	Colour colour_ = Colour(255, 255, 255);
 	TERRAIN terrain_ = FLAT;
 	PROV_STATE state_ = NORMAL;
-	vector<ProvinceNew*> neighbours_;
+	vector<Province*> neighbours_;
 
 public:
-	ProvinceNew(int identifier, string name) : identifier_(identifier), name_(name) {}
+	Province(int identifier, string name) : identifier_(identifier), name_(name) {}
 
 	void setID(int identifier) { identifier_ = identifier; }
 	int getID() { return identifier_; }
@@ -37,15 +37,15 @@ public:
 	void setState(PROV_STATE state) { state_ = state; }
 	PROV_STATE getState() { return state_; }
 
-	vector<ProvinceNew*> getNeighbours() {
+	vector<Province*> getNeighbours() {
 		return neighbours_;
 	}
 
-	void addNeighbour(ProvinceNew* neighbour) {
+	void addNeighbour(Province* neighbour) {
 		neighbours_.push_back(neighbour);
 	}
 
-	bool isNeighbour(ProvinceNew* other) {
+	bool isNeighbour(Province* other) {
 		return find(neighbours_.begin(), neighbours_.end(), other) != neighbours_.end();
 	}
 
@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	bool operator==(const ProvinceNew& other) const {
+	bool operator==(const Province& other) const {
 		return identifier_ == other.identifier_ && name_ == other.name_;
 	}
 };

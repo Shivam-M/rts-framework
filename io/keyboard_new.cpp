@@ -1,9 +1,9 @@
 #include "keyboard_new.h"
 
-GameNew* KeyboardNew::game = nullptr;
-KeyboardNew::KeyboardNew(GameNew* instance) { KeyboardNew::game = instance; }
+Game* Keyboard::game = nullptr;
+Keyboard::Keyboard(Game* instance) { Keyboard::game = instance; }
 
-void KeyboardNew::movement(int direction, int action) {
+void Keyboard::movement(int direction, int action) {
 	switch (direction) {
 		case GLFW_KEY_LEFT:
 			return;
@@ -14,7 +14,7 @@ void KeyboardNew::movement(int direction, int action) {
 	}
 }
 
-void KeyboardNew::callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void Keyboard::callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (GLFW_KEY_RIGHT >= key && key <= GLFW_KEY_UP)			movement(key, action);
 
 	if (action == GLFW_RELEASE) {

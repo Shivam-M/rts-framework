@@ -5,7 +5,7 @@
 #include "game_new.h"
 
 int main(int argc, char** argv) {
-	GameNew game = GameNew(argc, argv);
+	Game game = Game(argc, argv);
 	return game.gameLoop();
 }
 

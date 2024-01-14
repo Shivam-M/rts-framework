@@ -1,10 +1,10 @@
 #include "collidable_new.h"
 
-CollidableNew::CollidableNew() {
+Collidable::Collidable() {
 	addFlag(COLLIDABLE);
 }
 
-void CollidableNew::update(float modifier) {
+void Collidable::update(float modifier) {
 	common(modifier);
 
 	if (getFlags() & MOVING) {

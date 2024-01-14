@@ -1,16 +1,16 @@
 #pragma once
 
-class CircleNew;
-class TextNew;
+class Circle;
+class Text;
 
 using namespace std;
 using namespace glfreetype;
 
-class RenderNew {
+class Render {
 	private:
 		GLFWwindow* window_;
-		vector<MoveableNew*>* objects_;
-		vector<TextNew*>* text_objects_;
+		vector<Moveable*>* objects_;
+		vector<Text*>* text_objects_;
 		bool fullscreen_ = false;
 		float render_level_ = 0;
 
@@ -20,25 +20,25 @@ class RenderNew {
 		float scale = 1.00;
 		float draw_times[3];
 
-		RenderNew() {}
-		RenderNew(GLFWwindow*, vector<MoveableNew*>*, vector<TextNew*>*);
+		Render() {}
+		Render(GLFWwindow*, vector<Moveable*>*, vector<Text*>*);
 
-		void drawQuad(Vector2 location, Vector2 size, Colour2 colour, Colour2 gradient);
+		void drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient);
 
-		void drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour2 colour, bool flip = false);
+		void drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour colour, bool flip = false);
 
-		void drawCurvedQuad(Vector2 location, Vector2 size, Colour2 colour, Colour2 gradient, float radius = 0.025);
+		void drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient, float radius = 0.025);
 
-		void drawCustom(vector<Vector2> points, Colour2 colour, Colour2 gradient);
+		void drawCustom(vector<Vector2> points, Colour colour, Colour gradient);
 
-		void drawText(Vector2 location, string message, font_data font, Colour2 colour);
+		void drawText(Vector2 location, string message, font_data font, Colour colour);
 
-		void drawCircle(CircleNew*);
-		void drawCircle(Vector2 location, Colour2 colour, Colour2 gradient, float radius, float generality);
+		void drawCircle(Circle*);
+		void drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality);
 
 		void renderWindow();
 		void toggleFullscreen();
 		void normaliseCoordinates(Vector2* location);
 
-		float setRenderLevel(float level) { render_level_ = level; }
+		void setRenderLevel(float level) { render_level_ = level; }
 };

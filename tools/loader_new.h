@@ -8,37 +8,37 @@ using namespace std;
 #include "../defs/colour.h"
 #include "../tools/fonts.h"
 
-class ProvinceNew;
+class Province;
 class NationNew;
-class UnitNew;
-class MoveableNew;
-class CircleNew;
-class TextNew;
-class CollidableNew;
+class Unit;
+class Moveable;
+class Circle;
+class Text;
+class Collidable;
 
-struct Level2 {
+struct Level {
 	Vector2 player_position;
-	vector<MoveableNew*> objects;
-	vector<TextNew*> text_objects;
+	vector<Moveable*> objects;
+	vector<Text*> text_objects;
 };
 
-class LoaderNew {
+class Loader {
 	private:
 		// static Fire* parseFire();
 		// static Stars* parseStars();
-		static CollidableNew* parseCollidable();
-		static CollidableNew* parseCustom();
-		static MoveableNew* parseMoveable();
+		static Collidable* parseCollidable();
+		static Collidable* parseCustom();
+		static Moveable* parseMoveable();
 		// static Square* parseSquare();
-		static CircleNew* parseCircle();
+		static Circle* parseCircle();
 		static string getVariable(string);
-		static TextNew* parseText();
-		static CollidableNew* parseSlider();
-		static ProvinceNew* parseProvince();
+		static Text* parseText();
+		static Collidable* parseSlider();
+		static Province* parseProvince();
 		static NationNew* parseNation();
-		static UnitNew* parseUnit();
+		static Unit* parseUnit();
 
-		static void parseCommon(MoveableNew*);
+		static void parseCommon(Moveable*);
 
 		static json::array_t getArray(string);
 		static float getFloat(string);
@@ -48,8 +48,8 @@ class LoaderNew {
 		static json ldata;
 
 	public:
-		static Level2* load(string, vector<MoveableNew*>*, vector<TextNew*>*, int);
-		static map<int, ProvinceNew*> getProvinceMap();
+		static Level* load(string, vector<Moveable*>*, vector<Text*>*, int);
+		static map<int, Province*> getProvinceMap();
 		static map<int, NationNew*> getNationMap();
-		static map<int, UnitNew*> getUnitMap();
+		static map<int, Unit*> getUnitMap();
 };

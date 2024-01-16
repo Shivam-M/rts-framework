@@ -76,7 +76,7 @@ void Console::entry(int character) {
 
 void Console::feedback(string message) {
 	feedback_text.setContent(message);
-	info(message);
+	log_t(message);
 }
 
 void Console::update(string message) {

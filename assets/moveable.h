@@ -10,13 +10,15 @@ using namespace std;
 class Text;
 
 struct ColourShift {
-	ColourShift(Colour first, Colour second) : first_colour(first), second_colour(second) {}
+	ColourShift() {};
+	ColourShift(Colour first, Colour second) : first_colour(first), second_colour(second) {
+		if (first < second) swap(first_colour, second_colour);
+	}
 	enum DIRECTION { UP, DOWN };
 	DIRECTION direction = DOWN;
 	Colour first_colour, second_colour;
 	bool loop = true, fade_to_death = false;
-	float speed = 1.0;
-	short alpha_limits[2] = { 0, 255 };
+	float speed = 0.1f;
 };
 
 class Moveable {
@@ -37,6 +39,7 @@ class Moveable {
 		Vector2 text_offset;
 		Vector2 size;
 
+		ColourShift colour_shift;
 		Colour colour = Colour("FFFFFF");
 		Colour alternate_colour = colour;
 		Colour gradient_colour = colour;
@@ -78,7 +81,8 @@ class Moveable {
 		virtual void setLocation(float x, float y) { location.set(x, y); }
 		virtual void setSize(float x, float y) { size.set(x, y); }
 
-		void setColour(Colour col) { colour = col; }
+		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; }
+		void setColour(Colour col) { colour = col; default_colour = col; }
 		void setDefaultColour(Colour col) { alternate_colour = col; }
 		void setAlternateColour(Colour col) { default_colour = col; }
 		void setGradientColour(Colour col) { gradient_colour = col; }
@@ -88,6 +92,9 @@ class Moveable {
 		void setColourShifting(bool state) { shifting_colour = state; }
 		void setDownwardsShifting(bool state) { shifting_downwards = state; }
 		void shiftColour(float speed = 0.01);
+		void shiftColour2();
+		virtual void onHover() { colour.w_ *= 1.5; }
+		virtual void onHoverStop() { resetColour(); }
 
 		void loadScript(string script_path);
 

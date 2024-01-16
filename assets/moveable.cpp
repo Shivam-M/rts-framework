@@ -1,4 +1,5 @@
 #include "moveable.h"
+#include <cmath>
 
 /*
 void Moveable::setAlphaShifting(bool state, bool oneway) {
@@ -29,6 +30,23 @@ void Moveable::shiftColour(int speed) {
 	}
 }
 */
+
+void Moveable::shiftColour2() {
+	Colour change = colour_shift.first_colour - colour_shift.second_colour;
+	if (colour_shift.direction == ColourShift::UP) {
+		colour = colour + (change * colour_shift.speed);
+		if (colour >= max(colour_shift.first_colour, colour_shift.second_colour)) {
+			colour = max(colour_shift.first_colour, colour_shift.second_colour);
+			colour_shift.direction = ColourShift::DOWN;
+		}
+	} else {
+		colour = colour - (change * colour_shift.speed);
+		if (colour <= min(colour_shift.first_colour, colour_shift.second_colour)) {
+			colour = min(colour_shift.first_colour, colour_shift.second_colour);
+			colour_shift.direction = ColourShift::UP;
+		}
+	}
+}
 
 void Moveable::shiftColour(float speed) {
 	if (getFlags() & TEXT) {
@@ -74,8 +92,7 @@ void Moveable::tickTimer(float modifier) {
 }
 
 void Moveable::loadScript(string path) {
-	stringstream ss;
-	info(ss << "Loading script... " << path << " [" << getName() << "]");
+	log_t("Loading script... " + path + " [" + getName() + "]");
 	string line;
 	fstream in(path);
 	while (getline(in, line)) if (line.size() > 0) script.push_back(line);
@@ -95,6 +112,10 @@ void Moveable::update(float modifier) {
 
 	location.x += velocity.x;
 	location.y += velocity.y;
+
+	if (getFlags() & PROVINCE) {
+		shiftColour2();
+	}
 
 	alternate_colour = Colour(0, 0, 0, 0);
 	// shiftColour(0.125f);

@@ -8,9 +8,9 @@ using namespace glfreetype;
 
 class Render {
 	private:
-		GLFWwindow* window_;
-		vector<Moveable*>* objects_;
-		vector<Text*>* text_objects_;
+		GLFWwindow* window_ = nullptr;
+		vector<Moveable*>* objects_ = nullptr;
+		vector<Text*>* text_objects_ = nullptr;
 		bool fullscreen_ = false;
 		float render_level_ = 0;
 
@@ -18,7 +18,7 @@ class Render {
 		Vector2 resolution = { 1280, 720 };
 		Vector2 offsets;
 		float scale = 1.00;
-		float draw_times[3];
+		float draw_times[3]{};
 
 		Render() {}
 		Render(GLFWwindow*, vector<Moveable*>*, vector<Text*>*);

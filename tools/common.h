@@ -7,6 +7,12 @@
 
 #include <GLFW/glfw3.h>
 
+#define CON_RED		"\033[1;91m"
+#define CON_YELLOW	"\033[1;33m"
+#define CON_CYAN	"\033[1;32m"
+#define CON_LBLUE	"\033[1;36m"
+#define CON_NORMAL  "\033[0m"
+
 struct Texture {
 	GLuint data;
 	int width, height, composition;
@@ -18,44 +24,28 @@ enum {
 	RING		= 1 << 1,
 	CIRCLE		= 1 << 2,
 	SQUARE		= 1 << 3,
-	FIRE		= 1 << 5,
-	STARS		= 1 << 6,
-	COLLIDABLE	= 1 << 7,
-	PHYSICS		= 1 << 8,
-	UNEDITABLE	= 1 << 9,
-	TEXT		= 1 << 10,
-	ENABLED		= 1 << 11,
-	PLAYER		= 1 << 12,
-	ENEMY		= 1 << 13,
-	MOVING		= 1 << 14,
-	BUTTON		= 1 << 15,
-	SELECTED	= 1 << 16,
-	QUAD		= 1 << 17,
-	GHOST		= 1 << 18,
-	TEXTURED	= 1 << 19,
-	CURVED		= 1 << 20,
-	DISABLED	= 1 << 21,
-	FIXED_POS	= 1 << 22,
-	BOUND		= 1 << 23,
-	PROVINCE	= 1 << 24,
-	UNIT		= 1 << 25,
-	CUSTOM		= 1 << 26
+	FIRE		= 1 << 4,
+	STARS		= 1 << 5,
+	COLLIDABLE	= 1 << 6,
+	UNEDITABLE	= 1 << 7,
+	TEXT		= 1 << 8,
+	ENABLED		= 1 << 9,
+	PLAYER		= 1 << 10,
+	ENEMY		= 1 << 11,
+	MOVING		= 1 << 12,
+	BUTTON		= 1 << 13,
+	SELECTED	= 1 << 14,
+	QUAD		= 1 << 15,
+	TEXTURED	= 1 << 16,
+	CURVED		= 1 << 17,
+	DISABLED	= 1 << 18,
+	FIXED_POS	= 1 << 19,
+	BOUND		= 1 << 20,
+	PROVINCE	= 1 << 21,
+	UNIT		= 1 << 22,
+	CUSTOM		= 1 << 23,
+	PANEL		= 1 << 24
 };
-
-enum {
-	DEFAULT = 0,
-	PLANET = 1
-};
-
-void info(std::ostream&);
-void info(std::string);
-void info(int);
-void info(double);
-void info_w(std::string);
-void info_i(std::string);
-void info_e(std::string);
-
-short* rgb(std::string);
  
 void log_impl(std::ostream& os);
 
@@ -73,7 +63,7 @@ void log_t(Args&&... args) {
 	tm tm;
 	localtime_s(&tm, &t);
 
-	std::cout << std::put_time(&tm, "\033[1;36m[%d-%m-%Y %H:%M:%S] \033[0m- ");
-
+	std::cout << std::put_time(&tm, "\033[1;91m[%d-%m-%Y %H:%M:%S] \033[0m- ");
 	log_impl(std::cout, std::forward<Args>(args)...);
 }
+

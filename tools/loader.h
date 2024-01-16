@@ -45,7 +45,7 @@ class Loader {
 		static int getInt(string);
 		static string getString(string, string = "");
 
-		static json ldata;
+		static json level_data;
 
 	public:
 		static Level* load(string, vector<Moveable*>*, vector<Text*>*, int);

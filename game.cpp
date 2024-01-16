@@ -18,9 +18,6 @@ using namespace std;
 
 Game* Game::game = nullptr;
 
-static void loadProvinceNeighbours(string);
-static void loadProvinceAttributes(string);
-
 Game::Game(int argc, char** argv) {
 	float launch_time = glfwGetTime();
 	game = this;
@@ -95,7 +92,7 @@ Game::Game(int argc, char** argv) {
 	glfwSetMouseButtonCallback(window, mouse->callback);
 	glfwSetScrollCallback(window, mouse->scroll_callback);
 
-	log_t("Took", glfwGetTime() - launch_time, "seconds to load the game.");
+	log_t("Took " CON_RED, glfwGetTime() - launch_time,  " seconds " CON_NORMAL "to load the game.");
 }
 
 void Game::setupRTSGame() {
@@ -121,7 +118,7 @@ void loadProvinceNeighbours(string neighbours) {
 	FILE* neighbours_file;
 	fopen_s(&neighbours_file, neighbours.c_str(), "r");
 	if (neighbours_file == nullptr) {
-		log_t("Error loading province neighbour pairs file.");
+		log_t(CON_RED "Error loading province neighbour pairs file." CON_NORMAL);
 		return;
 	}
 
@@ -131,7 +128,7 @@ void loadProvinceNeighbours(string neighbours) {
 		Province* other_province = Loader::getProvinceMap()[other_id];
 		province->addNeighbour(other_province);
 		other_province->addNeighbour(province);
-		log_t("Assigned province '", province->getName(), "' (", province->getID(), ") as a neighbour with '", other_province->getName(), "' (", other_province->getID(), ")");
+		log_t("Assigned province " CON_RED, province->getName(), CON_NORMAL " (" CON_RED, province->getID(), CON_NORMAL ") as a neighbour with " CON_RED, other_province->getName(), CON_NORMAL " (" CON_RED, other_province->getID(), CON_NORMAL ")");
 	}
 	fclose(neighbours_file);
 }
@@ -144,15 +141,25 @@ void loadProvinceAttributes(string attributes) {
 		return;
 	}
 
+
 	int id;
 	float x, y, w, h, xoffset = -0.2, yoffset = -0.1;
 	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
-		log_t("Loading map position data for province ID... #" + to_string(id));
 		Loader::getProvinceMap()[id]->setSize(w, h);
 		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
-		Loader::getProvinceMap()[id]->setColour(Colour(0, 0, 0, 80));
+		// Loader::getProvinceMap()[id]->setColour(Colour(0, 0, 0, 80));
+		// Colour colour = Loader::getProvinceMap()[id]->getColour();
+		// colour = colour / 1.25;
+		// colour.setW(100);
+		// Loader::getProvinceMap()[id]->setColour(colour);
+
+		ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Colour(240, 240, 240, 240));
+		colourshift.speed = 0.01f;
+		// Loader::getProvinceMap()[id]->setColourShift(colourshift);
+
 		//  Loader::getProvinceMap()[id]->loadScript("data/scripts/anim.txt");
 	}
+	log_t("Loaded map position data for all provinces");
 	fclose(dimensions_file);
 }
 
@@ -255,10 +262,43 @@ void Game::updateStatistics(int f, int u) {
 	t_PlayerLocation.setContent("Day #" + to_string(elapsed_days));
 	t_PlayerVelocity.setContent("Money: 0.00");
 	t_PlayerAcceleration.setContent("Playing as: " + nation_string);
-	info(ss << "FPS: " << f << " \tUpdates: " << u << " \tGame time: " << update_time_ << "s \t[" << (int)(1 / update_time_) << "]");
+	log_t("FPS: ", f, " \tUpdates: ", u, " \tGame time: ", update_time_, "s \t[", (int)(1 / update_time_), "]");
+}
+
+static bool within(Vector2 location, Vector2 size, Vector2 point) {
+	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
 void Game::updateProperties() {
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+	Vector2 cursor(x / game->render.resolution.x, y / game->render.resolution.y);
+
+	vector<Moveable*> over_objects;
+	Moveable* obj = nullptr;
+	float min_distance = 100;
+	for (Moveable* moveable : game->objects) {
+
+		moveable->onHoverStop();
+		
+		if (!(moveable->getFlags() & UNEDITABLE || moveable->getFlags() & FIXED_POS)) {
+			Vector2 location = moveable->getLocation(), size = moveable->getSize();
+			if (within(location, size, cursor)) {
+				Vector2 centre = moveable->getCentre();
+				float distance = sqrt(pow(centre.x - cursor.x, 2) + pow(centre.y - cursor.y, 2));
+				if (distance < min_distance) {
+					min_distance = distance;
+					obj = moveable;
+				}
+			}
+		}
+	}
+
+	if (obj != nullptr)
+		obj->onHover();
+
+
+
 	if (selected_object) {
 		if (selected_object->getFlags() & PROVINCE) {
 			selected_object->setColour(Colour(255, 255, 0, 80));
@@ -398,6 +438,6 @@ int Game::gameLoop() {
 	cout << "Average text time: " << average * 1000 << endl;
 #endif
 
-	info(ss << "Average FPS after " << frame_count << " seconds: " << average_frames);
+	log_t("Average FPS after ", frame_count, " seconds: ", average_frames);
 	return 0;
 }

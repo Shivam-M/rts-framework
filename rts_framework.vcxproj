@@ -134,7 +134,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="assets\collidable.cpp" />
+    <ClCompile Include="assets\general_tooltip.h" />
     <ClCompile Include="assets\moveable.cpp" />
+    <ClCompile Include="assets\panel.cpp" />
     <ClCompile Include="assets\text.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="io\keyboard.cpp" />
@@ -152,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="assets\collidable.h" />
     <ClInclude Include="assets\moveable.h" />
+    <ClInclude Include="assets\panel.h" />
     <ClInclude Include="assets\text.h" />
     <ClInclude Include="defs\colour.h" />
     <ClInclude Include="defs\nation.h" />

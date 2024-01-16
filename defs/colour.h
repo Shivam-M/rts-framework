@@ -38,8 +38,23 @@ class Vector4 {
 
 		Vector4 operator/(const Vector4& other) const { return Vector4(x_ / other.x_, y_ / other.y_, z_ / other.z_, w_ / other.w_); }
 		Vector4 operator/(const float& number) const { return Vector4(x_ / number, y_ / number, z_ / number, w_ / number); }
+
 		bool operator==(const Vector4& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_ && w_ == other.w_; }
 		bool operator!=(const Vector4& other) const { return x_ != other.x_ || y_ != other.y_ || z_ != other.z_ || w_ != other.w_; }
+
+		bool operator<(const Vector4& other) const { return magnitude() < other.magnitude(); }
+		bool operator<=(const Vector4& other) const { return magnitude() <= other.magnitude(); }
+
+		bool operator>(const Vector4& other) const { return magnitude() > other.magnitude(); }
+		bool operator>=(const Vector4& other) const { return magnitude() >= other.magnitude(); }
+
+		/*
+		bool operator<(const Vector4& other) const { return x_ < other.x_ && y_ < other.y_ && z_ < other.z_ && w_ < other.w_; }
+		bool operator<=(const Vector4& other) const { return x_ <= other.x_ && y_ <= other.y_ && z_ <= other.z_ && w_ <= other.w_; }
+
+		bool operator>(const Vector4& other) const { return x_ > other.x_ && y_ > other.y_ && z_ > other.z_ && w_ > other.w_; }
+		bool operator>=(const Vector4& other) const { return x_ >= other.x_ && y_ >= other.y_ && z_ >= other.z_ && w_ >= other.w_; }
+		*/
 
 		float magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_); }
 

@@ -8,7 +8,7 @@
 #include "../shapes/circle.h"
 #include "../assets/collidable.h"
 
-json Loader::ldata;
+json Loader::level_data;
 
 const json DEFAULTS = {
 	{"colour",			"FFFFFF"},
@@ -28,6 +28,7 @@ const json DEFAULTS = {
 	{"font_custom",		0},
 	{"size",			10},
 	{"content",			"Sample Text"},
+	{"texture",			"NULL"},
 	{"variables",		nullptr},
 	{"image",			nullptr},
 	{"value",			0.10},
@@ -52,9 +53,9 @@ void Loader::parseCommon(Moveable* moveable) {
 	moveable->setSize(getFloat("width"), getFloat("height"));
 	moveable->setLocation(getFloat("x"), getFloat("y"));
 	moveable->setColour(Colour::HexToRGB(getString("colour"), (getFloat("alpha"))));
-	if (getString("alt_colour") != "") {
-		moveable->setColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
-	}
+	// if (getString("alt_colour") != "") {
+	// 	moveable->setGradientColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
+	// }
 }
 
 /*
@@ -109,7 +110,7 @@ Collidable* Loader::parseCustom() {
 	quad->addFlag(CUSTOM);
 	// quad->setPoints(points[0], points[1], points[2], points[3]);
 	// quad->setSize(abs(points[0][0] - points[1][0]), abs(points[0][1] - points[1][1])); // Temp
-	if (getString("texture", "NULL") != "NULL") {
+	if (getString("texture") != "NULL") {
 		quad->setTexture(Image::getImage(getString("texture")));
 	}
 	
@@ -118,10 +119,9 @@ Collidable* Loader::parseCustom() {
 
 Text* Loader::parseText() {
 	Text* text = new Text();
-	text->setColour(Colour::HexToRGB(getString("colour"), (getFloat("alpha"))));
+	parseCommon(text);
 	text->setContent(getString("content"));
 	text->setFont(Fonts::getFont(getString("font"), getInt( "size"), getInt("font_custom")));
-	text->setLocation(getFloat("x"), getFloat("y"));
 	return text;
 }
 
@@ -177,10 +177,10 @@ NationNew* Loader::parseNation() {
 		Province* province = province_map[(int)element];
 		if (province == nullptr) continue;
 
-		nation->setColour(Colour::HexToRGB(getString("colour"), getFloat("alpha")));
+		// nation->setColour(Colour::HexToRGB(getString("colour"), getFloat("alpha")));
 		nation->addProvince(province);
 		province->setColour(nation->getColour());
-		log_t("Assigned province '", province->getName(), "' (", province->getID(), ") to nation '", nation->getName(), "' (", nation->getID(), ")");
+		log_t("Assigned province " CON_RED, province->getName(), CON_NORMAL " (" CON_RED, province->getID(), CON_NORMAL ") to nation " CON_RED, nation->getName(), CON_NORMAL " (" CON_RED, nation->getID(), CON_NORMAL ")");
 	}
 
 	for (const auto& element : getArray("units")) {
@@ -188,7 +188,7 @@ NationNew* Loader::parseNation() {
 		if (unit == nullptr) continue;
 		nation->addUnit(unit);
 		unit->setColour(nation->getColour());
-		log_t("Assigned unit '", unit->getName(), "' (", unit->getID(), ") to nation '", nation->getName(), "' (", nation->getID(), ")");
+		log_t("Assigned unit " CON_RED, unit->getName(), CON_NORMAL " (" CON_RED, unit->getID(), CON_NORMAL ") to nation " CON_RED, nation->getName(), CON_NORMAL " (" CON_RED, nation->getID(), CON_NORMAL ")");
 	}
 
 	nation_map[getInt("id")] = nation;
@@ -196,9 +196,9 @@ NationNew* Loader::parseNation() {
 }
 
 string Loader::getVariable(string var) {
-	auto target_value = ldata.find("variables");
-	if (target_value == ldata.end()) return "";
-	json vars = ldata["variables"];
+	auto target_value = level_data.find("variables");
+	if (target_value == level_data.end()) return "";
+	json vars = level_data["variables"];
 	return vars[var];
 }
 
@@ -225,7 +225,7 @@ Level* Loader::load(string f, vector <Moveable*>* q, vector<Text*>* t, int ident
 	ifstream level_file(f);
 	json level_data = json::parse(level_file);
 
-	log_t("Loading level... " + f + " [" + "PLACEHOLDER TEXT" + "]");
+	log_t("Loading level... " CON_RED + f + CON_NORMAL " [" + CON_RED "PLACEHOLDER TEXT" CON_NORMAL + "]");
 
 	Moveable* background = new Moveable(Vector2(), Vector2(1.0, 1.0),
 		Colour::HexToRGB(level_data["background"], level_data["background_alpha"]), 
@@ -239,7 +239,7 @@ Level* Loader::load(string f, vector <Moveable*>* q, vector<Text*>* t, int ident
 	}
 
 	level->objects.push_back(background);
-	ldata = level_data;
+	level_data = level_data;
 
 	for (auto& el : level_data["objects"].items()) {
 		properties = el.value();

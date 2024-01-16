@@ -4,14 +4,13 @@
 #include "render.h"
 
 #define PI 3.14159265358979
-#define GLW_SMALL_ROUNDED_CORNER_SLICES 20 
+#define GLW_SMALL_ROUNDED_CORNER_SLICES 5 
 
 static Vector2 roundedCorners[GLW_SMALL_ROUNDED_CORNER_SLICES] = { {0} };
 
 static void createRoundedCorners(Vector2* corner_points, int num) {
-    float slice = PI / 2 / num;
-    float a = 0;
-    for (int i = 0; i < num; a += slice, ++i) corner_points[i].set(cosf(a), sinf(a));
+    float a = 0, slice = PI / 2 / num;
+    for (int i = 0; i < num; a += slice, i++) corner_points[i].set(cosf(a), sinf(a));
 }
 
 static void alignCoordinates(Vector2* location, Vector2* size) {
@@ -90,14 +89,14 @@ void Render::drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colou
     glDisable(GL_TEXTURE_2D);
     glBegin(GL_QUAD_STRIP);
 
-    for (int i = 0; i < GLW_SMALL_ROUNDED_CORNER_SLICES; ++i) {
+    for (int i = 0; i < GLW_SMALL_ROUNDED_CORNER_SLICES; i++) {
         glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
         glVertex2f(left + radius - radius * roundedCorners[i].x, bottom - radius + radius * roundedCorners[i].y);
         if (colour != gradient) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
         glVertex2f(left + radius - radius * roundedCorners[i].x, top + radius - radius * roundedCorners[i].y);
     }
 
-    for (int i = GLW_SMALL_ROUNDED_CORNER_SLICES - 1; i >= 0; --i) {
+    for (int i = GLW_SMALL_ROUNDED_CORNER_SLICES - 1; i >= 0; i--) {
         glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
         glVertex2f(right - radius + radius * roundedCorners[i].x, bottom - radius + radius * roundedCorners[i].y);
         if (colour != gradient) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());

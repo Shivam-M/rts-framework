@@ -56,6 +56,16 @@ public:
 		}
 	}
 
+	/*
+	void onHover() override {
+		
+	}
+
+	void onHoverCancel() {
+
+	}
+	*/
+
 	bool operator==(const Province& other) const {
 		return identifier_ == other.identifier_ && name_ == other.name_;
 	}

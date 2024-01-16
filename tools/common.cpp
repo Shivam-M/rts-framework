@@ -1,42 +1,5 @@
 #include "common.h"
 
-#define CON_RED		\033[1;91m
-#define CON_YELLOW	\033[1;33m
-#define CON_CYAN	\033[1;32m
-
-void info(std::ostream& out) {
-	std::stringstream ss;
-	ss << out.rdbuf();
-	info(ss.str());
-}
-
-void info(std::string s) {
-	auto t = std::time(nullptr);
-	struct tm tm;
-	localtime_s(&tm, &t);
-	std::cout << (std::put_time(&tm, "\033[1;36m[%d-%m-%Y %H:%M:%S] \033[0m- ")) << s << std::endl;
-}
-
-void info_i(std::string s) {
-	info("\033[0m[\033[1;32m*\033[0m] " + s);
-}
-
-void info_w(std::string s) {
-	info("\033[0m[\033[1;33m!\033[0m] " + s);
-}
-
-void info_e(std::string s) {
-	info("\033[0m[\033[1;91m!\033[0m] " + s);
-}
-
-void info(int i) {
-	info(std::to_string(i));
-}
-
-void info(double d) {
-	info(std::to_string(d));
-}
-
 void log_impl(std::ostream& os) {
 	os << std::endl;
 }

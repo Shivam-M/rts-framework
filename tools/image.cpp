@@ -40,7 +40,7 @@ void Image::loadMap(string path, string data) { // add cache
     unsigned char* image = stbi_load(path.c_str(), &width, &height, &channels, 3);
 
     if (image == nullptr) {
-        info_e("Error loading map image file.");
+        log_t("Error loading map image file.");
         return;
     }
 
@@ -48,19 +48,19 @@ void Image::loadMap(string path, string data) { // add cache
     fopen_s(&file, data.c_str(), "r");
 
     if (file == nullptr) {
-        info_e("Error loading map data file.");
+        log_t("Error loading map data file.");
         return;
     }
 
     ofstream output_file("data/generated/province_dimensions.txt", ios::trunc);
     if (!output_file.is_open()) {
-        info_e("Error loading province data output file.");
+        log_t("Error loading province data output file.");
         return;
     }
 
     int id, r, g, b;
     while (fscanf_s(file, "%d,%d,%d,%d", &id, &r, &g, &b) == 4) {
-        info_i("Extracting map image for province ID... #" + to_string(id));
+        log_t("Extracting map image for province ID... #", id);
         unsigned char target_colour[3] = { r, g, b };
         Rectangle rect;
         cropRectangle(image, width, height, target_colour, rect);
@@ -114,7 +114,7 @@ void Image::loadMap(string path, string data) { // add cache
 
 void Image::loadImage(string path) {
     if (images.count(path)) return;
-    info("Loading image... " + path);
+    log_t("Loading image... " CON_RED + path + CON_NORMAL);
     Texture* texture = new Texture();
 
     glGenTextures(1, &texture->data);

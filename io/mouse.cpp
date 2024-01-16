@@ -17,14 +17,11 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 	Vector2 cursor;
 	Vector2 resolution = game->render.resolution;
 
-	glfwGetCursorPos(window, &x, &y);
-	game->setButton(button, action);
-	cursor.set(x / resolution.x, y / resolution.y);
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (game->selected_object) {
 			game->selected_object->setLocation(cursor.x, cursor.y);
 			game->t_Notification.setContent("Set location of " + game->selected_object->getName() + " to " + to_string(cursor.x) + ", " + to_string(cursor.y));
-			info(game->ss << "Set location of " + game->selected_object->getName() + " to " + to_string(cursor.x) + ", " + to_string(cursor.y));
+			log_t("Set location of " + game->selected_object->getName() + " to " + to_string(cursor.x) + ", " + to_string(cursor.y));
 		}
 	} else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
 		if (action == GLFW_PRESS) {
@@ -49,7 +46,7 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 
 			if (game->selected_object) {
 				game->t_Notification.setContent("Selected " + game->selected_object->getName());
-				info(game->ss << "Selected " + game->selected_object->getName());
+				log_t("Selected " + game->selected_object->getName());
 			}
 		}
 	} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {

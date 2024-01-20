@@ -192,7 +192,7 @@ namespace glfreetype {
 
     // Much Like NeHe's glPrint Function, But Modified To Work
     // With FreeType Fonts.
-    void print(const font_data& ft_font, float x, float y, std::string const& text) {
+    void render_text(const font_data& ft_font, float x, float y, std::string const& text) {
 
         // We Want A Coordinate System Where Distance Is Measured In Window Pixels.
         pushScreenCoordinateMatrix();

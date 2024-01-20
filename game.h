@@ -29,7 +29,7 @@ class Game {
 		int elapsed_days = 0;
 		int level_index = 0;
 
-		map<int, int> button_map;
+		map<int, int> button_map; // replace
 		Vector2 mouse_position;
 		Vector2 original_position;
 
@@ -64,10 +64,11 @@ class Game {
 		int fps_limit = 0;
 		int update_rate = 144;
 		
-		void registerObject(Moveable*);
-		void registerObject(Text*);
-		void updateObjects(float = 1.0);
-		void updateStatistics(int, int);
+		void loadLevels(string level_directory);
+		void registerObject(Moveable* object);
+		void registerObject(Text* text_object);
+		void updateObjects(float modifier = 1.0);
+		void updateStatistics(int frames, int updates);
 		void updateProperties();
 		void checkCollision();
 		void debugMode();
@@ -77,6 +78,8 @@ class Game {
 		void setButton(int button, int state) { button_map[button] = state; }
 		int  getButton(int button) { return button_map[button]; }
 		int  gameLoop();
+
+		Moveable* getObjectUnderMouse();
 		
 		// Player* getPlayer();
 

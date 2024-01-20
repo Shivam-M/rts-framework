@@ -71,7 +71,7 @@ FT_BEGIN_HEADER
    *
    * @description:
    *   To be as flexible as possible (and for historical reasons), you must
-   *   load file `ft2build.h` first before other header files, for example
+   *   load_font file `ft2build.h` first before other header files, for example
    *
    *   ```
    *     #include <ft2build.h>
@@ -524,7 +524,7 @@ FT_BEGIN_HEADER
    * @note:
    *   An @FT_Face has one _active_ @FT_Size object that is used by functions
    *   like @FT_Load_Glyph to determine the scaling transformation that in
-   *   turn is used to load and hint glyphs and metrics.
+   *   turn is used to load_font and hint glyphs and metrics.
    *
    *   You can use @FT_Set_Char_Size, @FT_Set_Pixel_Sizes, @FT_Request_Size
    *   or even @FT_Select_Size to change the content (i.e., the scaling
@@ -1732,7 +1732,7 @@ FT_BEGIN_HEADER
    *
    *   metrics ::
    *     The metrics of the last loaded glyph in the slot.  The returned
-   *     values depend on the last load flags (see the @FT_Load_Glyph API
+   *     values depend on the last load_font flags (see the @FT_Load_Glyph API
    *     function) and can be expressed either in 26.6 fractional pixels or
    *     font units.
    *
@@ -1786,7 +1786,7 @@ FT_BEGIN_HEADER
    *     OpenType variation fonts for a selected instance are internally
    *     handled as 26.6 fractional font units but returned as (rounded)
    *     integers, as expected.  To get unrounded font units, don't use
-   *     @FT_LOAD_NO_SCALE but load the glyph with @FT_LOAD_NO_HINTING and
+   *     @FT_LOAD_NO_SCALE but load_font the glyph with @FT_LOAD_NO_HINTING and
    *     scale it, using the font's `units_per_EM` value as the ppem.
    *
    *   num_subglyphs ::
@@ -1849,7 +1849,7 @@ FT_BEGIN_HEADER
    *
    *
    *     for all glyphs do
-   *       <load glyph with `FT_Load_Glyph'>
+   *       <load_font glyph with `FT_Load_Glyph'>
    *
    *       FT_Outline_Translate( slot->outline, origin_x & 63, 0 );
    *
@@ -1876,7 +1876,7 @@ FT_BEGIN_HEADER
    *       <compute kern between current and previous glyph
    *        and add it to `origin_x'>
    *
-   *       <load glyph with `FT_Load_Glyph'>
+   *       <load_font glyph with `FT_Load_Glyph'>
    *
    *       if ( prev_rsb_delta - slot->lsb_delta >  32 )
    *         origin_x -= 64;
@@ -2103,7 +2103,7 @@ FT_BEGIN_HEADER
    *   driver ::
    *     This field is exclusively used by @FT_Open_Face; it simply specifies
    *     the font driver to use for opening the face.  If set to `NULL`,
-   *     FreeType tries to load the face with each one of the drivers in its
+   *     FreeType tries to load_font the face with each one of the drivers in its
    *     list.
    *
    *   num_params ::
@@ -2804,9 +2804,9 @@ FT_BEGIN_HEADER
    *     value.
    *
    *   load_flags ::
-   *     A flag indicating what to load for this glyph.  The @FT_LOAD_XXX
+   *     A flag indicating what to load_font for this glyph.  The @FT_LOAD_XXX
    *     constants can be used to control the glyph loading process (e.g.,
-   *     whether the outline should be scaled, whether to load bitmaps or
+   *     whether the outline should be scaled, whether to load_font bitmaps or
    *     not, whether to hint the outline, etc).
    *
    * @return:
@@ -2850,9 +2850,9 @@ FT_BEGIN_HEADER
    *     the face.
    *
    *   load_flags ::
-   *     A flag indicating what to load for this glyph.  The @FT_LOAD_XXX
+   *     A flag indicating what to load_font for this glyph.  The @FT_LOAD_XXX
    *     constants can be used to control the glyph loading process (e.g.,
-   *     whether the outline should be scaled, whether to load bitmaps or
+   *     whether the outline should be scaled, whether to load_font bitmaps or
    *     not, whether to hint the outline, etc).
    *
    * @return:
@@ -2885,7 +2885,7 @@ FT_BEGIN_HEADER
    *
    * @values:
    *   FT_LOAD_DEFAULT ::
-   *     Corresponding to~0, this value is used as the default glyph load
+   *     Corresponding to~0, this value is used as the default glyph load_font
    *     operation.  In this case, the following happens:
    *
    *     1. FreeType looks for a bitmap for the glyph corresponding to the
@@ -2959,7 +2959,7 @@ FT_BEGIN_HEADER
    *     is buggy.
    *
    *   FT_LOAD_NO_RECURSE ::
-   *     Don't load composite glyphs recursively.  Instead, the font driver
+   *     Don't load_font composite glyphs recursively.  Instead, the font driver
    *     fills the `num_subglyph` and `subglyphs` values of the glyph slot;
    *     it also sets `glyph->format` to @FT_GLYPH_FORMAT_COMPOSITE.  The
    *     description of subglyphs can then be accessed with

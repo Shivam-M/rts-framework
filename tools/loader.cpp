@@ -53,9 +53,9 @@ void Loader::parseCommon(Moveable* moveable) {
 	moveable->setSize(getFloat("width"), getFloat("height"));
 	moveable->setLocation(getFloat("x"), getFloat("y"));
 	moveable->setColour(Colour::HexToRGB(getString("colour"), (getFloat("alpha"))));
-	// if (getString("alt_colour") != "") {
-	// 	moveable->setGradientColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
-	// }
+	if (getString("alt_colour") != "") {
+	 	moveable->setGradientColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
+	}
 }
 
 /*
@@ -220,12 +220,15 @@ json::array_t Loader::getArray(string key) {
 	return target_value != properties.end() && target_value.value().is_array() ? properties[key] : DEFAULTS[key];
 }
 
-Level* Loader::load(string f, vector <Moveable*>* q, vector<Text*>* t, int identifier) {
+Level* Loader::load_font(string f, vector <Moveable*>* q, vector<Text*>* t, int identifier) {
 	Level* level = new Level();
 	ifstream level_file(f);
 	json level_data = json::parse(level_file);
 
 	log_t("Loading level... " CON_RED + f + CON_NORMAL " [" + CON_RED "PLACEHOLDER TEXT" CON_NORMAL + "]");
+
+	string ex1 = level_data["background"];
+	string ex = level_data["alt_background"];
 
 	Moveable* background = new Moveable(Vector2(), Vector2(1.0, 1.0),
 		Colour::HexToRGB(level_data["background"], level_data["background_alpha"]), 

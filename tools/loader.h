@@ -48,7 +48,7 @@ class Loader {
 		static json level_data;
 
 	public:
-		static Level* load(string, vector<Moveable*>*, vector<Text*>*, int);
+		static Level* load_font(string, vector<Moveable*>*, vector<Text*>*, int);
 		static map<int, Province*> getProvinceMap();
 		static map<int, NationNew*> getNationMap();
 		static map<int, Unit*> getUnitMap();

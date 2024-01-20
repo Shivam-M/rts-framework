@@ -27,7 +27,7 @@ namespace glfreetype {
     // The Flagship Function Of The Library - This Thing Will Print
     // Out Text At Window Coordinates X, Y, Using The Font ft_font.
     // The Current Modelview Matrix Will Also Be Applied To The Text.
-    void print(font_data const& ft_font, float x, float y,
+    void render_text(font_data const& ft_font, float x, float y,
         std::string const& text);
 
 }

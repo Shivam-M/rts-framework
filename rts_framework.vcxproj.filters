@@ -66,6 +66,9 @@
     <ClCompile Include="assets\general_tooltip.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tools\TextRendererNew.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defs\colour.h">
@@ -134,8 +137,16 @@
     <ClInclude Include="assets\panel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tools\TextRendererNew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\particle_group.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="gen_neighbours.py" />
+    <None Include="text.vert" />
+    <None Include="text.frag" />
   </ItemGroup>
 </Project>

@@ -13,9 +13,11 @@ void Mouse::scroll_callback(GLFWwindow* window, double x, double y) {
 }
 
 void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
-	double x, y;
-	Vector2 cursor;
 	Vector2 resolution = game->render.resolution;
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+	Vector2 cursor(x / game->render.resolution.x, y / game->render.resolution.y);
+	game->setButton(button, action);
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (game->selected_object) {

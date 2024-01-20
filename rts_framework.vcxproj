@@ -108,6 +108,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>include/;</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,11 +151,13 @@
     <ClCompile Include="tools\loader.cpp" />
     <ClCompile Include="tools\render.cpp" />
     <ClCompile Include="tools\TextRenderer.cpp" />
+    <ClCompile Include="tools\TextRendererNew.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\collidable.h" />
     <ClInclude Include="assets\moveable.h" />
     <ClInclude Include="assets\panel.h" />
+    <ClInclude Include="assets\particle_group.h" />
     <ClInclude Include="assets\text.h" />
     <ClInclude Include="defs\colour.h" />
     <ClInclude Include="defs\nation.h" />
@@ -174,9 +177,12 @@
     <ClInclude Include="tools\loader.h" />
     <ClInclude Include="tools\render.h" />
     <ClInclude Include="tools\TextRenderer.hpp" />
+    <ClInclude Include="tools\TextRendererNew.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gen_neighbours.py" />
+    <None Include="text.frag" />
+    <None Include="text.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

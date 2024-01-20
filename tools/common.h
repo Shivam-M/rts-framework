@@ -44,7 +44,8 @@ enum {
 	PROVINCE	= 1 << 21,
 	UNIT		= 1 << 22,
 	CUSTOM		= 1 << 23,
-	PANEL		= 1 << 24
+	PANEL		= 1 << 24,
+	PARTICLES	= 1 << 25
 };
  
 void log_impl(std::ostream& os);

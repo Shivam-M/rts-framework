@@ -6,13 +6,23 @@ class Text;
 using namespace std;
 using namespace glfreetype;
 
-class Render {
+struct QuadData {
+	Vector2 location; Vector2 size; Colour colour; Colour gradient;
+};
+
+struct TextureData {
+	Vector2 location; Vector2 size; Texture* texture; Colour colour; bool flip;
+};
+
+class Render { // TODO: Switch from immediate mode to direct mode rendering
 	private:
 		GLFWwindow* window_ = nullptr;
 		vector<Moveable*>* objects_ = nullptr;
 		vector<Text*>* text_objects_ = nullptr;
 		bool fullscreen_ = false;
 		float render_level_ = 0;
+		std::vector<QuadData> quadBatch;
+		std::vector<TextureData> textureBatch;
 
 	public:
 		Vector2 resolution = { 1280, 720 };
@@ -24,8 +34,16 @@ class Render {
 		Render(GLFWwindow*, vector<Moveable*>*, vector<Text*>*);
 
 		void drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient);
+		void drawQuadBatch();
+		void drawQuadB(Vector2 location, Vector2 size, Colour colour, Colour gradient) {
+			quadBatch.push_back({ location, size, colour, gradient });
+		}
 
 		void drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour colour, bool flip = false);
+		void drawTextureBatch();
+		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour colour, bool flip = false) {
+			textureBatch.push_back({ location, size, texture, colour, flip });
+		}
 
 		void drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient, float radius = 0.025);
 

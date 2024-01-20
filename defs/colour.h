@@ -66,7 +66,7 @@ class Vector4 {
 
 class Colour: public Vector4 { 
 	public:
-		static Colour HexToRGB(string hex, float alpha = 1) { 
+		static Colour HexToRGB(string hex, float alpha = 1.0f) { 
 			int r, g, b;
 			sscanf_s(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
 			return Colour(r, g, b, alpha * 255); 
@@ -81,20 +81,13 @@ class Colour: public Vector4 {
 			*this = HexToRGB(hex, alpha);
 		}
 
-		Colour(float r, float g, float b, float a = 255) {
+		Colour(float r, float g, float b, float a = 255.f) {
 			setX(r);
 			setY(g);
 			setZ(b);
 			setW(a);
 		}
 
-		void getGLColour(float* rgba[4]) {
-			*rgba[0] = getX() / 255;
-			*rgba[1] = getY() / 255;
-			*rgba[2] = getZ() / 255;
-			*rgba[3] = getW() / 255;
-		}
-
 		string getHex() { return ""; }
-		Vector4 getRGBAf() { return *this / 255.0; }
+		Vector4 getRGBAf() { return *this / 255.0f; }
 };

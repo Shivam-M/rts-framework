@@ -17,7 +17,7 @@ struct ColourShift {
 	enum DIRECTION { UP, DOWN };
 	DIRECTION direction = DOWN;
 	Colour first_colour, second_colour;
-	bool loop = true, fade_to_death = false;
+	bool loop = true, fade_to_death = false, with_gradient = false;
 	float speed = 0.1f;
 };
 
@@ -43,15 +43,12 @@ class Moveable {
 		Colour colour = Colour("FFFFFF");
 		Colour alternate_colour = colour;
 		Colour gradient_colour = colour;
-		Colour shift_colour = colour;
 		Colour default_colour = colour;
-		Colour target_colour = Colour("000000");
 
-		short alpha_max = 255, alpha_min = 0;
-		bool shifting_colour = false, shifting_downwards = true, oneWay = false, isActive = true;
+		bool shifting_colour = false, isActive = true;
 
 		Moveable() {}
-		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(col) {}
+		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
 
 		virtual vector<Vector2> getPoints() { return points; }
 		Text* getText() { return text; }
@@ -71,6 +68,7 @@ class Moveable {
 		int getFlags() { return flags; }
 		void addFlag(int f) { flags |= f; }
 		void removeFlag(int f) { flags &= ~f; }
+		bool hasFlag(int f) { return flags & f; }
 
 		void setText(Text* t) { text = t; }
 		void setTextOffset(float x, float y) { text_offset.set(x, y); }
@@ -78,10 +76,10 @@ class Moveable {
 		void setName(string n) { name = n; }
 		void setAcceleration(float x, float y) { acceleration.set(x, y); }
 		void setVelocity(float x, float y) { velocity.set(x, y); }
-		virtual void setLocation(float x, float y) { location.set(x, y); }
-		virtual void setSize(float x, float y) { size.set(x, y); }
+		void setLocation(float x, float y) { location.set(x, y); }
+		void setSize(float x, float y) { size.set(x, y); }
 
-		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; }
+		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; shifting_colour = true; }
 		void setColour(Colour col) { colour = col; default_colour = col; }
 		void setDefaultColour(Colour col) { alternate_colour = col; }
 		void setAlternateColour(Colour col) { default_colour = col; }
@@ -89,15 +87,12 @@ class Moveable {
 		void resetColour() { colour = default_colour; }
 		void tickTimer(float modifier);
 
-		void setColourShifting(bool state) { shifting_colour = state; }
-		void setDownwardsShifting(bool state) { shifting_downwards = state; }
-		void shiftColour(float speed = 0.01);
-		void shiftColour2();
-		virtual void onHover() { colour.w_ *= 1.5; }
-		virtual void onHoverStop() { resetColour(); }
+		void shiftColour();
+		virtual void onHover() { /*colour.w_ *= 1.5; */}
+		virtual void onHoverStop() { /* resetColour(); */}
 
 		void loadScript(string script_path);
 
-		void common(float);
-		virtual void update(float = 1.0);
+		void common(float modifier);
+		virtual void update(float modifier = 1.0);
 };

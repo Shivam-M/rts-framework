@@ -7,12 +7,19 @@
 #include "defs/nation.h"
 #include "io/mouse.h"
 #include "io/keyboard.h"
+#include "assets/general_tooltip.h"
+#include "assets/particle_group.h"
+
+#include "tools/TextRendererNew.h"
 
 #define MAX_RESTRICTED_GAME_SPEED 2000
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 #define PRINT_DEBUG_
 // #define DEBUG_PROFILING
+#define GAME_RTS rts
+#define GAME_SIDESCROLLER sidescroller
+#define GAME_TYPE GAME_RTS
 
 using namespace std;
 
@@ -44,35 +51,22 @@ Game::Game(int argc, char** argv) {
 	t_Alt3 =				Text({0.550, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
 	t_Notification =		Text({0.150, 0.050}, debug_font, Colour(189, 195, 199, 255), "");
 
-	// One-time load
+	Moveable star = Moveable({}, { 0.005 * 9 / 16.0, 0.005 }, Colour(255, 255, 255, 255), Colour(255, 255, 255, 255));
+	ColourShift colourshift = ColourShift(star.getColour(), Colour(255, 255, 255, 0));
+	colourshift.speed = 0.02f;
+	colourshift.with_gradient = true;
+	colourshift.fade_to_death = true;
+	star.setColourShift(colourshift);
+
+	// ParticleGroup* stars = new ParticleGroup({ 0.0, 0.0 }, { 1.0, 1.0 }, star, 50, &queue_objects);
+	// registerObject(stars);
+
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
-
-	int level_counter = 0;
-	while (true) {
-		if (ifstream("data/levels/rts/" + to_string(level_counter) + ".json").fail()) break;
-		Level* level = loader.load("data/levels/rts/" + to_string(level_counter) + ".json", &queue_objects, &text_objects, level_counter);
-
-		for (Moveable* m : level->objects) {
-			Vector2 location = m->getLocation();
-			if (m->getFlags() & QUAD) {
-				vector<Vector2> points = m->getPoints();
-				Collidable* c = (Collidable*)(m);
-				for (int x = 0; x < 4; x++) points[x].x += level_counter;
-				// c->setPoints(points[0], points[1], points[2], points[3]);
-			}
-			m->location.x += level_counter;
-			registerObject(m);
-		}
-
-		for (Text* t : level->text_objects) registerObject(t);
-		levels.push_back(*level);
-		level_counter++;
-	}
-
+	loadLevels("data/levels/rts/");
 	loadProvinceNeighbours("data/generated/province_neighbours.txt");
 	loadProvinceAttributes("data/generated/province_dimensions.txt");
 	setupRTSGame();
-
+	
 	registerObject(&t_FPSCounter);
 	registerObject(&t_Alt);
 	registerObject(&t_Alt2);
@@ -81,6 +75,9 @@ Game::Game(int argc, char** argv) {
 	registerObject(&t_PlayerVelocity);
 	registerObject(&t_PlayerAcceleration);
 	registerObject(&t_PlayerLocation);
+
+	// GeneralTooltip* province_tooltip = new GeneralTooltip();
+	// registerObject(province_tooltip);
 
 	render = Render(window, &objects, &text_objects);
 	keyboard = new Keyboard(this);
@@ -93,6 +90,23 @@ Game::Game(int argc, char** argv) {
 	glfwSetScrollCallback(window, mouse->scroll_callback);
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time,  " seconds " CON_NORMAL "to load the game.");
+}
+
+void Game::loadLevels(string level_directory) {
+	int level_counter = 0;
+	while (true) {
+		if (ifstream(level_directory + to_string(level_counter) + ".json").fail()) break;
+		Level* level = loader.load_font(level_directory + to_string(level_counter) + ".json", &queue_objects, &text_objects, level_counter);
+
+		for (Moveable* m : level->objects) {
+			m->location.x += level_counter;
+			registerObject(m);
+		}
+
+		for (Text* t : level->text_objects) registerObject(t);
+		levels.push_back(*level);
+		level_counter++;
+	}
 }
 
 void Game::setupRTSGame() {
@@ -141,23 +155,27 @@ void loadProvinceAttributes(string attributes) {
 		return;
 	}
 
-
 	int id;
 	float x, y, w, h, xoffset = -0.2, yoffset = -0.1;
 	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
 		Loader::getProvinceMap()[id]->setSize(w, h);
 		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
 		// Loader::getProvinceMap()[id]->setColour(Colour(0, 0, 0, 80));
-		// Colour colour = Loader::getProvinceMap()[id]->getColour();
+		Colour colour = Loader::getProvinceMap()[id]->getColour();
 		// colour = colour / 1.25;
-		// colour.setW(100);
-		// Loader::getProvinceMap()[id]->setColour(colour);
+		// colour.setW(150);
+		Loader::getProvinceMap()[id]->setColour(colour);
 
-		ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Colour(240, 240, 240, 240));
-		colourshift.speed = 0.01f;
+		if (id == 5) {
+			ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Loader::getProvinceMap()[21]->getColour());
+			colourshift.speed = 0.035f;
+			Loader::getProvinceMap()[5]->setColourShift(colourshift);
+		}
+
+		// ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Colour(20, 20, 20, 50));
+		// colourshift.speed = 0.01f;
 		// Loader::getProvinceMap()[id]->setColourShift(colourshift);
-
-		//  Loader::getProvinceMap()[id]->loadScript("data/scripts/anim.txt");
+		// Loader::getProvinceMap()[id]->loadScript("data/scripts/anim.txt");
 	}
 	log_t("Loaded map position data for all provinces");
 	fclose(dimensions_file);
@@ -176,8 +194,6 @@ void Game::pauseGame() {
 	Text* t_Quit = new Text({ 0.05, 0.49 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Quit game");
 	registerObject(t_Quit);
 }
-
-// Player* Game::getPlayer() { return &player; }
 
 void Game::checkCollision() {
 	/*
@@ -257,8 +273,6 @@ void Game::updateStatistics(int f, int u) {
 		t_PlayerAcceleration.setColour(player_nation->getColour());
 	}
 
-	// font_data font = Fonts::getFont("data/fonts/brockscript.ttf", 25, true);
-	// t_PlayerAcceleration.setFont(font);
 	t_PlayerLocation.setContent("Day #" + to_string(elapsed_days));
 	t_PlayerVelocity.setContent("Money: 0.00");
 	t_PlayerAcceleration.setContent("Playing as: " + nation_string);
@@ -269,35 +283,35 @@ static bool within(Vector2 location, Vector2 size, Vector2 point) {
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
-void Game::updateProperties() {
+Moveable* Game::getObjectUnderMouse() {
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	Vector2 cursor(x / game->render.resolution.x, y / game->render.resolution.y);
-
 	vector<Moveable*> over_objects;
-	Moveable* obj = nullptr;
+	Moveable* object = nullptr;
 	float min_distance = 100;
 	for (Moveable* moveable : game->objects) {
-
 		moveable->onHoverStop();
-		
 		if (!(moveable->getFlags() & UNEDITABLE || moveable->getFlags() & FIXED_POS)) {
 			Vector2 location = moveable->getLocation(), size = moveable->getSize();
 			if (within(location, size, cursor)) {
 				Vector2 centre = moveable->getCentre();
-				float distance = sqrt(pow(centre.x - cursor.x, 2) + pow(centre.y - cursor.y, 2));
+				float distance = pow(centre.x - cursor.x, 2) + pow(centre.y - cursor.y, 2); // remove sqrt
 				if (distance < min_distance) {
 					min_distance = distance;
-					obj = moveable;
+					object = moveable;
 				}
 			}
 		}
 	}
 
-	if (obj != nullptr)
-		obj->onHover();
+	if (object != nullptr)
+		object->onHover();
+	return object;
+}
 
-
+void Game::updateProperties() {
+	// getObjectUnderMouse();
 
 	if (selected_object) {
 		if (selected_object->getFlags() & PROVINCE) {
@@ -353,6 +367,7 @@ int Game::gameLoop() {
 	float last_time = glfwGetTime(), timer = last_time;
 	float delta_time = 0, current_time = 0;
 	float last_frame_time = glfwGetTime();
+	float update_time;
 
 #ifdef DEBUG_PROFILING
 	vector<float> temp_profiling_u;
@@ -367,8 +382,7 @@ int Game::gameLoop() {
 		last_time = current_time;
 
 		while (delta_time >= 1.0) {
-
-			float update_time = glfwGetTime();
+			update_time = glfwGetTime();
 #ifdef PRINT_DEBUG
 			cout << "* Day #" << elapsed_days << endl;
 			for (Nation* nation : nations) {
@@ -424,9 +438,8 @@ int Game::gameLoop() {
 	} objects.clear();
 
 	for (const auto& p : Image::images) {
-		Texture* texture = p.second;
-		delete[] texture->image;
-		delete texture;
+		delete[] p.second->image;
+		delete p.second;
 	}
 
 #ifdef DEBUG_PROFILING

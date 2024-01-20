@@ -1,5 +1,9 @@
 #include "../assets/text.h"
 #include "../shapes/circle.h"
+#include "../assets/panel.h"
+#include "../assets/particle_group.h"
+
+#include "../tools/TextRendererNew.h"
 
 #include "render.h"
 
@@ -7,6 +11,7 @@
 #define GLW_SMALL_ROUNDED_CORNER_SLICES 5 
 
 static Vector2 roundedCorners[GLW_SMALL_ROUNDED_CORNER_SLICES] = { {0} };
+font_data2 ft_font;
 
 static void createRoundedCorners(Vector2* corner_points, int num) {
     float a = 0, slice = PI / 2 / num;
@@ -26,6 +31,7 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     window_ = window;
     objects_ = objects;
     text_objects_ = text_objects;
+    ft_font = TextRendererNew::load_font("C:/Windows/Fonts/consolab.ttf", 11);
 }
 
 void Render::normaliseCoordinates(Vector2* location) {
@@ -58,18 +64,20 @@ void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float 
 }
 
 void Render::drawText(Vector2 location, string message, font_data font, Colour colour) {
+#if 1
+    TextRendererNew::render_text(ft_font, location.x * 1280, (1 - location.y) * 720, message, colour, scale);
+#else
     glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
     location.x *= resolution.x;
     location.y = resolution.y - location.y * resolution.y;
-    print(font, location.x, location.y, message);
+    render_text(font, location.x, location.y, message);
+#endif
 }
 
 void Render::drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
-    // glMatrixMode(GL_MODELVIEW);
-    // glPushMatrix();
     glBegin(GL_QUADS);
     glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
     glVertex2f(location.x, location.y);
@@ -78,7 +86,6 @@ void Render::drawQuad(Vector2 location, Vector2 size, Colour colour, Colour grad
     glVertex2f(location.x + size.x, location.y + size.y);
     glVertex2f(location.x + size.x, location.y);
     glEnd();
-    // glPopMatrix();
 }
 
 void Render::drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient, float radius) {
@@ -109,8 +116,6 @@ void Render::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colou
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
-    // glMatrixMode(GL_MODELVIEW);
-    // glPushMatrix();
     glBindTexture(GL_TEXTURE_2D, texture->data);
     glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
@@ -121,21 +126,18 @@ void Render::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colou
     glTexCoord2i(1 - flip, 1); glVertex2f(location.x + size.x, location.y);
     glEnd();
     glDisable(GL_TEXTURE_2D);
-    // glBindTexture(GL_TEXTURE_2D, 0);
-    // glPopMatrix();
 }
 
 void Render::drawCustom(vector<Vector2> points, Colour colour, Colour gradient) {
+    return;
     glBegin(GL_QUADS);
     glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
-
     for (int i = 0; i < 4; i++) {
         if (i == 2 && gradient != colour) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
         points[i].set(points[i].x * scale + offsets.x, points[i].y * scale + offsets.y);
         normaliseCoordinates(&points[i]);
         glVertex2f(points[i].x, points[i].y);
     }
-
     glEnd();
 }
 
@@ -143,6 +145,40 @@ void Render::toggleFullscreen() {
     fullscreen_ = !fullscreen_;
     glfwSetWindowMonitor(window_, fullscreen_ ? glfwGetPrimaryMonitor() : NULL, 100, 100, resolution.x, resolution.y, GLFW_DONT_CARE);
     renderWindow();
+}
+
+void Render::drawQuadBatch() {
+    glBegin(GL_QUADS);
+    for (QuadData& quad : quadBatch) {
+        normaliseCoordinates(&quad.location);
+        alignCoordinates(&quad.location, &quad.size);
+        glColor4ub(quad.colour.getX(), quad.colour.getY(), quad.colour.getZ(), quad.colour.getW());
+        glVertex2f(quad.location.x, quad.location.y);
+        glVertex2f(quad.location.x, quad.location.y + quad.size.y);
+        glColor4ub(quad.gradient.getX(), quad.gradient.getY(), quad.gradient.getZ(), quad.gradient.getW());
+        glVertex2f(quad.location.x + quad.size.x, quad.location.y + quad.size.y);
+        glVertex2f(quad.location.x + quad.size.x, quad.location.y);
+    }
+    glEnd();
+    quadBatch.clear();
+}
+
+void Render::drawTextureBatch() {
+    glEnable(GL_TEXTURE_2D);
+    for (TextureData& tx: textureBatch) {
+        normaliseCoordinates(&tx.location);
+        alignCoordinates(&tx.location, &tx.size);
+        glBindTexture(GL_TEXTURE_2D, tx.texture->data);
+        glBegin(GL_QUADS);
+        glColor4ub(tx.colour.getX(), tx.colour.getY(), tx.colour.getZ(), tx.colour.getW());
+        glTexCoord2i(tx.flip, 1);     glVertex2f(tx.location.x, tx.location.y);
+        glTexCoord2i(tx.flip, 0);     glVertex2f(tx.location.x, tx.location.y + tx.size.y);
+        glTexCoord2i(1 - tx.flip, 0); glVertex2f(tx.location.x + tx.size.x, tx.location.y + tx.size.y);
+        glTexCoord2i(1 - tx.flip, 1); glVertex2f(tx.location.x + tx.size.x, tx.location.y);
+        glEnd();
+    }
+    glDisable(GL_TEXTURE_2D);
+    textureBatch.clear();
 }
 
 void Render::renderWindow() {
@@ -153,22 +189,46 @@ void Render::renderWindow() {
         if (moveable->getFlags() & DISABLED) continue;
         if ((moveable->location.x + moveable->size.x < 0) || (moveable->location.y + moveable->size.y < 0) || (moveable->location.x > 1) || (moveable->location.y > 1)) continue;
         
+        if (moveable->getFlags() & PARTICLES) {
+            // ParticleGroup* particle_group = reinterpret_cast<ParticleGroup*>(moveable);
+            // for (Moveable& particle : particle_group->getParticles()) {
+                // drawQuadB(particle.getLocation(), particle.getSize(), particle.getColour(), particle.getGradientColour());
+            //}
+            // drawQuadBatch();
+            continue;
+        }
+        
+        /* if (moveable->getFlags() & PANEL) {
+            Panel* panel = reinterpret_cast<Panel*>(moveable);
+            for (Moveable* panel_moveable : panel->get()) {
+                if (panel_moveable->getFlags() & TEXT) {
+                    Text* text_moveable = reinterpret_cast<Text*>(panel_moveable);
+                    drawText(text_moveable->getLocation(), text_moveable->getContent(), text_moveable->getFont(), text_moveable->getColour());
+                }
+            }
+            continue;
+        } */
+        
         if (moveable->getFlags() & CUSTOM) {
             drawCustom(moveable->getPoints(), moveable->getColour(), moveable->getGradientColour());
         } else if (moveable->getFlags() & CURVED) {
             drawCurvedQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour(), 0.025);
         } else if (moveable->getFlags() & TEXTURED) {
-            drawTexture(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
+            drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
         } else if (moveable->getFlags() & CIRCLE) {
             drawCircle(reinterpret_cast<Circle*>(moveable));
         } else {
             drawQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour());
         }
     }
+
+    drawTextureBatch(); // Note: won't take into account object order.
     draw_times[0] = glfwGetTime() - time_shapes;
 
     float time_text = glfwGetTime();
+    TextRendererNew::init_shader();
     for (Text* text: *text_objects_) if (!(text->getFlags() & DISABLED)) drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour());
+    TextRendererNew::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;
 
     glfwSwapBuffers(window_);

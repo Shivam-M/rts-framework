@@ -427,7 +427,7 @@ FT_BEGIN_HEADER
    *
    *   If the font is tricky and the glyph has been loaded with
    *   @FT_LOAD_NO_SCALE, the resulting CBox is meaningless.  To get
-   *   reasonable values for the CBox it is necessary to load the glyph at a
+   *   reasonable values for the CBox it is necessary to load_font the glyph at a
    *   large ppem value (so that the hinting instructions can properly shift
    *   and scale the subglyphs), then extracting the CBox, which can be
    *   eventually converted back to font units.
@@ -507,7 +507,7 @@ FT_BEGIN_HEADER
    *     FT_BitmapGlyph  glyph_bitmap;
    *
    *
-   *     // load glyph
+   *     // load_font glyph
    *     error = FT_Load_Char( face, glyph_index, FT_LOAD_DEFAULT );
    *
    *     // extract glyph image

@@ -24,9 +24,6 @@
     <ClCompile Include="tools\image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tools\TextRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,7 +63,7 @@
     <ClCompile Include="assets\general_tooltip.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tools\TextRendererNew.cpp">
+    <ClCompile Include="tools\text_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,9 +81,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tools\image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tools\TextRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stb_image.h">
@@ -137,7 +131,7 @@
     <ClInclude Include="assets\panel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tools\TextRendererNew.h">
+    <ClInclude Include="tools\text_renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="assets\particle_group.h">

@@ -3,7 +3,7 @@
 #include "../assets/panel.h"
 #include "../assets/particle_group.h"
 
-#include "../tools/TextRendererNew.h"
+#include "../tools/text_renderer.h"
 
 #include "render.h"
 
@@ -11,17 +11,10 @@
 #define GLW_SMALL_ROUNDED_CORNER_SLICES 5 
 
 static Vector2 roundedCorners[GLW_SMALL_ROUNDED_CORNER_SLICES] = { {0} };
-font_data2 ft_font;
 
 static void createRoundedCorners(Vector2* corner_points, int num) {
     float a = 0, slice = PI / 2 / num;
     for (int i = 0; i < num; a += slice, i++) corner_points[i].set(cosf(a), sinf(a));
-}
-
-static void alignCoordinates(Vector2* location, Vector2* size) {
-    size->x *= 2;
-    size->y *= 2;
-    location->y -= size->y;
 }
 
 Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* text_objects) {
@@ -31,13 +24,18 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     window_ = window;
     objects_ = objects;
     text_objects_ = text_objects;
-    ft_font = TextRendererNew::load_font("C:/Windows/Fonts/consolab.ttf", 11);
 }
 
 void Render::normaliseCoordinates(Vector2* location) {
-    float x = location->x + offsets.x, y = location->y + offsets.y;
+    float x = location->x * scale +offsets.x, y = location->y * scale + offsets.y;
     location->x = x < 0.5 ? -1 + (x * 2) : x > 0.5 ? ((x - 0.5) * 2) : 0;
     location->y = y < 0.5 ? (-1 + (y * 2)) * -1 : y > 0.5 ? ((y - 0.5) * 2) * -1 : 0;
+}
+
+void Render::alignCoordinates(Vector2* location, Vector2* size) {
+    size->x *= 2 * scale;
+    size->y *= 2 * scale;
+    location->y -= size->y;
 }
 
 void Render::drawCircle(Circle* circle) {
@@ -63,15 +61,8 @@ void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float 
     glEnd();
 }
 
-void Render::drawText(Vector2 location, string message, font_data font, Colour colour) {
-#if 1
-    TextRendererNew::render_text(ft_font, location.x * 1280, (1 - location.y) * 720, message, colour, scale);
-#else
-    glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
-    location.x *= resolution.x;
-    location.y = resolution.y - location.y * resolution.y;
-    render_text(font, location.x, location.y, message);
-#endif
+void Render::drawText(Vector2 location, string message, Font* font, Colour colour) {
+    TextRenderer::render_text(font, location.x * 1280, (1 - location.y) * 720, message, colour, scale);
 }
 
 void Render::drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient) {
@@ -226,9 +217,9 @@ void Render::renderWindow() {
     draw_times[0] = glfwGetTime() - time_shapes;
 
     float time_text = glfwGetTime();
-    TextRendererNew::init_shader();
+    TextRenderer::init_shader();
     for (Text* text: *text_objects_) if (!(text->getFlags() & DISABLED)) drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour());
-    TextRendererNew::reset_shader();
+    TextRenderer::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;
 
     glfwSwapBuffers(window_);

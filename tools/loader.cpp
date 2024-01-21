@@ -39,7 +39,7 @@ const json DEFAULTS = {
 };
 
 static map<int, Province*> province_map;
-static map<int, NationNew*> nation_map;
+static map<int, Nation*> nation_map;
 static map<int, Unit*> unit_map;
 
 static json properties;
@@ -134,13 +134,13 @@ Collidable* Loader::parseSlider() {
 
 map<int, Province*> Loader::getProvinceMap() { return province_map; }
 
-map<int, NationNew*> Loader::getNationMap() { return nation_map; }
+map<int, Nation*> Loader::getNationMap() { return nation_map; }
 
 map<int, Unit*> Loader::getUnitMap() { return unit_map; }
 
 Province* Loader::parseProvince() {
 	Province* province = new Province(getInt("id"), getString("name"));
-	font_data font = Fonts::getFont(CONSOLAS_BOLD, 8);
+	Font* font = Fonts::getFont(CONSOLAS_BOLD, 8);
 
 	parseCommon(province);
 	province->setTexture(Image::getImage("data/generated/" + to_string(province->getID()) + "_province.png"));
@@ -160,7 +160,7 @@ Unit* Loader::parseUnit() {
 	Unit* unit = new Unit(getInt("id"), nullptr, getInt("size"), getFloat("skill"), province_map[getInt("province")]);
 	parseCommon(unit);
 
-	font_data font = Fonts::getFont(CONSOLAS_BOLD, 8);
+	Font* font = Fonts::getFont(CONSOLAS_BOLD, 8);
 	unit->setText(new Text(unit->getLocation(), font, Colour(189, 195, 199, 250), unit->getName()));
 	unit->setTextOffset(0, -0.0025);
 	unit->location.x -= 1; // Offset x by -1 (sidescroller levelling)
@@ -169,8 +169,8 @@ Unit* Loader::parseUnit() {
 	return unit;
 }
 
-NationNew* Loader::parseNation() {
-	NationNew* nation = new NationNew(getInt("id"), getString("name"), province_map[getInt("capital")]);
+Nation* Loader::parseNation() {
+	Nation* nation = new Nation(getInt("id"), getString("name"), province_map[getInt("capital")]);
 	parseCommon(nation);
 
 	for (const auto& element : getArray("provinces")) {
@@ -275,7 +275,7 @@ Level* Loader::load_font(string f, vector <Moveable*>* q, vector<Text*>* t, int 
 			level->objects.push_back(unit);
 			level->text_objects.push_back(unit->getText());
 		} else if (type == "NATION") {
-			NationNew* nation = parseNation();
+			Nation* nation = parseNation();
 			level->objects.push_back(nation);
 		}
 		/*

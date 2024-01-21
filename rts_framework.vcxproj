@@ -150,8 +150,7 @@
     <ClCompile Include="tools\image.cpp" />
     <ClCompile Include="tools\loader.cpp" />
     <ClCompile Include="tools\render.cpp" />
-    <ClCompile Include="tools\TextRenderer.cpp" />
-    <ClCompile Include="tools\TextRendererNew.cpp" />
+    <ClCompile Include="tools\text_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\collidable.h" />
@@ -176,8 +175,7 @@
     <ClInclude Include="tools\image.h" />
     <ClInclude Include="tools\loader.h" />
     <ClInclude Include="tools\render.h" />
-    <ClInclude Include="tools\TextRenderer.hpp" />
-    <ClInclude Include="tools\TextRendererNew.h" />
+    <ClInclude Include="tools\text_renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gen_neighbours.py" />

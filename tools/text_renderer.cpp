@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 
-#include "TextRendererNew.h"
+#include "text_renderer.h"
 
 #include "error.h"
 #include "file.h"
@@ -14,7 +14,7 @@
 GLuint VAO, VBO;
 GLuint shader;
 
-void TextRendererNew::setup() {
+void TextRenderer::setup() {
     shader = CompileShader("text.vert", "text.frag");
     glUseProgram(shader);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(1280), 0.0f, static_cast<float>(720));
@@ -32,9 +32,9 @@ void TextRendererNew::setup() {
     glBindVertexArray(0);
 }
 
-font_data2 TextRendererNew::load_font(string font_path, int height) {
+Font* TextRenderer::load_font(string font_path, int height) {
     shader = CompileShader("text.vert", "text.frag");
-    font_data2 ft_font;
+    Font* ft_font = new Font();
     FT_Library library;
     FT_Face face;
 
@@ -68,7 +68,7 @@ font_data2 TextRendererNew::load_font(string font_path, int height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        ft_font.Characters.emplace(c, Character{ texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows), glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+        ft_font->characters.emplace(c, Character{ texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows), glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
                                                static_cast<unsigned int>(face->glyph->advance.x) });
     
     }
@@ -94,16 +94,16 @@ font_data2 TextRendererNew::load_font(string font_path, int height) {
     return ft_font;
 }
 
-void TextRendererNew::render_text(font_data2 const& ft_font, float x, float y, string const& text, Colour colour, float scale) {
+void TextRenderer::render_text(Font* ft_font, float x, float y, string const& text, Colour colour, float scale) {
     glUniform3f(glGetUniformLocation(shader, "characterColour"), colour.getX(), colour.getY(), colour.getZ());
 
     for (string::const_iterator c = text.begin(); c != text.end(); c++) {
-        Character ch = ft_font.Characters.at(*c);
+        Character ch = ft_font->characters.at(*c);
 
-        float xpos = x + ch.Bearing.x * scale;
-        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-        float w = ch.Size.x * scale;
-        float h = ch.Size.y * scale;
+        float xpos = x + ch.bearing.x * scale;
+        float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+        float w = ch.size.x * scale;
+        float h = ch.size.y * scale;
 
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },
@@ -115,22 +115,22 @@ void TextRendererNew::render_text(font_data2 const& ft_font, float x, float y, s
             { xpos + w, ypos + h,   1.0f, 0.0f }
         };
 
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        glBindTexture(GL_TEXTURE_2D, ch.texture_id);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        x += (ch.Advance >> 6) * scale;
+        x += (ch.advance >> 6) * scale;
     }
 }
 
-void TextRendererNew::init_shader() {
+void TextRenderer::init_shader() {
     glUseProgram(shader);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 }
 
-void TextRendererNew::reset_shader() {
+void TextRenderer::reset_shader() {
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
 }

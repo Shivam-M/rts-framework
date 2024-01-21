@@ -2,19 +2,18 @@
 
 #include <map>
 #include "common.h"
-#include "TextRenderer.hpp"
+#include "text_renderer.h"
 
 #define DIRECTORY	 "C:/Windows/Fonts/"
 
 using namespace std;
-using namespace glfreetype;
 
 class Fonts {
 	public:
-		static map<pair<string, int>, font_data*> fonts;
+		static map<pair<string, int>, Font*> fonts;
 
 		static void loadFont(string, int, bool = false);
-		static font_data getFont(string, int, bool = false);
+		static Font* getFont(string, int, bool = false);
 };
 
 #define	ARIAL						"arial.ttf"

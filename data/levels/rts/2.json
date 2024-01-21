@@ -49,7 +49,7 @@
 	  "colour": "3498db",
       "name": "Sussex",
       "provinces": [19, 20],
-      "units": []
+      "units": [2]
     },
 	{
       "type": "NATION",

@@ -14,10 +14,16 @@ struct ColourShift {
 	ColourShift(Colour first, Colour second) : first_colour(first), second_colour(second) {
 		if (first < second) swap(first_colour, second_colour);
 	}
+	void setCondition(int* value) {
+		condition = value;
+		target = *value;
+	}
 	enum DIRECTION { UP, DOWN };
 	DIRECTION direction = DOWN;
 	Colour first_colour, second_colour;
 	bool loop = true, fade_to_death = false, with_gradient = false;
+	int* condition;
+	int target;
 	float speed = 0.1f;
 };
 
@@ -79,6 +85,7 @@ class Moveable {
 		void setLocation(float x, float y) { location.set(x, y); }
 		void setSize(float x, float y) { size.set(x, y); }
 
+		void stopColourShift();
 		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; shifting_colour = true; }
 		void setColour(Colour col) { colour = col; default_colour = col; }
 		void setDefaultColour(Colour col) { alternate_colour = col; }

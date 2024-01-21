@@ -1,23 +1,21 @@
 #pragma once
 
-#include "../tools/TextRenderer.hpp"
+#include "../tools/text_renderer.h"
 #include "moveable.h"
 
 using namespace std;
-using namespace glfreetype;
-
 class Text: public Moveable {
 	private:
 		string content;
-		font_data font;
+		Font* font;
 
 	public:
 		Text();
-		Text(Vector2 location, font_data font, Colour colour, string content = "");
+		Text(Vector2 location, Font* font, Colour colour, string content = "");
 
-		font_data getFont() { return font; }
+		Font* getFont() { return font; }
 		string getContent() { return content; }
 
-		void setFont(font_data f) { font = f; }
+		void setFont(Font* f) { font = f; }
 		void setContent(string c) { content = c; }
 };

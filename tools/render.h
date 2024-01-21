@@ -4,7 +4,6 @@ class Circle;
 class Text;
 
 using namespace std;
-using namespace glfreetype;
 
 struct QuadData {
 	Vector2 location; Vector2 size; Colour colour; Colour gradient;
@@ -49,7 +48,7 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering
 
 		void drawCustom(vector<Vector2> points, Colour colour, Colour gradient);
 
-		void drawText(Vector2 location, string message, font_data font, Colour colour);
+		void drawText(Vector2 location, string message, Font* font, Colour colour);
 
 		void drawCircle(Circle*);
 		void drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality);
@@ -57,6 +56,7 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering
 		void renderWindow();
 		void toggleFullscreen();
 		void normaliseCoordinates(Vector2* location);
+		void alignCoordinates(Vector2* location, Vector2* size);
 
 		void setRenderLevel(float level) { render_level_ = level; }
 };

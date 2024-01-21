@@ -12,17 +12,32 @@
     {
       "type": "UNIT",
       "size": 1000,
-      "skill":  1.00,
+      "skill": 1.00,
       "x": 0.3,
       "y": 0.15,
       "width": 0.02125,
       "height": 0.0375,
-      "texture": "images/unit.png",
+      "texture": "images/unit_thick.png",
       "colour": "&g_colour",
       "alt_colour": "&g_colour",
       "province": 5,
       "id": 1,
       "name": "Mercia Starting Unit"
+    },
+    {
+      "type": "UNIT",
+      "size": 1000,
+      "skill": 1.00,
+      "x": 0.3,
+      "y": 0.15,
+      "width": 0.02125,
+      "height": 0.0375,
+      "texture": "images/unit_thick.png",
+      "colour": "&g_colour",
+      "alt_colour": "&g_colour",
+      "province": 19,
+      "id": 2,
+      "name": "Wessex Starting Unit"
     }
   ]
 }

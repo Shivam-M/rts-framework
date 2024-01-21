@@ -61,6 +61,12 @@ void Moveable::shiftColour() {
 	}
 	if (colour_shift.with_gradient) gradient_colour = colour;
 	if (colour_shift.fade_to_death && colour.getW() <= 0) addFlag(DISABLED);
+	if (*colour_shift.condition != colour_shift.target) stopColourShift();
+}
+
+void Moveable::stopColourShift() {
+	colour = default_colour;
+	shifting_colour = false;
 }
 
 void Moveable::common(float modifier) {

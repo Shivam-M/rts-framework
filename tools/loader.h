@@ -9,7 +9,7 @@ using namespace std;
 #include "../tools/fonts.h"
 
 class Province;
-class NationNew;
+class Nation;
 class Unit;
 class Moveable;
 class Circle;
@@ -35,7 +35,7 @@ class Loader {
 		static Text* parseText();
 		static Collidable* parseSlider();
 		static Province* parseProvince();
-		static NationNew* parseNation();
+		static Nation* parseNation();
 		static Unit* parseUnit();
 
 		static void parseCommon(Moveable*);
@@ -50,6 +50,6 @@ class Loader {
 	public:
 		static Level* load_font(string, vector<Moveable*>*, vector<Text*>*, int);
 		static map<int, Province*> getProvinceMap();
-		static map<int, NationNew*> getNationMap();
+		static map<int, Nation*> getNationMap();
 		static map<int, Unit*> getUnitMap();
 };

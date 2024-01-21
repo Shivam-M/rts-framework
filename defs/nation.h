@@ -10,7 +10,14 @@ enum NATION_FLAGS {
 	UNLANDED,
 };
 
-class NationNew : public Moveable {
+struct EventMessage {
+	int event_type = GENERIC;
+	string content = "";
+	enum EVENT {GENERIC, MESSAGE, BATTLE_START, BATTLE_WON, BATTLE_LOST, UNIT_LOST};
+	vector<Moveable*> involved;
+};
+
+class Nation : public Moveable {
 	private:
 		int identifier_ = -1;
 		string name_ = "Generic Nation";
@@ -25,7 +32,7 @@ class NationNew : public Moveable {
 		int flags = 0;
 
 	public:
-		NationNew(int identifier, string name, Province* capital = nullptr) : identifier_(identifier), name_(name), capital_province_(capital) {}
+		Nation(int identifier, string name, Province* capital = nullptr) : identifier_(identifier), name_(name), capital_province_(capital) {}
 
 		void setID(int identifier) { identifier_ = identifier; }
 		int getID() { return identifier_; }
@@ -50,7 +57,7 @@ class NationNew : public Moveable {
 		}
 
 		vector<Unit*> getOwnedUnits() { return owned_army_units_; }
-		void addUnit(Unit* unit) { owned_army_units_.push_back(unit); }
+		void addUnit(Unit* unit) { owned_army_units_.push_back(unit); unit->setNation(this); }
 
 		float getMoney() { return money_; }
 		void setMoney(float money) { money_ = money; }

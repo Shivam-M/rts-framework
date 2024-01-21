@@ -41,13 +41,13 @@ class Game {
 		vector<Text*> text_objects;
 		vector<Moveable*> queue_objects;
 		vector<Moveable*> objects;
-		vector<NationNew*> nations;
+		vector<Nation*> nations;
 
 		GLFWwindow* window = nullptr;
 		Moveable* selected_object = nullptr;
 		Province* selected_province = nullptr;
 		Unit* selected_unit = nullptr;
-		NationNew* player_nation = nullptr;
+		Nation* player_nation = nullptr;
 
 		Mouse* mouse = nullptr;
 		Keyboard* keyboard = nullptr;
@@ -73,6 +73,7 @@ class Game {
 		void checkCollision();
 		void debugMode();
 		void fireShot();
+		void moveUnit(Province* province);
 		void pauseGame();
 		void setupRTSGame();
 		void setButton(int button, int state) { button_map[button] = state; }

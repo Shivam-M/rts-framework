@@ -68,3 +68,4 @@ void log_t(Args&&... args) {
 	log_impl(std::cout, std::forward<Args>(args)...);
 }
 
+float random_float();

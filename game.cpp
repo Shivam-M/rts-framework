@@ -1,4 +1,4 @@
-#include <windows.h>
+﻿#include <windows.h>
 #include <Psapi.h>
 
 #include "game.h"
@@ -10,13 +10,14 @@
 #include "assets/general_tooltip.h"
 #include "assets/particle_group.h"
 
-#include "tools/TextRendererNew.h"
+#include "tools/text_renderer.h"
 
 #define MAX_RESTRICTED_GAME_SPEED 2000
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 #define PRINT_DEBUG_
 // #define DEBUG_PROFILING
+
 #define GAME_RTS rts
 #define GAME_SIDESCROLLER sidescroller
 #define GAME_TYPE GAME_RTS
@@ -38,10 +39,16 @@ Game::Game(int argc, char** argv) {
 
 	glewExperimental = GL_TRUE;
 	glewInit();
+	srand(time(nullptr));
 
 	log_t("\033[1;31mOpenGL Version: ", glGetString(GL_VERSION));
 
-	font_data debug_font = Fonts::getFont(CONSOLAS_BOLD, 11);
+	render = Render(window, &objects, &text_objects);
+	keyboard = new Keyboard(this);
+	mouse = new Mouse(this);
+	console = new Console(this);
+
+	Font* debug_font = Fonts::getFont(CONSOLAS_BOLD, 11);
 	t_FPSCounter =			Text({0.925, 0.050}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
 	t_PlayerLocation =		Text({0.030, 0.050}, debug_font, Colour(34, 166, 179, 255), "--");
 	t_PlayerVelocity =		Text({0.030, 0.075}, debug_font, Colour(34, 166, 179, 255), "--");
@@ -63,6 +70,7 @@ Game::Game(int argc, char** argv) {
 
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 	loadLevels("data/levels/rts/");
+	// mouse->debug_control_scheme = true;
 	loadProvinceNeighbours("data/generated/province_neighbours.txt");
 	loadProvinceAttributes("data/generated/province_dimensions.txt");
 	setupRTSGame();
@@ -78,11 +86,7 @@ Game::Game(int argc, char** argv) {
 
 	// GeneralTooltip* province_tooltip = new GeneralTooltip();
 	// registerObject(province_tooltip);
-
-	render = Render(window, &objects, &text_objects);
-	keyboard = new Keyboard(this);
-	mouse = new Mouse(this);
-	console = new Console(this);
+	
 	console->build();
 
 	glfwSetKeyCallback(window, keyboard->callback);
@@ -119,9 +123,13 @@ void Game::setupRTSGame() {
 	path.push_back(Loader::getProvinceMap()[18]);
 	Loader::getUnitMap()[1]->setPath(path);
 	Loader::getUnitMap()[1]->initiate();
+	Loader::getUnitMap()[2]->initiate();
+
+	vector<Province*> apath = Province::getShortestPath(Loader::getProvinceMap()[5], Loader::getProvinceMap()[18]);
+	Loader::getUnitMap()[1]->setPath(apath);
 
 	for (const auto& p : Loader::getNationMap()) {
-		NationNew* nation = p.second;
+		Nation* nation = p.second;
 		nations.push_back(nation);
 	}
 
@@ -167,7 +175,7 @@ void loadProvinceAttributes(string attributes) {
 		Loader::getProvinceMap()[id]->setColour(colour);
 
 		if (id == 5) {
-			ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Loader::getProvinceMap()[21]->getColour());
+			ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Loader::getProvinceMap()[10]->getColour());
 			colourshift.speed = 0.035f;
 			Loader::getProvinceMap()[5]->setColourShift(colourshift);
 		}
@@ -283,7 +291,15 @@ static bool within(Vector2 location, Vector2 size, Vector2 point) {
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
-Moveable* Game::getObjectUnderMouse() {
+void Game::moveUnit(Province* province) {
+	Unit* unit = reinterpret_cast<Unit*>(selected_object);
+	if (unit->getState() != FIGHTING) {
+		unit->setPath(Province::getShortestPath(unit->getProvince(), province));
+		unit->initiate();
+	}
+}
+
+Moveable* Game::getObjectUnderMouse() { // Cache each update
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	Vector2 cursor(x / game->render.resolution.x, y / game->render.resolution.y);
@@ -325,14 +341,15 @@ void Game::updateProperties() {
 		}
 	}
 
-	if (getButton(GLFW_MOUSE_BUTTON_RIGHT) && selected_object) {
-		double x, y, relx, rely;
-		glfwGetCursorPos(window, &x, &y);
-		relx = x / render.resolution.x, rely = y / render.resolution.y;
-		Vector2 new_size = Vector2(abs(game->mouse_position.x - relx), abs(game->mouse_position.y - rely));
-		selected_object->setSize(new_size.x, new_size.y);
-		t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
-	}
+	if (mouse->debug_control_scheme)
+		if (getButton(GLFW_MOUSE_BUTTON_RIGHT) && selected_object) {
+			double x, y, relx, rely;
+			glfwGetCursorPos(window, &x, &y);
+			relx = x / render.resolution.x, rely = y / render.resolution.y;
+			Vector2 new_size = Vector2(abs(game->mouse_position.x - relx), abs(game->mouse_position.y - rely));
+			selected_object->setSize(new_size.x, new_size.y);
+			t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
+		}
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
 		double x, y, relx, rely;
 		glfwGetCursorPos(window, &x, &y);
@@ -397,7 +414,7 @@ int Game::gameLoop() {
 				} cout << endl;
 			} cout << endl;
 #else
-			for (NationNew* nation : nations) nation->evaluate();
+			for (Nation* nation : nations) nation->evaluate();
 #endif
 			elapsed_days++;
 			updateObjects(60.0 / update_rate);

@@ -116,19 +116,9 @@ void Game::loadLevels(string level_directory) {
 }
 
 void Game::setupRTSGame() {
-	vector<Province*> path;
-	path.push_back(Loader::getProvinceMap()[22]);
-	path.push_back(Loader::getProvinceMap()[21]);
-	path.push_back(Loader::getProvinceMap()[20]);
-	path.push_back(Loader::getProvinceMap()[19]);
-	path.push_back(Loader::getProvinceMap()[17]);
-	path.push_back(Loader::getProvinceMap()[18]);
-	Loader::getUnitMap()[1]->setPath(path);
+	Loader::getUnitMap()[1]->setPath(Province::getShortestPath(Loader::getProvinceMap()[5], Loader::getProvinceMap()[18]));
 	Loader::getUnitMap()[1]->initiate();
 	Loader::getUnitMap()[2]->initiate();
-
-	vector<Province*> apath = Province::getShortestPath(Loader::getProvinceMap()[5], Loader::getProvinceMap()[18]);
-	Loader::getUnitMap()[1]->setPath(apath);
 
 	for (const auto& p : Loader::getNationMap()) {
 		Nation* nation = p.second;
@@ -173,7 +163,7 @@ void loadProvinceAttributes(string attributes) {
 		// Loader::getProvinceMap()[id]->setColour(Colour(0, 0, 0, 80));
 		Colour colour = Loader::getProvinceMap()[id]->getColour();
 		// colour = colour / 1.25;
-		// colour.setW(150);
+		colour.setW(200);
 		Loader::getProvinceMap()[id]->setColour(colour);
 
 		if (id == 5) {
@@ -327,12 +317,11 @@ Moveable* Game::getObjectUnderMouse() { // Cache each update
 	}
 
 	if (object != nullptr) {
-		if (object->hasFlag(DISABLED)) {
+		if (!object->hasFlag(DISABLED)) {
 			object->onHover();
-			if (object->getFlags() & PROVINCE) {
+			if (object->hasFlag(PROVINCE)) {
 				hoverProvince((Province*)object);
-			}
-			else if (object->getFlags() & UNIT) {
+			} else if (object->hasFlag(UNIT)) {
 				hoverUnit((Unit*)object);
 			}
 		}
@@ -347,16 +336,16 @@ void Game::hoverProvince(Province* province) {
 	province_tooltip->show();
 	province_tooltip->setTitle(province->getName());
 	province_tooltip->setSubtitle("Owned by: " + province->getNation()->getName());
-	province_tooltip->subtitle2_->setContent("Value: " + to_string(province->getValue()));
-	province_tooltip->subtitle3_->setContent("Terrain: " + province->getTerrain());
+	province_tooltip->subtitle2->setContent("Value: " + to_string(province->getValue()));
+	province_tooltip->subtitle3->setContent("Terrain: " + province->getTerrain());
 }
 
 void Game::hoverUnit(Unit* unit) {
 	province_tooltip->show();
 	province_tooltip->setTitle(unit->getName());
 	province_tooltip->setSubtitle("Owned by: " + unit->getNation()->getName());
-	province_tooltip->subtitle2_->setContent("Skill rating: " + to_string(unit->getSkill()));
-	province_tooltip->subtitle3_->setContent("Size: " + to_string(unit->getSize()));
+	province_tooltip->subtitle2->setContent("Skill rating: " + to_string(unit->getSkill()));
+	province_tooltip->subtitle3->setContent("Size: " + to_string(unit->getSize()));
 }
 
 void Game::updateProperties() {
@@ -394,8 +383,8 @@ void Game::updateProperties() {
 
 void Game::updateObjects(float modifier) {
 	vector<Moveable*> inactive_objects;
-	for (Moveable* m : objects) !m->isActive ? inactive_objects.push_back(m) : m->update(modifier);
-	for (Moveable* to : text_objects) !to->isActive ? inactive_objects.push_back(to) : to->update(modifier);
+	for (Moveable* m : objects) !m->is_active ? inactive_objects.push_back(m) : m->update(modifier);
+	for (Moveable* to : text_objects) !to->is_active ? inactive_objects.push_back(to) : to->update(modifier);
 
 	for (Moveable* t : inactive_objects) {
 		objects.erase(remove(objects.begin(), objects.end(), t), objects.end());

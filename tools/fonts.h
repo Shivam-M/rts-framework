@@ -1,12 +1,13 @@
 #pragma once
 
 #include <map>
-#include "common.h"
-#include "text_renderer.h"
+#include <string>
 
 #define DIRECTORY	 "C:/Windows/Fonts/"
 
 using namespace std;
+
+class Font;
 
 class Fonts {
 	public:

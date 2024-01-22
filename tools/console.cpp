@@ -127,10 +127,10 @@ void Console::execute() {
 			vector<Moveable*> objects = game->objects;
 			for (Moveable* m : objects) {
 				if (m->getFlags() & SQUARE) {
-					m->isActive = false;
+					m->is_active = false;
 				}
 				else if (m->getName() == "Ice") {
-					m->isActive = false;
+					m->is_active = false;
 				}
 			}
 			feedback("Cleared all particle objects");

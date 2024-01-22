@@ -160,8 +160,11 @@ Unit* Loader::parseUnit() {
 	Unit* unit = new Unit(getInt("id"), nullptr, getInt("size"), getFloat("skill"), province_map[getInt("province")]);
 	parseCommon(unit);
 
-	Font* font = Fonts::getFont(CONSOLAS_BOLD, 8);
-	unit->setText(new Text(unit->getLocation(), font, Colour(189, 195, 199, 250), unit->getName()));
+	// Font* font = Fonts::getFont(CONSOLAS_BOLD, 16); // (189, 195, 199, 250)
+	Font* font = Fonts::getFont("data/fonts/Cinzel-Regular.ttf", 12, true); // (189, 195, 199, 250)
+	Text* unit_text = new Text(unit->getLocation(), font, Colour(255, 255, 255, 255), unit->getName(), 0.75f);
+	unit_text->addFlag(TEXT_BACKGROUND);
+	unit->setText(unit_text);
 	unit->setTextOffset(0, -0.0025);
 	unit->location.x -= 1; // Offset x by -1 (sidescroller levelling)
 

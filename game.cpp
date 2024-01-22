@@ -84,8 +84,10 @@ Game::Game(int argc, char** argv) {
 	registerObject(&t_PlayerAcceleration);
 	registerObject(&t_PlayerLocation);
 
-	// GeneralTooltip* province_tooltip = new GeneralTooltip();
-	// registerObject(province_tooltip);
+	province_tooltip = new GeneralTooltip();
+	province_tooltip->setLocation(0.01, 0.79);
+	province_tooltip->setTitle("");
+	registerObject(province_tooltip);
 	
 	console->build();
 
@@ -258,8 +260,11 @@ void Game::fireShot() {
 	*/
 }
 
-void Game::debugMode() {
-	render.setRenderLevel(3);
+void Game::debugMode() { render.setRenderLevel(3); }
+
+void Game::toggleDebug() {
+	mouse->debug_control_scheme ^= true;
+	t_Notification.setContent("Updated control scheme to: " + to_string(mouse->debug_control_scheme));
 }
 
 void Game::updateStatistics(int f, int u) {
@@ -321,27 +326,55 @@ Moveable* Game::getObjectUnderMouse() { // Cache each update
 		}
 	}
 
-	if (object != nullptr)
-		object->onHover();
+	if (object != nullptr) {
+		if (object->hasFlag(DISABLED)) {
+			object->onHover();
+			if (object->getFlags() & PROVINCE) {
+				hoverProvince((Province*)object);
+			}
+			else if (object->getFlags() & UNIT) {
+				hoverUnit((Unit*)object);
+			}
+		}
+	} else {
+		province_tooltip->hide();
+	}
+	
 	return object;
 }
 
+void Game::hoverProvince(Province* province) {
+	province_tooltip->show();
+	province_tooltip->setTitle(province->getName());
+	province_tooltip->setSubtitle("Owned by: " + province->getNation()->getName());
+	province_tooltip->subtitle2_->setContent("Value: " + to_string(province->getValue()));
+	province_tooltip->subtitle3_->setContent("Terrain: " + province->getTerrain());
+}
+
+void Game::hoverUnit(Unit* unit) {
+	province_tooltip->show();
+	province_tooltip->setTitle(unit->getName());
+	province_tooltip->setSubtitle("Owned by: " + unit->getNation()->getName());
+	province_tooltip->subtitle2_->setContent("Skill rating: " + to_string(unit->getSkill()));
+	province_tooltip->subtitle3_->setContent("Size: " + to_string(unit->getSize()));
+}
+
 void Game::updateProperties() {
-	// getObjectUnderMouse();
+	getObjectUnderMouse();
 
-	if (selected_object) {
-		if (selected_object->getFlags() & PROVINCE) {
-			selected_object->setColour(Colour(255, 255, 0, 80));
-			Province* province = reinterpret_cast<Province*>(selected_object);
-			for (Province* neighbour : province->getNeighbours()) {
-				neighbour->setColour(Colour(255, 0, 255, 80));
+	if (mouse->debug_control_scheme) {
+		if (selected_object) {
+			if (selected_object->getFlags() & PROVINCE) {
+				selected_object->setColour(Colour(255, 255, 0, 80));
+				Province* province = reinterpret_cast<Province*>(selected_object);
+				for (Province* neighbour : province->getNeighbours()) {
+					neighbour->setColour(Colour(255, 0, 255, 80));
+				}
 			}
-		} else if (selected_object->getFlags() & UNIT) {
+			else if (selected_object->getFlags() & UNIT) {
 
+			}
 		}
-	}
-
-	if (mouse->debug_control_scheme)
 		if (getButton(GLFW_MOUSE_BUTTON_RIGHT) && selected_object) {
 			double x, y, relx, rely;
 			glfwGetCursorPos(window, &x, &y);
@@ -350,6 +383,7 @@ void Game::updateProperties() {
 			selected_object->setSize(new_size.x, new_size.y);
 			t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
+	}
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
 		double x, y, relx, rely;
 		glfwGetCursorPos(window, &x, &y);
@@ -372,17 +406,28 @@ void Game::updateObjects(float modifier) {
 	queue_objects.clear();
 }
 
-void Game::registerObject(Moveable* m) { objects.push_back(m); }
+void Game::registerObject(Moveable* m) { 
+	objects.push_back(m);
+	if (m->getFlags() & PANEL) {
+		Panel* panel = reinterpret_cast<Panel*>(m);
+		for (Moveable* moveable : *panel->get()) {
+			if (moveable->getFlags() & TEXT) {
+				registerObject(reinterpret_cast<Text*>(moveable));
+			} else {
+				registerObject(moveable);
+			}
+		}
+	}
+}
 
 void Game::registerObject(Text* t) { text_objects.push_back(t); }
 
 int Game::gameLoop() {
-	update_rate = 60;
 	int frames = 0, updates = 0, frame_count = 0;
-	float average_frames = 0;
-	float limit = 1.0 / update_rate;
+	float average_frames = 0.f;
+	float limit = 1.0f / update_rate;
 	float last_time = glfwGetTime(), timer = last_time;
-	float delta_time = 0, current_time = 0;
+	float delta_time = 0.f, current_time = 0.f;
 	float last_frame_time = glfwGetTime();
 	float update_time;
 

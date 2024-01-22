@@ -24,7 +24,7 @@ class Unit: public Moveable {
 	public:
 		Unit(int identifier, Nation* nation, int size, float skill = 1.00, Province* province = nullptr) :
 			identifier_(identifier), nation_(nation), size_(size), skill_factor_(skill) {
-			setProvince(province); addFlag(TEXTURED | UNIT); setTexture(Image::getImage("images/unit.png")); Moveable::setSize(0.075, 0.10);
+			setProvince(province); addFlag(TEXTURED | UNIT); setTexture(Image::getImage("images/unit_thick.png")); Moveable::setSize(0.075, 0.075 / 1.16);
 		}
 
 		void setID(int identifier) { identifier_ = identifier; }
@@ -158,7 +158,7 @@ class Unit: public Moveable {
 							for (Unit* unit: units) {
 								if (unit == this) continue;
 								if (unit->getNation() != getNation()) {
-									if (unit->getState() != FIGHTING || unit->getState() != DEAD) {
+									if (unit->getState() != FIGHTING && unit->getState() != DEAD) {
 										initiateBattle(unit);
 										break;
 									}
@@ -173,8 +173,18 @@ class Unit: public Moveable {
 			}
 
 			if (text != nullptr) {
-				text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
 				text->setContent(getName() + " - " + to_string(getSize()));
+
+				Vector2 text_location = getCentre();
+				Vector2 text_size = text->getTextSize();
+
+				text_size.x /= 1280;
+				text_size.y /= 720;
+				text_location.y -= 0.0275;
+				text_location.x -= text_size.x / 2;
+
+				// text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
+				text->setLocation(text_location.x, text_location.y);
 			}
 		}
 };

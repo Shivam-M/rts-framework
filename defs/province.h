@@ -19,6 +19,7 @@ private:
 	PROV_STATE state_ = NORMAL;
 	vector<Province*> neighbours_;
 	vector<Unit*> stationed_units;
+	Nation* nation_;
 
 public:
 	Province(int identifier, string name) : identifier_(identifier), name_(name) {}
@@ -46,6 +47,7 @@ public:
 	bool isNeighbour(Province* other) { return find(neighbours_.begin(), neighbours_.end(), other) != neighbours_.end(); }
 
 	void evaluate() {
+		return;
 		if (text != nullptr) {
 			text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
 			text->setContent(getName() + " [" + to_string(getID()) + "] - (" + to_string(location.x) + ", " + to_string(location.y) + ")");
@@ -57,6 +59,10 @@ public:
 	void deregisterUnit(Unit* unit) { stationed_units.erase(remove(stationed_units.begin(), stationed_units.end(), unit), stationed_units.end()); }
 
 	vector<Unit*> getStationedUnits() { return stationed_units; }
+
+	void setNation(Nation* nation) { nation_ = nation; }
+
+	Nation* getNation() { return nation_; }
 
 	/*
 	void onHover() override {

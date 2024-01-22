@@ -48,11 +48,12 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering
 
 		void drawCustom(vector<Vector2> points, Colour colour, Colour gradient);
 
-		void drawText(Vector2 location, string message, Font* font, Colour colour);
+		void drawText(Vector2 location, string message, Font* font, Colour colour, float scale = 1.0f);
 
 		void drawCircle(Circle*);
 		void drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality);
 
+		void renderMoveable(Moveable* moveable);
 		void renderWindow();
 		void toggleFullscreen();
 		void normaliseCoordinates(Vector2* location);

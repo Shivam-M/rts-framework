@@ -27,5 +27,6 @@ class TextRenderer {
         static void init_shader();
         static void reset_shader();
         static void render_text(Font* ft_font, float x, float y, string const& text, Colour colour, float scale = 1.0f);
-        static Font* load_font(string font_name, int height);    
+        static Font* load_font(string font_name, int height, float scale = 1.0f);    
+        static Vector2 calculate_text_dimensions(Font* ft_font, const std::string& text, float scale);
 };

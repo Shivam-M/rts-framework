@@ -15,6 +15,7 @@
 
 class Keyboard;
 class Mouse;
+class GeneralTooltip;
 
 static void loadProvinceNeighbours(string);
 static void loadProvinceAttributes(string);
@@ -23,9 +24,9 @@ using namespace std;
 
 class Game {
 	public:
-		const float GRAVITY = 0.004;
-		float game_speed = 2.5;
-		float update_time_ = 0;
+		const float GRAVITY = 0.004f;
+		float game_speed = 2.5f;
+		float update_time_ = 0.f;
 		int elapsed_days = 0;
 		int level_index = 0;
 
@@ -52,6 +53,7 @@ class Game {
 		Mouse* mouse = nullptr;
 		Keyboard* keyboard = nullptr;
 		Console* console = nullptr;
+		GeneralTooltip* province_tooltip = nullptr;
 
 		Text t_FPSCounter, t_PlayerLocation, t_PlayerVelocity, t_PlayerAcceleration, t_Alt, t_Alt2, t_Alt3, t_Notification, t_Hint, t_Hint2;
 
@@ -62,20 +64,23 @@ class Game {
 		bool show_console = false;
 		bool god_mode = true;
 		int fps_limit = 0;
-		int update_rate = 144;
+		int update_rate = 60;
 		
 		void loadLevels(string level_directory);
 		void registerObject(Moveable* object);
 		void registerObject(Text* text_object);
-		void updateObjects(float modifier = 1.0);
+		void updateObjects(float modifier = 1.0f);
 		void updateStatistics(int frames, int updates);
 		void updateProperties();
 		void checkCollision();
 		void debugMode();
+		void toggleDebug();
 		void fireShot();
-		void moveUnit(Province* province);
 		void pauseGame();
 		void setupRTSGame();
+		void moveUnit(Province* province);
+		void hoverProvince(Province* province);
+		void hoverUnit(Unit* unit);
 		void setButton(int button, int state) { button_map[button] = state; }
 		int  getButton(int button) { return button_map[button]; }
 		int  gameLoop();

@@ -82,7 +82,7 @@ class Moveable {
 		void setName(string n) { name = n; }
 		void setAcceleration(float x, float y) { acceleration.set(x, y); }
 		void setVelocity(float x, float y) { velocity.set(x, y); }
-		void setLocation(float x, float y) { location.set(x, y); }
+		virtual void setLocation(float x, float y) { location.set(x, y); }
 		void setSize(float x, float y) { size.set(x, y); }
 
 		void stopColourShift();

@@ -15,7 +15,7 @@ GLuint VAO, VBO;
 GLuint shader;
 
 void TextRenderer::setup() {
-    shader = CompileShader("text.vert", "text.frag");
+    shader = CompileShader("shaders/text.vert", "shaders/text.frag");
     glUseProgram(shader);
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(1280), 0.0f, static_cast<float>(720));
     glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -32,8 +32,7 @@ void TextRenderer::setup() {
     glBindVertexArray(0);
 }
 
-Font* TextRenderer::load_font(string font_path, int height) {
-    shader = CompileShader("text.vert", "text.frag");
+Font* TextRenderer::load_font(string font_path, int height, float scale) {
     Font* ft_font = new Font();
     FT_Library library;
     FT_Face face;
@@ -67,6 +66,7 @@ Font* TextRenderer::load_font(string font_path, int height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 
         ft_font->characters.emplace(c, Character{ texture, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows), glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
                                                static_cast<unsigned int>(face->glyph->advance.x) });
@@ -76,21 +76,6 @@ Font* TextRenderer::load_font(string font_path, int height) {
     glBindTexture(GL_TEXTURE_2D, 0);
     FT_Done_Face(face);
     FT_Done_FreeType(library);
-
-    glUseProgram(shader);
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(1280), 0.0f, static_cast<float>(720));
-    glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-    glUseProgram(0);
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
     return ft_font;
 }
 
@@ -121,6 +106,19 @@ void TextRenderer::render_text(Font* ft_font, float x, float y, string const& te
 
         x += (ch.advance >> 6) * scale;
     }
+}
+
+Vector2 TextRenderer::calculate_text_dimensions(Font* ft_font, const string& text, float scale) {
+    float width = 0.0f;
+    float height = 0.0f;
+
+    for (const char& c : text) {
+        Character ch = ft_font->characters.at(c);
+        width += (ch.advance >> 6) * scale;
+        height = max(height, ch.size.y * scale);
+    }
+
+    return Vector2(width, height);
 }
 
 void TextRenderer::init_shader() {

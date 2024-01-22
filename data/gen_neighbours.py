@@ -5,7 +5,7 @@ import json
 # neighbours = {}
 provinces = {}
 neighbouring_pairs = []
-blacklisted_pairs = []
+blacklisted_pairs = [['25', '7'], ['25', '11'], ['44', '29'], ['44', '43'], ['38', '5']]
 
 class Province:
     def __init__(self, x, y, width, height):
@@ -20,7 +20,7 @@ class Province:
                     self.y + self.height < other.y or
                     other.y + other.height < self.y)
 
-with open("data/generated/province_dimensions.txt", "r") as province_mappings:
+with open("generated/province_dimensions.txt", "r") as province_mappings:
     for line in province_mappings.readlines():
         province_values = line.rstrip().split(',')
         province_id = province_values[0]
@@ -36,10 +36,10 @@ for province in provinces:
         if provinces[province].overlaps(provinces[other_province]):
             # neighbours[province].append(other_province)
             if [other_province, province] not in neighbouring_pairs:
-                if [other_province, province] not in blacklisted_pairs or [province, other_province] not in blacklisted_pairs:
+                if [other_province, province] not in blacklisted_pairs and [province, other_province] not in blacklisted_pairs:
                     neighbouring_pairs.append([province, other_province])
 
-with open("data/generated/province_neighbours.txt", "w") as neighbour_file:
+with open("generated/province_neighbours.txt", "w") as neighbour_file:
     for pair in neighbouring_pairs:
         neighbour_file.write(pair[0] + "," + pair[1] + "\n")
 

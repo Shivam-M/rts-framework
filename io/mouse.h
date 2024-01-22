@@ -6,7 +6,7 @@ class Mouse {
 		static Game* game;
 
 	public:
-		static inline bool debug_control_scheme = false;
+		static inline bool debug_control_scheme = true;
 
 		Mouse(Game*);
 

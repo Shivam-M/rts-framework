@@ -8,7 +8,7 @@
 #include "render.h"
 
 #define PI 3.14159265358979
-#define GLW_SMALL_ROUNDED_CORNER_SLICES 5 
+#define GLW_SMALL_ROUNDED_CORNER_SLICES 10
 
 static Vector2 roundedCorners[GLW_SMALL_ROUNDED_CORNER_SLICES] = { {0} };
 
@@ -24,6 +24,7 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     window_ = window;
     objects_ = objects;
     text_objects_ = text_objects;
+    TextRenderer::setup();
 }
 
 void Render::normaliseCoordinates(Vector2* location) {
@@ -40,6 +41,13 @@ void Render::alignCoordinates(Vector2* location, Vector2* size) {
 
 void Render::drawCircle(Circle* circle) {
     drawCircle(circle->getLocation(), circle->getColour(), circle->getGradientColour(), circle->getRadius(), circle->getGenerality());
+}
+
+static void scaleBy(Vector2& location, Vector2& size, float custom_scale) {
+    location.x *= custom_scale;
+    location.y *= custom_scale;
+    size.x *= custom_scale;
+    size.y *= custom_scale;
 }
 
 void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality) {
@@ -61,8 +69,25 @@ void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float 
     glEnd();
 }
 
-void Render::drawText(Vector2 location, string message, Font* font, Colour colour) {
-    TextRenderer::render_text(font, location.x * 1280, (1 - location.y) * 720, message, colour, scale);
+void Render::drawText(Vector2 location, string message, Font* font, Colour colour, float font_scale) {
+    /*
+    TextRenderer::reset_shader();
+    Vector2 dims = TextRenderer::calculate_text_dimensions(font, message, font_scale);
+    dims.x /= 1280;
+    dims.y /= 720;
+    Vector2 loc = location;
+    loc.y -= dims.y;
+
+    float bg_scale = 1.05f;
+    dims.x *= bg_scale;
+    dims.y *= bg_scale * 1.5;
+
+    loc.x -= dims.x * (bg_scale - 1) / (2 * bg_scale);
+    loc.y -= dims.y * (bg_scale * 1.5 - 1) / (2 * bg_scale * 1.5);
+
+    drawQuad(loc, dims, Colour(40, 40, 40, 200), Colour(40, 40, 40, 200));
+    TextRenderer::init_shader();*/
+    TextRenderer::render_text(font, location.x * 1280, (1 - location.y) * 720, message, colour, font_scale);
 }
 
 void Render::drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient) {
@@ -172,6 +197,20 @@ void Render::drawTextureBatch() {
     textureBatch.clear();
 }
 
+void Render::renderMoveable(Moveable* moveable) {
+    if (moveable->getFlags() & CUSTOM) {
+        drawCustom(moveable->getPoints(), moveable->getColour(), moveable->getGradientColour());
+    } else if (moveable->getFlags() & CURVED) {
+        drawCurvedQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour(), 0.025);
+    } else if (moveable->getFlags() & TEXTURED) {
+        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
+    } else if (moveable->getFlags() & CIRCLE) {
+        drawCircle(reinterpret_cast<Circle*>(moveable));
+    } else {
+        drawQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour());
+    }
+}
+
 void Render::renderWindow() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -180,45 +219,44 @@ void Render::renderWindow() {
         if (moveable->getFlags() & DISABLED) continue;
         if ((moveable->location.x + moveable->size.x < 0) || (moveable->location.y + moveable->size.y < 0) || (moveable->location.x > 1) || (moveable->location.y > 1)) continue;
         
-        if (moveable->getFlags() & PARTICLES) {
-            // ParticleGroup* particle_group = reinterpret_cast<ParticleGroup*>(moveable);
-            // for (Moveable& particle : particle_group->getParticles()) {
-                // drawQuadB(particle.getLocation(), particle.getSize(), particle.getColour(), particle.getGradientColour());
-            //}
-            // drawQuadBatch();
+        if (moveable->getFlags() & PARTICLES) continue;
+
+        if (moveable->getFlags() & PANEL) {
+            /*Panel* panel = reinterpret_cast<Panel*>(moveable);
+            for (Moveable* panel_moveable : *panel->get()) {
+                renderMoveable(panel_moveable);
+            }*/
             continue;
         }
         
-        /* if (moveable->getFlags() & PANEL) {
-            Panel* panel = reinterpret_cast<Panel*>(moveable);
-            for (Moveable* panel_moveable : panel->get()) {
-                if (panel_moveable->getFlags() & TEXT) {
-                    Text* text_moveable = reinterpret_cast<Text*>(panel_moveable);
-                    drawText(text_moveable->getLocation(), text_moveable->getContent(), text_moveable->getFont(), text_moveable->getColour());
-                }
-            }
-            continue;
-        } */
-        
-        if (moveable->getFlags() & CUSTOM) {
-            drawCustom(moveable->getPoints(), moveable->getColour(), moveable->getGradientColour());
-        } else if (moveable->getFlags() & CURVED) {
-            drawCurvedQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour(), 0.025);
-        } else if (moveable->getFlags() & TEXTURED) {
-            drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
-        } else if (moveable->getFlags() & CIRCLE) {
-            drawCircle(reinterpret_cast<Circle*>(moveable));
-        } else {
-            drawQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour());
-        }
+        renderMoveable(moveable);
     }
 
     drawTextureBatch(); // Note: won't take into account object order.
     draw_times[0] = glfwGetTime() - time_shapes;
 
     float time_text = glfwGetTime();
+    for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED) && (text->getFlags() & TEXT_BACKGROUND)) {
+        Vector2 dims = TextRenderer::calculate_text_dimensions(text->getFont(), text->getContent(), text->getScale());
+        dims.x /= 1280;
+        dims.y /= 720;
+        Vector2 loc = text->getLocation();
+        loc.y -= dims.y;
+
+        float bg_scale = 1.05f;
+        dims.x *= bg_scale;
+        dims.y *= bg_scale * 1.5;
+
+        loc.x -= dims.x * (bg_scale - 1) / (2 * bg_scale);
+        loc.y -= dims.y * (bg_scale * 1.5 - 1) / (2 * bg_scale * 1.5);
+
+        drawCurvedQuad(loc, dims, Colour(40, 40, 40, 200), Colour(40, 40, 40, 200), 0.0125);
+    }
+
     TextRenderer::init_shader();
-    for (Text* text: *text_objects_) if (!(text->getFlags() & DISABLED)) drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour());
+    for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED)) {
+        drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour(), text->getScale());
+    }
     TextRenderer::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;
 

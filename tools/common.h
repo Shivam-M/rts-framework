@@ -45,7 +45,8 @@ enum {
 	UNIT		= 1 << 22,
 	CUSTOM		= 1 << 23,
 	PANEL		= 1 << 24,
-	PARTICLES	= 1 << 25
+	PARTICLES	= 1 << 25,
+	TEXT_BACKGROUND	= 1 << 26
 };
  
 void log_impl(std::ostream& os);

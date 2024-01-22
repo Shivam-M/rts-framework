@@ -14,11 +14,17 @@ class Panel: public Moveable {
 		}
 
 		void show() {
-			if (this->getFlags() & DISABLED) removeFlag(DISABLED);
+			removeFlag(DISABLED);
+			for (Moveable* moveable : bundle_) {
+				moveable->removeFlag(DISABLED);
+			}
 		}
 
 		void hide() {
 			addFlag(DISABLED);
+			for (Moveable* moveable : bundle_) {
+				moveable->addFlag(DISABLED);
+			}
 		}
 
 		void add(Moveable* moveable) {
@@ -33,7 +39,21 @@ class Panel: public Moveable {
 			bundle_.clear();
 		}
 
-		vector<Moveable*> get() {
-			return bundle_;
+		vector<Moveable*>* get() {
+			return &bundle_;
+		}
+
+		void setLocation(float x, float y) override {
+
+			
+
+			for (Moveable* moveable : bundle_) {
+				Vector2 new_loc = moveable->getLocation();
+				new_loc.x += -getLocation().x + x;
+				new_loc.y += -getLocation().y + y;
+				moveable->setLocation(new_loc.x, new_loc.y);
+			}
+
+			Moveable::setLocation(x, y);
 		}
 };

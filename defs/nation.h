@@ -43,7 +43,7 @@ class Nation : public Moveable {
 		vector<Province*> getOwnedProvinces() { return owned_provinces_; }
 		int getNumberProvinces() { return owned_provinces_.size(); }
 		bool ownsProvince(Province* province) { return find(owned_provinces_.begin(), owned_provinces_.end(), province) != owned_provinces_.end(); }
-		void addProvince(Province* province) { owned_provinces_.push_back(province); }
+		void addProvince(Province* province) { owned_provinces_.push_back(province); province->setNation(this); }
 		void removeProvince(Province* province) {
 			if (ownsProvince(province)) {
 				if (getCapital() != province) {
@@ -74,11 +74,14 @@ class Nation : public Moveable {
 		bool isInDebt() { return in_debt_; }
 
 		void evaluate() {
+			
 			float final_income = income_; // Final income is base income plus value from all owned provinces
+
 			for (Province* province : getOwnedProvinces()) {
 				province->evaluate();
 				final_income += province->getValue();
 			}
+
 			for (Unit* unit : getOwnedUnits()) {
 				unit->evaluate();
 			}

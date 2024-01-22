@@ -135,9 +135,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="assets\collidable.cpp" />
-    <ClCompile Include="assets\general_tooltip.h" />
+    <ClInclude Include="assets\general_tooltip.h" />
     <ClCompile Include="assets\moveable.cpp" />
-    <ClCompile Include="assets\panel.cpp" />
     <ClCompile Include="assets\text.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="io\keyboard.cpp" />
@@ -178,9 +177,9 @@
     <ClInclude Include="tools\text_renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="gen_neighbours.py" />
-    <None Include="text.frag" />
-    <None Include="text.vert" />
+    <None Include="data\gen_neighbours.py" />
+    <None Include="shaders\text.frag" />
+    <None Include="shaders\text.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

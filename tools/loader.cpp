@@ -126,7 +126,7 @@ map<int, Nation*> Loader::getNationMap() { return nation_map; }
 map<int, Unit*> Loader::getUnitMap() { return unit_map; }
 
 Province* Loader::parseProvince() {
-	Province* province = new Province(getInt("id"), getString("name"));
+	Province* province = new Province(getInt("id"));
 	Font* font = Fonts::getFont(CONSOLAS_BOLD, 8);
 
 	parseCommon(province);
@@ -147,8 +147,8 @@ Unit* Loader::parseUnit() {
 	parseCommon(unit);
 
 	// Font* font = Fonts::getFont(CONSOLAS_BOLD, 16); // (189, 195, 199, 250)
-	Font* font = Fonts::getFont("data/fonts/Cinzel-Regular.ttf", 12, true); // (189, 195, 199, 250)
-	Text* unit_text = new Text(unit->getLocation(), font, Colour(255, 255, 255, 255), unit->getName(), 0.75f);
+	Font* font = Fonts::getFont("data/fonts/Cinzel-Regular.ttf", 16, true); // (189, 195, 199, 250)
+	Text* unit_text = new Text(unit->getLocation(), font, Colour(255, 255, 255, 255), unit->getName(), 0.5f);
 	unit_text->addFlag(TEXT_BACKGROUND);
 	unit_text->removeFlag(FIXED_POS);
 	unit->setText(unit_text);

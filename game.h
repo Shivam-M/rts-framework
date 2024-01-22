@@ -33,6 +33,7 @@ class Game {
 		map<int, int> button_map; // replace
 		Vector2 mouse_position;
 		Vector2 original_position;
+		Vector2 cursor_position;
 
 		Render render;
 		Loader loader;
@@ -45,6 +46,7 @@ class Game {
 		vector<Nation*> nations;
 
 		GLFWwindow* window = nullptr;
+		Moveable* hovered_object = nullptr;
 		Moveable* selected_object = nullptr;
 		Province* selected_province = nullptr;
 		Unit* selected_unit = nullptr;
@@ -81,6 +83,7 @@ class Game {
 		void moveUnit(Province* province);
 		void hoverProvince(Province* province);
 		void hoverUnit(Unit* unit);
+		void updateCursor();
 		void setButton(int button, int state) { button_map[button] = state; }
 		int  getButton(int button) { return button_map[button]; }
 		int  gameLoop();

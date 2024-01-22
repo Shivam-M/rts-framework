@@ -295,19 +295,16 @@ void Game::moveUnit(Province* province) {
 }
 
 Moveable* Game::getObjectUnderMouse() { // Cache each update
-	double x, y;
-	glfwGetCursorPos(window, &x, &y);
-	Vector2 cursor(x / game->render.resolution.x, y / game->render.resolution.y);
 	vector<Moveable*> over_objects;
 	Moveable* object = nullptr;
 	float min_distance = 100;
 	for (Moveable* moveable : game->objects) {
 		moveable->onHoverStop();
 		if (!(moveable->getFlags() & UNEDITABLE || moveable->getFlags() & FIXED_POS)) {
-			Vector2 location = moveable->getLocation(), size = moveable->getSize();
-			if (within(location, size, cursor)) {
-				Vector2 centre = moveable->getCentre();
-				float distance = pow(centre.x - cursor.x, 2) + pow(centre.y - cursor.y, 2); // remove sqrt
+			Vector2 location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
+			if (within(location, size, cursor_position)) {
+				Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
+				float distance = pow(centre.x - cursor_position.x, 2) + pow(centre.y - cursor_position.y, 2);
 				if (distance < min_distance) {
 					min_distance = distance;
 					object = moveable;
@@ -329,6 +326,7 @@ Moveable* Game::getObjectUnderMouse() { // Cache each update
 		province_tooltip->hide();
 	}
 	
+	hovered_object = object;
 	return object;
 }
 
@@ -345,10 +343,17 @@ void Game::hoverUnit(Unit* unit) {
 	province_tooltip->setTitle(unit->getName());
 	province_tooltip->setSubtitle("Owned by: " + unit->getNation()->getName());
 	province_tooltip->subtitle2->setContent("Skill rating: " + to_string(unit->getSkill()));
-	province_tooltip->subtitle3->setContent("Size: " + to_string(unit->getSize()));
+	province_tooltip->subtitle3->setContent("Size: " + to_string(unit->getAmount()));
+}
+
+void Game::updateCursor() {
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+	cursor_position.set(x / render.resolution.x, y / render.resolution.y);
 }
 
 void Game::updateProperties() {
+	updateCursor();
 	getObjectUnderMouse();
 
 	if (mouse->debug_control_scheme) {
@@ -360,24 +365,15 @@ void Game::updateProperties() {
 					neighbour->setColour(Colour(255, 0, 255, 80));
 				}
 			}
-			else if (selected_object->getFlags() & UNIT) {
-
-			}
 		}
 		if (getButton(GLFW_MOUSE_BUTTON_RIGHT) && selected_object) {
-			double x, y, relx, rely;
-			glfwGetCursorPos(window, &x, &y);
-			relx = x / render.resolution.x, rely = y / render.resolution.y;
-			Vector2 new_size = Vector2(abs(game->mouse_position.x - relx), abs(game->mouse_position.y - rely));
+			Vector2 new_size = Vector2(abs(game->mouse_position.x - cursor_position.x), abs(game->mouse_position.y - cursor_position.y));
 			selected_object->setSize(new_size.x, new_size.y);
 			t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
 	}
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
-		double x, y, relx, rely;
-		glfwGetCursorPos(window, &x, &y);
-		relx = x / render.resolution.x, rely = y / render.resolution.y;
-		render.offsets.x += (relx - original_position.x) * 0.01, render.offsets.y += (rely - original_position.y) * 0.01;
+		render.offsets.x += (cursor_position.x - original_position.x) * 0.01, render.offsets.y += (cursor_position.y - original_position.y) * 0.01;
 	}
 }
 
@@ -400,11 +396,10 @@ void Game::registerObject(Moveable* m) {
 	if (m->getFlags() & PANEL) {
 		Panel* panel = reinterpret_cast<Panel*>(m);
 		for (Moveable* moveable : *panel->get()) {
-			if (moveable->getFlags() & TEXT) {
+			if (moveable->getFlags() & TEXT)
 				registerObject(reinterpret_cast<Text*>(moveable));
-			} else {
+			else
 				registerObject(moveable);
-			}
 		}
 	}
 }

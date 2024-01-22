@@ -11,7 +11,7 @@ static int PathCount = 0;
 class Unit: public Moveable {
 	private:
 		int identifier_ = -1;
-		int size_ = 1;
+		int amount_ = 1;
 		float skill_factor_ = 1.00f;
 		float speed_ = 0.01f;
 		Nation* nation_ = nullptr;
@@ -23,15 +23,15 @@ class Unit: public Moveable {
 
 	public:
 		Unit(int identifier, Nation* nation, int size, float skill = 1.00, Province* province = nullptr) :
-			identifier_(identifier), nation_(nation), size_(size), skill_factor_(skill) {
+			identifier_(identifier), nation_(nation), amount_(size), skill_factor_(skill) {
 			setProvince(province); addFlag(TEXTURED | UNIT); setTexture(Image::getImage("images/unit_thick.png")); Moveable::setSize(0.075, 0.075 / 1.16);
 		}
 
 		void setID(int identifier) { identifier_ = identifier; }
 		int getID() { return identifier_; }
 
-		int getSize() { return size_; }
-		void setSize(int size) { size_ = size; }
+		int getAmount() { return amount_; }
+		void setAmount(int amount) { amount_ = amount; }
 
 		float getSkill() { return skill_factor_; }
 		void setSkill(float skill) { skill_factor_ = skill; }
@@ -76,9 +76,9 @@ class Unit: public Moveable {
 		}
 
 		void takeFatalities(int amount) {
-			size_ -= amount;
-			if (size_ <= 0) {
-				size_ = 0;
+			amount_ -= amount;
+			if (amount_ <= 0) {
+				amount_ = 0;
 				addFlag(DISABLED);
 				setState(DEAD);
 				text->addFlag(DISABLED);
@@ -103,13 +103,8 @@ class Unit: public Moveable {
 			province_->registerUnit(this);
 		}
 
-		Nation* getNation() {
-			return nation_;
-		}
-
-		void setNation(Nation* nation) {
-			nation_ = nation;
-		}
+		Nation* getNation() { return nation_; }
+		void setNation(Nation* nation) { nation_ = nation; }
 
 		void evaluate() {
 			Vector2 home_location = province_->getCentre();
@@ -173,7 +168,7 @@ class Unit: public Moveable {
 			}
 
 			if (text != nullptr) {
-				text->setContent(getName() + " - " + to_string(getSize()));
+				text->setContent(getName() + " - " + to_string(getAmount()));
 
 				Vector2 text_location = getCentre();
 				Vector2 text_size = text->getTextSize();

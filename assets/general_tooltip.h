@@ -12,7 +12,7 @@ class GeneralTooltip : public Panel {
 		Font* subtitle_font = Fonts::getFont(fn, 20, true);
 
 	public:
-		Moveable* background_ = new Moveable({ 0.0, 0.0 }, { 0.20, 0.175 }, Colour(40, 40, 40, 150), Colour(40, 40, 40, 150));
+		Moveable* background_ = new Moveable({ 0.0, 0.0 }, { 0.20, 0.175 }, Colour(40, 40, 40, 150), Colour(0, 0, 0, 0));
 		Text* title = new Text({ 0.01, 0.05 }, title_font, Colour(255, 255, 255, 255), "London", 0.5f);
 		Text* subtitle = new Text({ 0.01, 0.085 }, subtitle_font, Colour(255, 255, 255, 255), "Owned by: Mercia", 0.5f);
 		Text* subtitle2 = new Text({ 0.01, 0.11 }, subtitle_font, Colour(255, 255, 255, 255), "Value: 2.32", 0.5f);

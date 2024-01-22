@@ -4,6 +4,9 @@ struct Vector2 {
 	float x, y;
 	Vector2(float x = 0.0, float y = 0.0) : x(x), y(y) {}
 	void set(float x_value, float y_value) { x = x_value, y = y_value; }
+	Vector2 operator*(const float& number) { return Vector2(x * number, y * number); }
+	Vector2 operator+(const float& number) { return Vector2(x + number, y + number); }
+	Vector2 operator+(const Vector2& other) { return Vector2(x + other.x, y + other.y); }
 };
 
 class Vector4 {

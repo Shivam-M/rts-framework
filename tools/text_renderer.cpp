@@ -38,13 +38,13 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
     FT_Face face;
 
     if (FT_Init_FreeType(&library)) {
-        printf("FreeType init failed\n");
-        return ft_font;
+        log_t(CON_RED "ERROR! FreeType initialisation failed");
+        return nullptr;
     }
 
     if (FT_New_Face(library, font_path.c_str(), 0, &face)) {
-        printf("Failed to load font file\n");
-        return ft_font;
+        log_t(CON_RED "ERROR! Failed to load font file");
+        return nullptr;
     }
 
     // FT_Set_Pixel_Sizes(face, 0, height);
@@ -53,7 +53,7 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
 
     for (unsigned char c = 0; c < 128; c++) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            printf("Failed to load font glyph\n");
+            log_t(CON_RED "ERROR! Failed to load font glyph");
             continue;
         }
 

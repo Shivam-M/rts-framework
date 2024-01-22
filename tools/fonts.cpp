@@ -1,4 +1,6 @@
 #include "fonts.h"
+#include "common.h"
+#include "text_renderer.h"
 
 using namespace std;
 

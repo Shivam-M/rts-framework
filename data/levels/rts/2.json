@@ -10,99 +10,99 @@
       "type": "NATION",
       "id": 4,
       "capital": 5,
-	  "colour": "e74c3c",
+      "colour": "e74c3c",
       "name": "Mercia",
-      "provinces": [5, 6, 13, 14, 15, 16, 23, 24, 26, 27, 28, 30, 33, 34, 35, 36, 37, 38, 39, 40],
-      "units": [1]
+      "provinces": [ 5, 6, 13, 14, 15, 16, 23, 24, 26, 27, 28, 30, 33, 34, 35, 36, 37, 38, 39, 40 ],
+      "units": [ 1 ]
     },
-	{
+    {
       "type": "NATION",
       "id": 5,
       "capital": 25,
-	  "colour": "1abc9c",
+      "colour": "0abde3",
       "name": "Wales",
-      "provinces": [25],
+      "provinces": [ 25 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 6,
       "capital": 44,
-	  "colour": "4834d4",
+      "colour": "4834d4",
       "name": "Scotland",
-      "provinces": [44],
+      "provinces": [ 44 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 7,
       "capital": 9,
-	  "colour": "f1c40f",
+      "colour": "f1c40f",
       "name": "Wessex",
-      "provinces": [9, 10, 11, 12, 13, 17, 18],
+      "provinces": [ 9, 10, 11, 12, 13, 17, 18 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 8,
       "capital": 19,
-	  "colour": "3498db",
+      "colour": "3498db",
       "name": "Sussex",
-      "provinces": [19, 20],
-      "units": [2]
+      "provinces": [ 19, 20 ],
+      "units": [ 2 ]
     },
-	{
+    {
       "type": "NATION",
       "id": 9,
       "capital": 21,
-	  "colour": "2ecc71",
+      "colour": "2ecc71",
       "name": "Kent",
-      "provinces": [21],
+      "provinces": [ 21 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 10,
       "capital": 22,
-	  "colour": "f0932b",
+      "colour": "f0932b",
       "name": "Essex",
-      "provinces": [22],
+      "provinces": [ 22 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 11,
       "capital": 31,
-	  "colour": "9b59b6",
+      "colour": "9b59b6",
       "name": "East Anglia",
-      "provinces": [31, 32],
+      "provinces": [ 31, 32 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 12,
       "capital": 42,
-	  "colour": "22a6b3",
+      "colour": "22a6b3",
       "name": "Northumberland",
-      "provinces": [42, 43, 29],
+      "provinces": [ 42, 43, 29 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 13,
       "capital": 41,
-	  "colour": "ffbe76",
+      "colour": "cd84f1",
       "name": "Strathclyde",
-      "provinces": [41, 7, 29],
+      "provinces": [ 41, 7, 29 ],
       "units": []
     },
-	{
+    {
       "type": "NATION",
       "id": 14,
       "capital": 8,
-	  "colour": "686de0",
+      "colour": "686de0",
       "name": "Dumonia",
-      "provinces": [8],
+      "provinces": [ 8 ],
       "units": []
     }
   ]

@@ -255,7 +255,7 @@ void Render::renderWindow() {
 
     TextRenderer::init_shader();
     for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED)) {
-        drawText(text->getLocation(), text->getContent(), text->getFont(), text->getColour(), text->getScale());
+        drawText(!text->hasFlag(FIXED_POS) ? text->getLocation() * scale + offsets : text->getLocation(), text->getContent(), text->getFont(), text->getColour(), !text->hasFlag(FIXED_POS) ? text->getScale() * scale : text->getScale());
     }
     TextRenderer::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;

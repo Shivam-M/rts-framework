@@ -28,6 +28,7 @@ class Panel: public Moveable {
 		}
 
 		void add(Moveable* moveable) {
+			moveable->addFlag(UNEDITABLE);
 			bundle_.push_back(moveable);
 		}
 

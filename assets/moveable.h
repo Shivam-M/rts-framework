@@ -30,8 +30,8 @@ struct ColourShift {
 class Moveable {
 	public:
 		string name = "Generic Moveable";
-		Texture* texture;
-		Text* text;
+		Texture* texture = nullptr;
+		Text* text = nullptr;
 		vector<string> script;
 		vector<Vector2> points;
 
@@ -47,11 +47,10 @@ class Moveable {
 
 		ColourShift colour_shift;
 		Colour colour = Colour("FFFFFF");
-		Colour alternate_colour = colour;
 		Colour gradient_colour = colour;
 		Colour default_colour = colour;
 
-		bool shifting_colour = false, isActive = true;
+		bool shifting_colour = false, is_active = true;
 
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
@@ -88,15 +87,14 @@ class Moveable {
 		void stopColourShift();
 		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; shifting_colour = true; }
 		void setColour(Colour col) { colour = col; default_colour = col; }
-		void setDefaultColour(Colour col) { alternate_colour = col; }
-		void setAlternateColour(Colour col) { default_colour = col; }
+		void setDefaultColour(Colour col) { default_colour = col; }
 		void setGradientColour(Colour col) { gradient_colour = col; }
 		void resetColour() { colour = default_colour; }
 		void tickTimer(float modifier);
 
 		void shiftColour();
-		virtual void onHover() { /*colour.w_ *= 1.5; */}
-		virtual void onHoverStop() { /* resetColour(); */}
+		virtual void onHover() { if (!shifting_colour) colour.w_ /= 1.25; }
+		virtual void onHoverStop() { if (!shifting_colour) resetColour();}
 
 		void loadScript(string script_path);
 

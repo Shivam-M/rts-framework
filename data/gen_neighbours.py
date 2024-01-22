@@ -5,7 +5,7 @@ import json
 # neighbours = {}
 provinces = {}
 neighbouring_pairs = []
-blacklisted_pairs = [['25', '7'], ['25', '11'], ['44', '29'], ['44', '43'], ['38', '5']]
+blacklisted_pairs = [['25', '7'], ['25', '11'], ['44', '29'], ['44', '43'], ['38', '5'], ['28', '29']]
 
 class Province:
     def __init__(self, x, y, width, height):

@@ -1,8 +1,8 @@
 {
 	"level_name": "Example",
-	"background": "000000",
+	"background": "0a3d62",
 	"background_alpha": 0.31,
-	"alt_background": "000000",
+	"alt_background": "0c2461",
 	"alt_background_alpha": 0.31,
 	"foreground": "FFFFFF",
 	"variables": {

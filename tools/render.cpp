@@ -43,13 +43,6 @@ void Render::drawCircle(Circle* circle) {
     drawCircle(circle->getLocation(), circle->getColour(), circle->getGradientColour(), circle->getRadius(), circle->getGenerality());
 }
 
-static void scaleBy(Vector2& location, Vector2& size, float custom_scale) {
-    location.x *= custom_scale;
-    location.y *= custom_scale;
-    size.x *= custom_scale;
-    size.y *= custom_scale;
-}
-
 void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality) {
     Vector2 original_location = location; // Check change
     normaliseCoordinates(&location);
@@ -70,23 +63,6 @@ void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float 
 }
 
 void Render::drawText(Vector2 location, string message, Font* font, Colour colour, float font_scale) {
-    /*
-    TextRenderer::reset_shader();
-    Vector2 dims = TextRenderer::calculate_text_dimensions(font, message, font_scale);
-    dims.x /= 1280;
-    dims.y /= 720;
-    Vector2 loc = location;
-    loc.y -= dims.y;
-
-    float bg_scale = 1.05f;
-    dims.x *= bg_scale;
-    dims.y *= bg_scale * 1.5;
-
-    loc.x -= dims.x * (bg_scale - 1) / (2 * bg_scale);
-    loc.y -= dims.y * (bg_scale * 1.5 - 1) / (2 * bg_scale * 1.5);
-
-    drawQuad(loc, dims, Colour(40, 40, 40, 200), Colour(40, 40, 40, 200));
-    TextRenderer::init_shader();*/
     TextRenderer::render_text(font, location.x * 1280, (1 - location.y) * 720, message, colour, font_scale);
 }
 
@@ -115,14 +91,15 @@ void Render::drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colou
     for (int i = 0; i < GLW_SMALL_ROUNDED_CORNER_SLICES; i++) {
         glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
         glVertex2f(left + radius - radius * roundedCorners[i].x, bottom - radius + radius * roundedCorners[i].y);
-        if (colour != gradient) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
+        // if (colour != gradient) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
         glVertex2f(left + radius - radius * roundedCorners[i].x, top + radius - radius * roundedCorners[i].y);
     }
 
     for (int i = GLW_SMALL_ROUNDED_CORNER_SLICES - 1; i >= 0; i--) {
-        glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
-        glVertex2f(right - radius + radius * roundedCorners[i].x, bottom - radius + radius * roundedCorners[i].y);
         if (colour != gradient) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
+        // glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
+        glVertex2f(right - radius + radius * roundedCorners[i].x, bottom - radius + radius * roundedCorners[i].y);
+        // if (colour != gradient) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
         glVertex2f(right - radius + radius * roundedCorners[i].x, top + radius - radius * roundedCorners[i].y);
     }
     glEnd();

@@ -1,6 +1,5 @@
 #pragma once
 
-#define RENDER_2
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +15,7 @@
 class Keyboard;
 class Mouse;
 class GeneralTooltip;
+class Panel;
 
 static void loadProvinceNeighbours(string);
 static void loadProvinceAttributes(string);
@@ -56,6 +56,7 @@ class Game {
 		Keyboard* keyboard = nullptr;
 		Console* console = nullptr;
 		GeneralTooltip* province_tooltip = nullptr;
+		Panel* pause_panel = nullptr;
 
 		Text t_FPSCounter, t_PlayerLocation, t_PlayerVelocity, t_PlayerAcceleration, t_Alt, t_Alt2, t_Alt3, t_Notification, t_Hint, t_Hint2;
 
@@ -63,6 +64,8 @@ class Game {
 		// Player player;
 		static Game* game;
 
+		bool game_paused = false;
+		bool picking_nation = false;
 		bool show_console = false;
 		bool god_mode = true;
 		int fps_limit = 0;
@@ -84,10 +87,12 @@ class Game {
 		void hoverProvince(Province* province);
 		void hoverUnit(Unit* unit);
 		void updateCursor();
+		void executeAction(ACTIONS action);
 		void setButton(int button, int state) { button_map[button] = state; }
 		int  getButton(int button) { return button_map[button]; }
 		int  gameLoop();
 
+		Moveable* createButton(Vector2 location, Vector2 size, Colour colour, Colour gradient, ACTIONS action, Text*);
 		Moveable* getObjectUnderMouse();
 		
 		// Player* getPlayer();

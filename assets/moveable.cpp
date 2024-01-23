@@ -1,6 +1,11 @@
 #include "moveable.h"
+#include "text.h"
 #include <cmath>
 
+void Moveable::setTextOffset(float x, float y) {
+	text_offset.set(x, y); 
+	if (text) text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
+}
 
 void setValues(Vector2& vector, string values) {
 	size_t splitter = values.find(',');
@@ -45,6 +50,12 @@ void Moveable::loadScript(string path) {
 
 void Moveable::shiftColour() {
 	Colour change = (colour_shift.first_colour - colour_shift.second_colour) * colour_shift.speed;
+	ColourShift::DIRECTION direction = colour_shift.direction;
+
+	if (hasFlag(PROVINCE)) {
+		bool t = 1;
+	}
+
 	if (colour_shift.direction == ColourShift::UP) {
 		colour = colour + change;
 		if (colour >= max(colour_shift.first_colour, colour_shift.second_colour)) {
@@ -54,12 +65,16 @@ void Moveable::shiftColour() {
 	}
 	else {
 		colour = colour - change;
+		float mag = colour.magnitude2();
+		float mag2 = colour.magnitude();
 		if (colour <= min(colour_shift.first_colour, colour_shift.second_colour)) {
 			colour = min(colour_shift.first_colour, colour_shift.second_colour);
 			colour_shift.direction = ColourShift::UP;
 		}
 	}
 	if (colour_shift.with_gradient) gradient_colour = colour;
+	if (colour_shift.loop == false && (direction != colour_shift.direction || colour.getW() <= 0)) // temp
+		shifting_colour = false;
 	if (colour_shift.fade_to_death && colour.getW() <= 0) addFlag(DISABLED);
 	if (*colour_shift.condition != colour_shift.target) stopColourShift();
 }

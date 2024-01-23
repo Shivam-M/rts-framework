@@ -27,6 +27,8 @@ struct ColourShift {
 	float speed = 0.1f;
 };
 
+enum ACTIONS {CLOSE_GAME, SWITCH_NATION, OTHER};
+
 class Moveable {
 	public:
 		string name = "Generic Moveable";
@@ -38,6 +40,7 @@ class Moveable {
 		float script_timer = 0;
 		int script_line = 0;
 		int flags = ENABLED;
+		ACTIONS button_action = OTHER;
 
 		Vector2 acceleration;
 		Vector2 velocity;
@@ -76,13 +79,20 @@ class Moveable {
 		bool hasFlag(int f) { return flags & f; }
 
 		void setText(Text* t) { text = t; }
-		void setTextOffset(float x, float y) { text_offset.set(x, y); }
+		void setTextOffset(float x, float y);
 		void setTexture(Texture* tex) { addFlag(TEXTURED); texture = tex; }
 		void setName(string n) { name = n; }
 		void setAcceleration(float x, float y) { acceleration.set(x, y); }
 		void setVelocity(float x, float y) { velocity.set(x, y); }
 		virtual void setLocation(float x, float y) { location.set(x, y); }
 		void setSize(float x, float y) { size.set(x, y); }
+
+		void setButtonAction(ACTIONS action) {
+			addFlag(BUTTON);
+			button_action = action;
+		}
+
+		ACTIONS getButtonAction() { return button_action; }
 
 		void stopColourShift();
 		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; shifting_colour = true; }
@@ -95,6 +105,10 @@ class Moveable {
 		void shiftColour();
 		virtual void onHover() { if (!shifting_colour) colour.w_ /= 1.25; }
 		virtual void onHoverStop() { if (!shifting_colour) resetColour();}
+
+		void onClick() {
+
+		}
 
 		void loadScript(string script_path);
 

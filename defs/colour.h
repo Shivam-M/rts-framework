@@ -45,11 +45,11 @@ class Vector4 {
 		bool operator==(const Vector4& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_ && w_ == other.w_; }
 		bool operator!=(const Vector4& other) const { return x_ != other.x_ || y_ != other.y_ || z_ != other.z_ || w_ != other.w_; }
 
-		bool operator<(const Vector4& other) const { return magnitude() < other.magnitude(); }
-		bool operator<=(const Vector4& other) const { return magnitude() <= other.magnitude(); }
+		bool operator<(const Vector4& other) const { return magnitude2() < other.magnitude2(); }
+		bool operator<=(const Vector4& other) const { return magnitude2() <= other.magnitude2(); }
 
-		bool operator>(const Vector4& other) const { return magnitude() > other.magnitude(); }
-		bool operator>=(const Vector4& other) const { return magnitude() >= other.magnitude(); }
+		bool operator>(const Vector4& other) const { return magnitude2() > other.magnitude2(); }
+		bool operator>=(const Vector4& other) const { return magnitude2() >= other.magnitude2(); }
 
 		/*
 		bool operator<(const Vector4& other) const { return x_ < other.x_ && y_ < other.y_ && z_ < other.z_ && w_ < other.w_; }
@@ -59,13 +59,25 @@ class Vector4 {
 		bool operator>=(const Vector4& other) const { return x_ >= other.x_ && y_ >= other.y_ && z_ >= other.z_ && w_ >= other.w_; }
 		*/
 
-		float magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_); }
+		float magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_); } // rm sqrt
+		float magnitude2() const {
+			float mag = 0.f;
+			mag += x_ <= 0 ? -(x_ * x_) : (x_ * x_);
+			mag += y_ <= 0 ? -(y_ * y_) : (y_ * y_);
+			mag += z_ <= 0 ? -(z_ * z_) : (z_ * z_);
+			mag += w_ <= 0 ? -(w_ * w_) : (w_ * w_);
+			return sqrt(mag);
+		}
 
 		Vector4 normalise() {
 			float mag = magnitude();
 			return (mag != 0.0) ? *this / mag : *this;
 		}
 };
+
+#define COLOUR_WHITE Colour(255, 255, 255, 255)
+#define COLOUR_BLACK Colour(0, 0, 0, 255)
+#define COLOUR_INVIS Colour(0, 0, 0, 0)
 
 class Colour: public Vector4 { 
 	public:

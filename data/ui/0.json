@@ -1,0 +1,293 @@
+{
+  "level_name": "Example",
+  "background": "0a3d62",
+  "background_alpha": 0.31,
+  "alt_background": "0c2461",
+  "alt_background_alpha": 0.31,
+  "foreground": "FFFFFF",
+  "variables": {
+    "g_colour": "FFFFFF"
+  },
+  "objects": [
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 5,
+      "name": "London"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 6,
+      "name": "Birmingham"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 7,
+      "name": "Lancashire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 8,
+      "name": "Cornwall"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 9,
+      "name": "Devon"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 10,
+      "name": "Dorset"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 11,
+      "name": "Somerset"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 12,
+      "name": "Wiltshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 13,
+      "name": "Berkshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 14,
+      "name": "Surrey"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 15,
+      "name": "Gloucestershire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 16,
+      "name": "Oxfordshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 17,
+      "name": "Hampshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 18,
+      "name": "Isle of Wight"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 19,
+      "name": "West Sussex"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 20,
+      "name": "East Sussex"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 21,
+      "name": "Kent"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 22,
+      "name": "Essex"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 23,
+      "name": "Buckinghamshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 24,
+      "name": "Hertfordshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 25,
+      "name": "Wales"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 26,
+      "name": "Herefordshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 27,
+      "name": "Shropshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 28,
+      "name": "Cheshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 29,
+      "name": "Yorkshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 30,
+      "name": "Lincolnshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 31,
+      "name": "Norfolk"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 32,
+      "name": "Suffolk"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 33,
+      "name": "Cambridgeshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 34,
+      "name": "Derbyshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 35,
+      "name": "Nottinghamshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 36,
+      "name": "Leicestershire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 37,
+      "name": "Rutland"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 38,
+      "name": "Northamptonshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 39,
+      "name": "Bedfordshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 40,
+      "name": "Staffordshire"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 41,
+      "name": "Cumbria"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 42,
+      "name": "Northumberland"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 43,
+      "name": "Durham"
+    },
+    {
+      "type": "PROVINCE",
+      "texture": "images/province.png",
+      "value": 0.32,
+      "id": 44,
+      "name": "Scotland"
+    }
+  ]
+}

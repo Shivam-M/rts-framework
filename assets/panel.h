@@ -45,9 +45,6 @@ class Panel: public Moveable {
 		}
 
 		void setLocation(float x, float y) override {
-
-			
-
 			for (Moveable* moveable : bundle_) {
 				Vector2 new_loc = moveable->getLocation();
 				new_loc.x += -getLocation().x + x;

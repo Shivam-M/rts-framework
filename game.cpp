@@ -58,15 +58,25 @@ Game::Game(int argc, char** argv) {
 	t_Alt3 =				Text({0.550, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
 	t_Notification =		Text({0.150, 0.050}, debug_font, Colour(189, 195, 199, 255), "");
 
-	Moveable star = Moveable({}, { 0.005 * 9 / 16.0, 0.005 }, Colour(255, 255, 255, 255), Colour(255, 255, 255, 255));
+	Moveable star = Moveable({}, { 0.005 * 9 / 16.0, 0.005 }, COLOUR_WHITE, COLOUR_WHITE);
 	ColourShift colourshift = ColourShift(star.getColour(), Colour(255, 255, 255, 0));
 	colourshift.speed = 0.02f;
 	colourshift.with_gradient = true;
 	colourshift.fade_to_death = true;
 	star.setColourShift(colourshift);
-
 	// ParticleGroup* stars = new ParticleGroup({ 0.0, 0.0 }, { 1.0, 1.0 }, star, 50, &queue_objects);
 	// registerObject(stars);
+
+	/*
+	Moveable* Qbutton = new Moveable({0.2, 0.3}, { 0.125, 0.05 }, Colour(109, 33, 79, 255), Colour(179, 55, 113, 255));
+	Qbutton->setButtonAction(CLOSE_GAME);
+	Qbutton->addFlag(CURVED);
+	Qbutton->setTextOffset(0.01, 0.05);
+	Text* t = new Text({0.225, 0.33}, Fonts::getFont(CONSOLAS_BOLD, 22), Colour(200, 200, 200, 125), "EXAMPLE TEST", 0.5f);
+	Qbutton->setText(t);
+	registerObject(Qbutton);
+	registerObject(t);
+	*/
 
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 	loadLevels("data/levels/rts/");
@@ -84,9 +94,35 @@ Game::Game(int argc, char** argv) {
 	registerObject(&t_PlayerAcceleration);
 	registerObject(&t_PlayerLocation);
 
+	Font* font = Fonts::getFont(CONSOLAS_BOLD_ITALIC, 22);
+	font = Fonts::getFont("data/fonts/MedievalSharp-Bold.ttf", 22, true);
+	Colour button_colour = Colour("6c5ce7", 0.5);
+	Vector2 button_size = { 0.125, 0.05 };
+
+	Text* text = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 125), "Debug Command", 0.5f);
+	Moveable* button = createButton({ 0.85, 0.3 }, button_size, button_colour, button_colour, CLOSE_GAME, text);
+	Text* text2 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 125), "Switch Nation", 0.5f);
+	Moveable* button2 = createButton({ 0.85, 0.36 }, button_size, button_colour, button_colour, SWITCH_NATION, text2);
+	Text* text3 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 125), "Manage Army", 0.5f);
+	Moveable* button3 = createButton({ 0.85, 0.42 }, button_size, button_colour, button_colour, CLOSE_GAME, text3);
+
+	pause_panel = new Panel(); // roman sd, hamlet, cinzel bold & reg, augustus
+	Font* pause_font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 50, true);
+	Font* pause_font2 = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 30, true);
+	Colour col = COLOUR_WHITE - objects[0]->getColour();
+	col.setW(150);
+	Text* t_Start = new Text({ 0.05, 0.35 }, pause_font, col, "Resume");
+	Text* t_Reload = new Text({ 0.05, 0.425 }, pause_font2, col, "Reload scenario");
+	Text* t_Quit = new Text({ 0.05, 0.49 }, pause_font2, col, "Quit game");
+
+	pause_panel->add(t_Start);
+	pause_panel->add(t_Reload);
+	pause_panel->add(t_Quit);
+	pause_panel->hide();
+	registerObject(pause_panel);
+
 	province_tooltip = new GeneralTooltip();
 	province_tooltip->setLocation(0.01, 0.79);
-	province_tooltip->setTitle("");
 	registerObject(province_tooltip);
 	
 	console->build();
@@ -96,6 +132,22 @@ Game::Game(int argc, char** argv) {
 	glfwSetScrollCallback(window, mouse->scroll_callback);
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time,  " seconds " CON_NORMAL "to load the game.");
+}
+
+Moveable* Game::createButton(Vector2 location, Vector2 size, Colour colour, Colour gradient, ACTIONS action, Text* text) {
+	Moveable* button = new Moveable(location, size, colour, gradient);
+	button->setButtonAction(action);
+	// button->addFlag(CURVED);
+	button->setText(text);
+
+	Vector2 dimensions = TextRenderer::calculate_text_dimensions(text->getFont(), text->getContent(), text->getScale());
+	float x_offset = (size.x - (dimensions.x / 1280)) / 2.0f;
+	float y_offset = (size.y - (dimensions.y / 720)) / 1.1f;
+	button->setTextOffset(x_offset, y_offset);
+
+	registerObject(button);
+	registerObject(text);
+	return button;
 }
 
 void Game::loadLevels(string level_directory) {
@@ -181,9 +233,37 @@ void loadProvinceAttributes(string attributes) {
 	fclose(dimensions_file);
 }
 
+static int paused = 0;
+
 void Game::pauseGame() {
+
+	paused++;
+	if (paused % 2 == 0) {
+		pause_panel->hide();
+		return;
+	}
+
+	pause_panel->show();
+	ColourShift colourshift = ColourShift(objects[0]->getColour(), COLOUR_INVIS);
+	colourshift.setCondition(&paused);
+	colourshift.loop = false;
+	colourshift.speed = 0.01f;
+	colourshift.with_gradient = false;
+	objects[0]->setColourShift(colourshift);
+
+	for (Nation* nation : nations) {
+		for (Province* province : nation->getOwnedProvinces()) {
+			ColourShift colourshift2 = ColourShift(province->getColour(), COLOUR_INVIS);
+			colourshift2.setCondition(&paused);
+			colourshift2.loop = false;
+			colourshift2.speed = 0.01f;
+			province->setColourShift(colourshift2);
+		}
+	}
+
+	/*
 	Colour col = objects[0]->getColour();
-	col.setW(200);
+	col.setW(150);
 
 	Text* t_Start = new Text({ 0.05, 0.35 }, Fonts::getFont("data/fonts/blkchcry.ttf", 50, true), col, "Resume");
 	registerObject(t_Start);
@@ -193,6 +273,7 @@ void Game::pauseGame() {
 
 	Text* t_Quit = new Text({ 0.05, 0.49 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Quit game");
 	registerObject(t_Quit);
+	*/
 }
 
 void Game::checkCollision() {
@@ -313,14 +394,20 @@ Moveable* Game::getObjectUnderMouse() { // Cache each update
 		}
 	}
 
-	if (object != nullptr) {
-		if (!object->hasFlag(DISABLED)) {
-			object->onHover();
-			if (object->hasFlag(PROVINCE)) {
-				hoverProvince((Province*)object);
-			} else if (object->hasFlag(UNIT)) {
-				hoverUnit((Unit*)object);
+	if (object != nullptr && !object->hasFlag(DISABLED)) {
+		object->onHover();
+		if (object->hasFlag(PROVINCE)) {
+			Province* province = reinterpret_cast<Province*>(object);
+			if (!picking_nation) {
+				hoverProvince(province);
+			} else {
+				object->onHoverStop();
+				for (Province* province : province->getNation()->getOwnedProvinces()) {
+					province->onHover();
+				}
 			}
+		} else if (object->hasFlag(UNIT)) {
+			hoverUnit((Unit*)object);
 		}
 	} else {
 		province_tooltip->hide();
@@ -334,7 +421,11 @@ void Game::hoverProvince(Province* province) {
 	province_tooltip->show();
 	province_tooltip->setTitle(province->getName());
 	province_tooltip->setSubtitle("Owned by: " + province->getNation()->getName());
-	province_tooltip->subtitle2->setContent("Value: " + to_string(province->getValue()));
+
+	ostringstream value_str;
+	value_str << fixed << setprecision(2) << province->getValue();
+
+	province_tooltip->subtitle2->setContent("Value: " + value_str.str());
 	province_tooltip->subtitle3->setContent("Terrain: " + province->getTerrain());
 }
 
@@ -352,9 +443,35 @@ void Game::updateCursor() {
 	cursor_position.set(x / render.resolution.x, y / render.resolution.y);
 }
 
+void Game::executeAction(ACTIONS action) {
+	switch (action) {
+		case CLOSE_GAME:
+			pauseGame();
+			log_t("Close game!");
+			break;
+		case SWITCH_NATION:
+			picking_nation ^= true;
+			log_t("Switching nation");
+			t_Notification.setContent("Select a nation to control it");
+			break;
+	}
+}
+
 void Game::updateProperties() {
 	updateCursor();
 	getObjectUnderMouse();
+
+	if (selected_object) {
+		if (selected_object->hasFlag(BUTTON)) {
+			executeAction(selected_object->getButtonAction());
+			selected_object = nullptr;
+		}
+	}
+
+	if (selected_object && selected_object->getFlags() & PROVINCE && picking_nation) {
+		player_nation = reinterpret_cast<Province*>(selected_object)->getNation();
+		picking_nation = false;
+	}
 
 	if (mouse->debug_control_scheme) {
 		if (selected_object) {

@@ -80,7 +80,7 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
 }
 
 void TextRenderer::render_text(Font* ft_font, float x, float y, string const& text, Colour colour, float scale) {
-    glUniform3f(glGetUniformLocation(shader, "characterColour"), colour.getX(), colour.getY(), colour.getZ());
+    glUniform4f(glGetUniformLocation(shader, "characterColour"), colour.getX(), colour.getY(), colour.getZ(), colour.getW());
 
     for (string::const_iterator c = text.begin(); c != text.end(); c++) {
         Character ch = ft_font->characters.at(*c);

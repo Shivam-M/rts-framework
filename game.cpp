@@ -67,17 +67,6 @@ Game::Game(int argc, char** argv) {
 	// ParticleGroup* stars = new ParticleGroup({ 0.0, 0.0 }, { 1.0, 1.0 }, star, 50, &queue_objects);
 	// registerObject(stars);
 
-	/*
-	Moveable* Qbutton = new Moveable({0.2, 0.3}, { 0.125, 0.05 }, Colour(109, 33, 79, 255), Colour(179, 55, 113, 255));
-	Qbutton->setButtonAction(CLOSE_GAME);
-	Qbutton->addFlag(CURVED);
-	Qbutton->setTextOffset(0.01, 0.05);
-	Text* t = new Text({0.225, 0.33}, Fonts::getFont(CONSOLAS_BOLD, 22), Colour(200, 200, 200, 125), "EXAMPLE TEST", 0.5f);
-	Qbutton->setText(t);
-	registerObject(Qbutton);
-	registerObject(t);
-	*/
-
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 	loadLevels("data/levels/rts/");
 	// mouse->debug_control_scheme = true;
@@ -99,12 +88,14 @@ Game::Game(int argc, char** argv) {
 	Colour button_colour = Colour("6c5ce7", 0.5);
 	Vector2 button_size = { 0.125, 0.05 };
 
-	Text* text = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 125), "Debug Command", 0.5f);
+	Text* text = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Pause Game", 0.5f);
 	Moveable* button = createButton({ 0.85, 0.3 }, button_size, button_colour, button_colour, CLOSE_GAME, text);
-	Text* text2 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 125), "Switch Nation", 0.5f);
+	Text* text2 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Switch Nation", 0.5f);
 	Moveable* button2 = createButton({ 0.85, 0.36 }, button_size, button_colour, button_colour, SWITCH_NATION, text2);
-	Text* text3 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 125), "Manage Army", 0.5f);
-	Moveable* button3 = createButton({ 0.85, 0.42 }, button_size, button_colour, button_colour, CLOSE_GAME, text3);
+	Text* text3 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Toggle Map View", 0.5f);
+	Moveable* button3 = createButton({ 0.85, 0.42 }, button_size, button_colour, button_colour, CHANGE_MAP_VIEW, text3);
+	Text* text4 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Debug Command", 0.5f);
+	Moveable* button4 = createButton({ 0.85, 0.48 }, button_size, button_colour, button_colour, CHANGE_CONTROLS, text4);
 
 	pause_panel = new Panel(); // roman sd, hamlet, cinzel bold & reg, augustus
 	Font* pause_font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 50, true);
@@ -210,12 +201,15 @@ void loadProvinceAttributes(string attributes) {
 	int id;
 	float x, y, w, h, xoffset = -0.2, yoffset = -0.1;
 	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
+
+
 		Loader::getProvinceMap()[id]->setSize(w, h);
 		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
 		// Loader::getProvinceMap()[id]->setColour(Colour(0, 0, 0, 80));
 		Colour colour = Loader::getProvinceMap()[id]->getColour();
 		// colour = colour / 1.25;
 		colour.setW(200);
+		colour.setW(75 + (Loader::getProvinceMap()[id]->getValue() * 300));
 		Loader::getProvinceMap()[id]->setColour(colour);
 
 		if (id == 5) {
@@ -236,18 +230,63 @@ void loadProvinceAttributes(string attributes) {
 static int paused = 0;
 
 void Game::pauseGame() {
-
+	// move background to front and increase alpha instead?
 	paused++;
 	if (paused % 2 == 0) {
+		game_paused = false;
 		pause_panel->hide();
+
+		ColourShift colourshift = ColourShift(objects[0]->getColour(), objects[0]->getDefaultColour());
+		colourshift.reswap();
+		// colourshift.direction = ColourShift::DIRECTION::UP;
+		colourshift.setCondition(&paused);
+		colourshift.loop = false;
+		colourshift.speed = 0.02f;
+		colourshift.with_gradient = false;
+		objects[0]->setColourShift(colourshift);
+
+		for (Nation* nation : nations) {
+			for (Province* province : nation->getOwnedProvinces()) {
+				ColourShift colourshift2 = ColourShift(province->getColour(), province->getDefaultColour());
+				colourshift2.reswap();
+				colourshift2.direction = ColourShift::DIRECTION::UP;
+				colourshift2.setCondition(&paused);
+				// olourshift2.loop = false;
+				colourshift2.speed = 0.02f;
+				province->setColourShift(colourshift2);
+			}
+			for (Unit* unit : nation->getOwnedUnits()) {
+				ColourShift colourshift2 = ColourShift(unit->getColour(), unit->getDefaultColour());
+				colourshift2.reswap();
+				colourshift2.direction = ColourShift::DIRECTION::UP;
+				colourshift2.setCondition(&paused);
+				colourshift2.loop = false;
+				colourshift2.speed = 0.02f;
+				unit->setColourShift(colourshift2);
+
+				if (unit->getText()) {
+					Text* text = unit->getText();
+					ColourShift colourshift3 = ColourShift(text->getColour(), text->getDefaultColour());
+					colourshift3.reswap();
+					colourshift3.direction = ColourShift::DIRECTION::UP;
+					colourshift3.setCondition(&paused);
+					colourshift2.loop = false;
+					colourshift3.speed = 0.02f;
+					text->setColourShift(colourshift3);
+				}
+
+				
+			}
+		}
 		return;
 	}
 
+	game_paused = true;
 	pause_panel->show();
 	ColourShift colourshift = ColourShift(objects[0]->getColour(), COLOUR_INVIS);
 	colourshift.setCondition(&paused);
 	colourshift.loop = false;
-	colourshift.speed = 0.01f;
+	colourshift.speed = 0.02f;
 	colourshift.with_gradient = false;
 	objects[0]->setColourShift(colourshift);
 
@@ -256,24 +295,28 @@ void Game::pauseGame() {
 			ColourShift colourshift2 = ColourShift(province->getColour(), COLOUR_INVIS);
 			colourshift2.setCondition(&paused);
 			colourshift2.loop = false;
-			colourshift2.speed = 0.01f;
+			colourshift2.speed = 0.02f;
 			province->setColourShift(colourshift2);
 		}
+
+		for (Unit* unit : nation->getOwnedUnits()) {
+			ColourShift colourshift2 = ColourShift(unit->getColour(), COLOUR_INVIS);
+			colourshift2.setCondition(&paused);
+			colourshift2.loop = false;
+			colourshift2.speed = 0.02f;
+			unit->setColourShift(colourshift2);
+			if (Text* text = unit->getText()) {
+				ColourShift colourshift3 = ColourShift(text->getColour(), COLOUR_INVIS);
+				colourshift3.direction = ColourShift::DIRECTION::UP;
+				colourshift3.setCondition(&paused);
+				// olourshift2.loop = false;
+				colourshift3.speed = 0.02f;
+				text->setColourShift(colourshift3);
+			}
+		}
+
+
 	}
-
-	/*
-	Colour col = objects[0]->getColour();
-	col.setW(150);
-
-	Text* t_Start = new Text({ 0.05, 0.35 }, Fonts::getFont("data/fonts/blkchcry.ttf", 50, true), col, "Resume");
-	registerObject(t_Start);
-
-	Text* t_Reload = new Text({ 0.05, 0.425 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Reload scenario");
-	registerObject(t_Reload);
-
-	Text* t_Quit = new Text({ 0.05, 0.49 }, Fonts::getFont("data/fonts/blkchcry.ttf", 30, true), col, "Quit game");
-	registerObject(t_Quit);
-	*/
 }
 
 void Game::checkCollision() {
@@ -380,8 +423,9 @@ Moveable* Game::getObjectUnderMouse() { // Cache each update
 	Moveable* object = nullptr;
 	float min_distance = 100;
 	for (Moveable* moveable : game->objects) {
-		moveable->onHoverStop();
-		if (!(moveable->getFlags() & UNEDITABLE || moveable->getFlags() & FIXED_POS)) {
+		if (!game_paused)
+		 	moveable->onHoverStop();
+		if (!(moveable->getFlags() & (UNEDITABLE | FIXED_POS | DISABLED))) {
 			Vector2 location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
 			if (within(location, size, cursor_position)) {
 				Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
@@ -445,6 +489,10 @@ void Game::updateCursor() {
 
 void Game::executeAction(ACTIONS action) {
 	switch (action) {
+		case CHANGE_CONTROLS:
+			game->mouse->debug_control_scheme ^= true;
+			t_Notification.setContent("Set debug control mode to: " + to_string(game->mouse->debug_control_scheme));
+			break;
 		case CLOSE_GAME:
 			pauseGame();
 			log_t("Close game!");
@@ -453,6 +501,23 @@ void Game::executeAction(ACTIONS action) {
 			picking_nation ^= true;
 			log_t("Switching nation");
 			t_Notification.setContent("Select a nation to control it");
+			break;
+		case CHANGE_MAP_VIEW:
+			value_view ^= true;
+			 // enqueue action to be executed in getObjectUnderMouse() instead of cycling through moveables again?
+			for (Moveable* moveable : objects) {
+				if (moveable->hasFlag(PROVINCE)) {
+					Colour colour = moveable->getColour();
+					if (value_view) { // add interrupt colour shift
+						colour.setW(75 + (reinterpret_cast<Province*>(moveable)->getValue()) * 300);
+					}
+					else {
+						colour.setW(200);
+					}
+					moveable->setColour(colour);
+				}
+			}
+			
 			break;
 	}
 }
@@ -560,7 +625,7 @@ int Game::gameLoop() {
 				} cout << endl;
 			} cout << endl;
 #else
-			for (Nation* nation : nations) nation->evaluate();
+			if (!game_paused) for (Nation* nation : nations) nation->evaluate();
 #endif
 			elapsed_days++;
 			updateObjects(60.0 / update_rate);

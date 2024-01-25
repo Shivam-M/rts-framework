@@ -18,6 +18,7 @@ struct ColourShift {
 		condition = value;
 		target = *value;
 	}
+	void reswap() { swap(first_colour, second_colour); }
 	enum DIRECTION { UP, DOWN };
 	DIRECTION direction = DOWN;
 	Colour first_colour, second_colour;
@@ -27,7 +28,7 @@ struct ColourShift {
 	float speed = 0.1f;
 };
 
-enum ACTIONS {CLOSE_GAME, SWITCH_NATION, OTHER};
+enum ACTIONS {CLOSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, OTHER};
 
 class Moveable {
 	public:
@@ -72,6 +73,7 @@ class Moveable {
 
 		Colour getColour() { return colour; }
 		Colour getGradientColour() { return gradient_colour; }
+		Colour getDefaultColour() { return default_colour; }
 
 		int getFlags() { return flags; }
 		void addFlag(int f) { flags |= f; }
@@ -86,13 +88,12 @@ class Moveable {
 		void setVelocity(float x, float y) { velocity.set(x, y); }
 		virtual void setLocation(float x, float y) { location.set(x, y); }
 		void setSize(float x, float y) { size.set(x, y); }
-
+		
+		ACTIONS getButtonAction() { return button_action; }
 		void setButtonAction(ACTIONS action) {
 			addFlag(BUTTON);
 			button_action = action;
 		}
-
-		ACTIONS getButtonAction() { return button_action; }
 
 		void stopColourShift();
 		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; shifting_colour = true; }
@@ -100,17 +101,12 @@ class Moveable {
 		void setDefaultColour(Colour col) { default_colour = col; }
 		void setGradientColour(Colour col) { gradient_colour = col; }
 		void resetColour() { colour = default_colour; }
-		void tickTimer(float modifier);
-
 		void shiftColour();
+		void tickTimer(float modifier);
+		void loadScript(string script_path);
+		
 		virtual void onHover() { if (!shifting_colour) colour.w_ /= 1.25; }
 		virtual void onHoverStop() { if (!shifting_colour) resetColour();}
-
-		void onClick() {
-
-		}
-
-		void loadScript(string script_path);
 
 		void common(float modifier);
 		virtual void update(float modifier = 1.0);

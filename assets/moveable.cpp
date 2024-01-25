@@ -38,6 +38,7 @@ void Moveable::tickTimer(float modifier) {
 	else if (action == "GRADIENT_ALPHA") gradient_colour.setW(stof(data));
 	else if (action == "JUMP") script_line = stoi(data);
 	else if (action == "TEXTURE") setTexture(Image::getImage(data));
+	else if (action == "COLOUR_SHIFT"); // TODO
 	script_line++;
 }
 
@@ -51,10 +52,6 @@ void Moveable::loadScript(string path) {
 void Moveable::shiftColour() {
 	Colour change = (colour_shift.first_colour - colour_shift.second_colour) * colour_shift.speed;
 	ColourShift::DIRECTION direction = colour_shift.direction;
-
-	if (hasFlag(PROVINCE)) {
-		bool t = 1;
-	}
 
 	if (colour_shift.direction == ColourShift::UP) {
 		colour = colour + change;

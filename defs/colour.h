@@ -45,11 +45,11 @@ class Vector4 {
 		bool operator==(const Vector4& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_ && w_ == other.w_; }
 		bool operator!=(const Vector4& other) const { return x_ != other.x_ || y_ != other.y_ || z_ != other.z_ || w_ != other.w_; }
 
-		bool operator<(const Vector4& other) const { return magnitude2() < other.magnitude2(); }
-		bool operator<=(const Vector4& other) const { return magnitude2() <= other.magnitude2(); }
+		bool operator<(const Vector4& other) const { return sum() < other.sum(); }
+		bool operator<=(const Vector4& other) const { return sum() <= other.sum(); }
 
-		bool operator>(const Vector4& other) const { return magnitude2() > other.magnitude2(); }
-		bool operator>=(const Vector4& other) const { return magnitude2() >= other.magnitude2(); }
+		bool operator>(const Vector4& other) const { return sum() > other.sum(); }
+		bool operator>=(const Vector4& other) const { return sum() >= other.sum(); }
 
 		/*
 		bool operator<(const Vector4& other) const { return x_ < other.x_ && y_ < other.y_ && z_ < other.z_ && w_ < other.w_; }
@@ -67,6 +67,10 @@ class Vector4 {
 			mag += z_ <= 0 ? -(z_ * z_) : (z_ * z_);
 			mag += w_ <= 0 ? -(w_ * w_) : (w_ * w_);
 			return sqrt(mag);
+		}
+
+		float sum() const {
+			return x_ + y_ + z_ + w_;
 		}
 
 		Vector4 normalise() {

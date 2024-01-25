@@ -64,6 +64,7 @@ class Game {
 		// Player player;
 		static Game* game;
 
+		bool value_view = false;
 		bool game_paused = false;
 		bool picking_nation = false;
 		bool show_console = false;

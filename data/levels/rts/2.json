@@ -26,20 +26,11 @@
     },
     {
       "type": "NATION",
-      "id": 6,
-      "capital": 44,
-      "colour": "4834d4",
-      "name": "Scotland",
-      "provinces": [ 44 ],
-      "units": []
-    },
-    {
-      "type": "NATION",
       "id": 7,
       "capital": 9,
       "colour": "f1c40f",
       "name": "Wessex",
-      "provinces": [ 9, 10, 11, 12, 13, 17, 18 ],
+      "provinces": [ 9, 10, 11, 12, 17, 18 ],
       "units": []
     },
     {
@@ -90,10 +81,10 @@
     {
       "type": "NATION",
       "id": 13,
-      "capital": 41,
+      "capital": 44,
       "colour": "cd84f1",
       "name": "Strathclyde",
-      "provinces": [ 41, 7, 29 ],
+      "provinces": [ 41, 7, 44],
       "units": []
     },
     {

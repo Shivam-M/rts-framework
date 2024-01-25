@@ -12,7 +12,7 @@
 		{
 			"type": "PROVINCE",
 			"texture": "images/province.png",
-			"value": 0.53,
+			"value": 0.42,
 			"id": 5,
 			"name": "London"
 		},
@@ -152,7 +152,7 @@
 		{
 			"type": "PROVINCE",
 			"texture": "images/province.png",
-			"value": 0.57,
+			"value": 0.41,
 			"id": 25,
 			"name": "Wales"
 		},
@@ -285,7 +285,7 @@
 		{
 			"type": "PROVINCE",
 			"texture": "images/province.png",
-			"value": 0.60,
+			"value": 0.36,
 			"id": 44,
 			"name": "Scotland"
 		}

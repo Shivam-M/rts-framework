@@ -71,7 +71,9 @@ class Moveable {
 		Vector2 getCentre() { return Vector2(location.x + size.x / 2, location.y + size.y / 2); }
 		Vector2 getTextOffset() { return text_offset; }
 
+		Colour& getColourRef() { return colour; }
 		Colour getColour() { return colour; }
+		Colour& getGradientColourRef() { return gradient_colour; }
 		Colour getGradientColour() { return gradient_colour; }
 		Colour getDefaultColour() { return default_colour; }
 

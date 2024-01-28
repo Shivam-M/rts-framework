@@ -13,7 +13,7 @@
       "colour": "e74c3c",
       "name": "Mercia",
       "provinces": [ 5, 6, 13, 14, 15, 16, 23, 24, 26, 27, 28, 30, 33, 34, 35, 36, 37, 38, 39, 40 ],
-      "units": [ 1 ]
+      "units": [ 1, 5 ]
     },
     {
       "type": "NATION",
@@ -85,7 +85,7 @@
       "colour": "cd84f1",
       "name": "Strathclyde",
       "provinces": [ 41, 7, 44],
-      "units": []
+      "units": [3]
     },
     {
       "type": "NATION",
@@ -94,7 +94,7 @@
       "colour": "686de0",
       "name": "Dumonia",
       "provinces": [ 8 ],
-      "units": []
+      "units": [4]
     }
   ]
 }

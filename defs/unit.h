@@ -4,12 +4,13 @@ class Nation;
 
 #include "../assets/text.h"
 
-enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };
+
 
 static int PathCount = 0;
 
 class Unit: public Moveable {
 	private:
+		
 		int identifier_ = -1;
 		int amount_ = 1;
 		float skill_factor_ = 1.00f;
@@ -19,9 +20,12 @@ class Unit: public Moveable {
 		Province* target_province_ = nullptr;
 		vector<Province*> travel_path_;
 		Unit* enemy_unit_ = nullptr;
-		UNIT_STATE state_ = NORMAL;
+		
 
 	public:
+		static enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };
+		UNIT_STATE state_ = NORMAL;
+
 		Unit(int identifier, Nation* nation, int size, float skill = 1.00, Province* province = nullptr) :
 			identifier_(identifier), nation_(nation), amount_(size), skill_factor_(skill) {
 			setProvince(province); addFlag(TEXTURED | UNIT); setTexture(Image::getImage("images/unit_thick.png")); Moveable::setSize(0.075, 0.075 / 1.16);
@@ -123,6 +127,7 @@ class Unit: public Moveable {
 					}
 					break;
 				case SIEGING:
+					province_->progressSiege(skill_factor_ * random_float());
 					break;
 				case TRAVELLING:
 					location.x += (target_location.x - home_location.x) * speed_;
@@ -164,6 +169,12 @@ class Unit: public Moveable {
 
 					break;
 				case NORMAL:
+					if (getProvince()->getNation() != getNation()) {
+						if (getProvince()->getState() != BESIEGING) {
+							getProvince()->beginSiege(this, getColour()); // t: merc may be different colour
+							setState(SIEGING);
+						}
+					}
 					break;
 			}
 

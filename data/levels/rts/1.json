@@ -38,6 +38,51 @@
       "province": 19,
       "id": 2,
       "name": "Wessex Starting Unit"
+    },
+    {
+      "type": "UNIT",
+      "size": 500,
+      "skill": 3.00,
+      "x": 0.3,
+      "y": 0.15,
+      "width": 0.02125,
+      "height": 0.0375,
+      "texture": "images/unit_thick.png",
+      "colour": "&g_colour",
+      "alt_colour": "&g_colour",
+      "province": 41,
+      "id": 3,
+      "name": "Strathclyde Starting Unit"
+    },
+    {
+      "type": "UNIT",
+      "size": 2000,
+      "skill": 0.50,
+      "x": 0.3,
+      "y": 0.15,
+      "width": 0.02125,
+      "height": 0.0375,
+      "texture": "images/unit_thick.png",
+      "colour": "&g_colour",
+      "alt_colour": "&g_colour",
+      "province": 8,
+      "id": 4,
+      "name": "Dumonia Starting Unit"
+    },
+    {
+      "type": "UNIT",
+      "size": 2000,
+      "skill": 0.50,
+      "x": 0.3,
+      "y": 0.15,
+      "width": 0.02125,
+      "height": 0.0375,
+      "texture": "images/unit_thick.png",
+      "colour": "&g_colour",
+      "alt_colour": "&g_colour",
+      "province": 24,
+      "id": 5,
+      "name": "Mercia Secondary Unit"
     }
   ]
 }

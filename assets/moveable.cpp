@@ -60,10 +60,13 @@ void Moveable::shiftColour() {
 			colour_shift.direction = ColourShift::DOWN;
 		}
 	}
-	else {
+	else {	
+		if (colour_shift.loop == false && ((default_colour.sum() - colour.sum()) < -10)) {
+			shifting_colour = false;
+			return;
+		}
+		
 		colour = colour - change;
-		float mag = colour.magnitude2();
-		float mag2 = colour.magnitude();
 		if (colour <= min(colour_shift.first_colour, colour_shift.second_colour)) {
 			colour = min(colour_shift.first_colour, colour_shift.second_colour);
 			colour_shift.direction = ColourShift::UP;

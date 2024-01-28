@@ -6,6 +6,7 @@ Text::Text(Vector2 loc, Font* fon, Colour col, string con, float scl) : Text() {
 	colour = col;
 	content = con;
 	scale = scl;
+	setDefaultColour(col);
 }
 
 Text::Text() {

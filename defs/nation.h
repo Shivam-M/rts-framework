@@ -74,7 +74,6 @@ class Nation : public Moveable {
 		bool isInDebt() { return in_debt_; }
 
 		void evaluate() {
-			
 			float final_income = income_; // Final income is base income plus value from all owned provinces
 
 			for (Province* province : getOwnedProvinces()) {
@@ -85,6 +84,7 @@ class Nation : public Moveable {
 			for (Unit* unit : getOwnedUnits()) {
 				unit->evaluate();
 			}
+
 			money_ += final_income - outgoings_;
 			in_debt_ = money_ < 0.00 ? true : false;
 		}

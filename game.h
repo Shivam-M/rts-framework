@@ -12,6 +12,15 @@
 #include "tools/console.h"
 #include "tools/fonts.h"
 
+struct Date {
+	short year;
+	short month;
+	short day;
+};
+
+const short month_days[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+const string month_names[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
 class Keyboard;
 class Mouse;
 class GeneralTooltip;
@@ -60,6 +69,8 @@ class Game {
 
 		Text t_FPSCounter, t_PlayerLocation, t_PlayerVelocity, t_PlayerAcceleration, t_Alt, t_Alt2, t_Alt3, t_Notification, t_Hint, t_Hint2;
 
+		Date date = {800, 1, 1};
+
 		// public:
 		// Player player;
 		static Game* game;
@@ -89,10 +100,12 @@ class Game {
 		void hoverUnit(Unit* unit);
 		void updateCursor();
 		void executeAction(ACTIONS action);
+		void incrementDay();
 		void setButton(int button, int state) { button_map[button] = state; }
 		int  getButton(int button) { return button_map[button]; }
 		int  gameLoop();
 
+		string getDate();
 		Moveable* createButton(Vector2 location, Vector2 size, Colour colour, Colour gradient, ACTIONS action, Text*);
 		Moveable* getObjectUnderMouse();
 		

@@ -5,8 +5,8 @@
 #include "../defs/nation.h"
 
 #include "../assets/text.h"
-#include "../shapes/circle.h"
 #include "../assets/collidable.h"
+#include "../shapes/circle.h"
 
 json Loader::level_data;
 
@@ -147,7 +147,7 @@ Unit* Loader::parseUnit() {
 	parseCommon(unit);
 
 	// Font* font = Fonts::getFont(CONSOLAS_BOLD, 16); // (189, 195, 199, 250)
-	Font* font = Fonts::getFont("data/fonts/Cinzel-Regular.ttf", 16, true); // (189, 195, 199, 250)
+	Font* font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
 	Text* unit_text = new Text(unit->getLocation(), font, Colour(255, 255, 255, 255), unit->getName(), 0.5f);
 	unit_text->addFlag(TEXT_BACKGROUND);
 	unit_text->removeFlag(FIXED_POS);
@@ -176,7 +176,10 @@ Nation* Loader::parseNation() {
 		Unit* unit = unit_map[(int)element];
 		if (unit == nullptr) continue;
 		nation->addUnit(unit);
-		unit->setColour(nation->getColour());
+		Colour col = nation->getColour();
+		col.setW(200);
+		unit->setColour(col);
+		// unit->initiate();
 		log_t("Assigned unit " CON_RED, unit->getName(), CON_NORMAL " (" CON_RED, unit->getID(), CON_NORMAL ") to nation " CON_RED, nation->getName(), CON_NORMAL " (" CON_RED, nation->getID(), CON_NORMAL ")");
 	}
 

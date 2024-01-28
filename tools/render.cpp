@@ -12,7 +12,7 @@
 
 static Vector2 roundedCorners[GLW_SMALL_ROUNDED_CORNER_SLICES] = { {0} };
 
-static void createRoundedCorners(Vector2* corner_points, int num) {
+constexpr void createRoundedCorners(Vector2* corner_points, int num) {
     float a = 0, slice = PI / 2 / num;
     for (int i = 0; i < num; a += slice, i++) corner_points[i].set(cosf(a), sinf(a));
 }
@@ -40,7 +40,7 @@ void Render::alignCoordinates(Vector2* location, Vector2* size) {
 }
 
 void Render::drawCircle(Circle* circle) {
-    drawCircle(circle->getLocation(), circle->getColour(), circle->getGradientColour(), circle->getRadius(), circle->getGenerality());
+    drawCircle(circle->getLocation(), circle->getColourRef(), circle->getGradientColourRef(), circle->getRadius(), circle->getGenerality());
 }
 
 void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality) {
@@ -62,11 +62,11 @@ void Render::drawCircle(Vector2 location, Colour colour, Colour gradient, float 
     glEnd();
 }
 
-void Render::drawText(Vector2 location, string message, Font* font, Colour colour, float font_scale) {
-    TextRenderer::render_text(font, location.x * 1280, (1 - location.y) * 720, message, colour, font_scale);
+void Render::drawText(Vector2 location, string message, Font* font, Colour& colour, float font_scale) {
+    TextRenderer::render_text(font, location.x * resolution.x, (1 - location.y) * resolution.y, message, colour, font_scale);
 }
 
-void Render::drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient) {
+void Render::drawQuad(Vector2 location, Vector2 size, Colour& colour, Colour& gradient) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
@@ -80,7 +80,7 @@ void Render::drawQuad(Vector2 location, Vector2 size, Colour colour, Colour grad
     glEnd();
 }
 
-void Render::drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient, float radius) {
+void Render::drawCurvedQuad(Vector2 location, Vector2 size, Colour& colour, Colour& gradient, float radius) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
@@ -105,7 +105,7 @@ void Render::drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colou
     glEnd();
 }
 
-void Render::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour colour, bool flip) {
+void Render::drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour& colour, bool flip) {
     normaliseCoordinates(&location);
     alignCoordinates(&location, &size);
 
@@ -176,47 +176,37 @@ void Render::drawTextureBatch() {
 
 void Render::renderMoveable(Moveable* moveable) {
     if (moveable->getFlags() & CUSTOM) {
-        drawCustom(moveable->getPoints(), moveable->getColour(), moveable->getGradientColour());
+        drawCustom(moveable->getPoints(), moveable->getColourRef(), moveable->getGradientColourRef());
     } else if (moveable->getFlags() & CURVED) {
-        drawCurvedQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour(), 0.025);
+        drawCurvedQuad(moveable->getLocation(), moveable->getSize(), moveable->getColourRef(), moveable->getGradientColourRef(), 0.025);
     } else if (moveable->getFlags() & TEXTURED) {
-        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColour());
+        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColourRef());
     } else if (moveable->getFlags() & CIRCLE) {
         drawCircle(reinterpret_cast<Circle*>(moveable));
     } else {
-        drawQuad(moveable->getLocation(), moveable->getSize(), moveable->getColour(), moveable->getGradientColour());
+        drawQuad(moveable->getLocation(), moveable->getSize(), moveable->getColourRef(), moveable->getGradientColourRef());
     }
 }
 
-void Render::renderWindow() {
+void Render::renderWindow() { // todo: don't render off screen when zoomed
     glClear(GL_COLOR_BUFFER_BIT);
 
     float time_shapes = glfwGetTime();
     for (Moveable* moveable: *objects_) {
-        if (moveable->getFlags() & DISABLED) continue;
+        if (moveable->getFlags() & (DISABLED | PARTICLES | PANEL)) continue;
         if ((moveable->location.x + moveable->size.x < 0) || (moveable->location.y + moveable->size.y < 0) || (moveable->location.x > 1) || (moveable->location.y > 1)) continue;
-        
-        if (moveable->getFlags() & PARTICLES) continue;
-
-        if (moveable->getFlags() & PANEL) {
-            /*Panel* panel = reinterpret_cast<Panel*>(moveable);
-            for (Moveable* panel_moveable : *panel->get()) {
-                renderMoveable(panel_moveable);
-            }*/
-            continue;
-        }
-        
         renderMoveable(moveable);
     }
 
     drawTextureBatch(); // Note: won't take into account object order.
     draw_times[0] = glfwGetTime() - time_shapes;
-
-    float time_text = glfwGetTime();
+    
+    float time_text = glfwGetTime(); // TEMP
+    
     for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED) && (text->getFlags() & TEXT_BACKGROUND)) {
         Vector2 dims = TextRenderer::calculate_text_dimensions(text->getFont(), text->getContent(), text->getScale());
-        dims.x /= 1280;
-        dims.y /= 720;
+        dims.x /= resolution.x;
+        dims.y /= resolution.y;
         Vector2 loc = text->getLocation();
         loc.y -= dims.y;
 
@@ -227,15 +217,26 @@ void Render::renderWindow() {
         loc.x -= dims.x * (bg_scale - 1) / (2 * bg_scale);
         loc.y -= dims.y * (bg_scale * 1.5 - 1) / (2 * bg_scale * 1.5);
 
-        drawCurvedQuad(loc, dims, Colour(40, 40, 40, 200), Colour(40, 40, 40, 200), 0.0125);
-    }
+        Colour c1 = Colour(40, 40, 40, min(text->getColourRef().getW(), 200.f));
 
+        drawCurvedQuad(loc, dims, c1, c1, 0.0125);
+    }
+    
     TextRenderer::init_shader();
     for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED)) {
-        drawText(!text->hasFlag(FIXED_POS) ? text->getLocation() * scale + offsets : text->getLocation(), text->getContent(), text->getFont(), text->getColour(), !text->hasFlag(FIXED_POS) ? text->getScale() * scale : text->getScale());
+        drawText(!text->hasFlag(FIXED_POS) ? text->getLocation() * scale + offsets : text->getLocation(), text->getContent(), text->getFont(), text->getColourRef(), !text->hasFlag(FIXED_POS) ? text->getScale() * scale : text->getScale());
     }
     TextRenderer::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;
 
     glfwSwapBuffers(window_);
+
+    /*
+    int w, h;
+    glfwGetWindowSize(window_, &w, &h);
+    glViewport(0, 0, w, h); // use vp instead of offset/scale
+    resolution.x = w;
+    resolution.y = h;
+    */
+
 }

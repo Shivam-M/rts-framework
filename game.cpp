@@ -9,7 +9,6 @@
 #include "io/keyboard.h"
 #include "assets/general_tooltip.h"
 #include "assets/particle_group.h"
-
 #include "tools/text_renderer.h"
 
 #define MAX_RESTRICTED_GAME_SPEED 2000
@@ -17,10 +16,6 @@
 #define WINDOW_HEIGHT 720
 #define PRINT_DEBUG_
 // #define DEBUG_PROFILING
-
-#define GAME_RTS rts
-#define GAME_SIDESCROLLER sidescroller
-#define GAME_TYPE GAME_RTS
 
 using namespace std;
 
@@ -69,7 +64,6 @@ Game::Game(int argc, char** argv) {
 
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 	loadLevels("data/levels/rts/");
-	// mouse->debug_control_scheme = true;
 	loadProvinceNeighbours("data/generated/province_neighbours.txt");
 	loadProvinceAttributes("data/generated/province_dimensions.txt");
 	setupRTSGame();
@@ -100,6 +94,7 @@ Game::Game(int argc, char** argv) {
 	pause_panel = new Panel(); // roman sd, hamlet, cinzel bold & reg, augustus
 	Font* pause_font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 50, true);
 	Font* pause_font2 = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 30, true);
+
 	Colour col = COLOUR_WHITE - objects[0]->getColour();
 	col.setW(150);
 	Text* t_Start = new Text({ 0.05, 0.35 }, pause_font, col, "Resume");
@@ -121,8 +116,10 @@ Game::Game(int argc, char** argv) {
 	glfwSetKeyCallback(window, keyboard->callback);
 	glfwSetMouseButtonCallback(window, mouse->callback);
 	glfwSetScrollCallback(window, mouse->scroll_callback);
+	// glfwSetWindowSizeCallback(window, NULL);
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time,  " seconds " CON_NORMAL "to load the game.");
+	log_t(getDate());
 }
 
 Moveable* Game::createButton(Vector2 location, Vector2 size, Colour colour, Colour gradient, ACTIONS action, Text* text) {
@@ -132,8 +129,8 @@ Moveable* Game::createButton(Vector2 location, Vector2 size, Colour colour, Colo
 	button->setText(text);
 
 	Vector2 dimensions = TextRenderer::calculate_text_dimensions(text->getFont(), text->getContent(), text->getScale());
-	float x_offset = (size.x - (dimensions.x / 1280)) / 2.0f;
-	float y_offset = (size.y - (dimensions.y / 720)) / 1.1f;
+	float x_offset = (size.x - (dimensions.x / render.resolution.x)) / 2.0f;
+	float y_offset = (size.y - (dimensions.y / render.resolution.y)) / 1.1f;
 	button->setTextOffset(x_offset, y_offset);
 
 	registerObject(button);
@@ -159,12 +156,16 @@ void Game::loadLevels(string level_directory) {
 }
 
 void Game::setupRTSGame() {
+	executeAction(CHANGE_MAP_VIEW);
 	Loader::getUnitMap()[1]->setPath(Province::getShortestPath(Loader::getProvinceMap()[5], Loader::getProvinceMap()[18]));
-	Loader::getUnitMap()[1]->initiate();
-	Loader::getUnitMap()[2]->initiate();
 
-	for (const auto& p : Loader::getNationMap()) {
-		Nation* nation = p.second;
+	for (const auto& u : Loader::getUnitMap()) {
+		Unit* unit = u.second;
+		unit->initiate();
+	}
+
+	for (const auto& n : Loader::getNationMap()) {
+		Nation* nation = n.second;
 		nations.push_back(nation);
 	}
 
@@ -201,122 +202,94 @@ void loadProvinceAttributes(string attributes) {
 	int id;
 	float x, y, w, h, xoffset = -0.2, yoffset = -0.1;
 	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
-
-
 		Loader::getProvinceMap()[id]->setSize(w, h);
 		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
-		// Loader::getProvinceMap()[id]->setColour(Colour(0, 0, 0, 80));
-		Colour colour = Loader::getProvinceMap()[id]->getColour();
-		// colour = colour / 1.25;
-		colour.setW(200);
-		colour.setW(75 + (Loader::getProvinceMap()[id]->getValue() * 300));
-		Loader::getProvinceMap()[id]->setColour(colour);
-
-		if (id == 5) {
-			ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Loader::getProvinceMap()[10]->getColour());
-			colourshift.speed = 0.035f;
-			Loader::getProvinceMap()[5]->setColourShift(colourshift);
-		}
-
-		// ColourShift colourshift = ColourShift(Loader::getProvinceMap()[id]->getColour(), Colour(20, 20, 20, 50));
-		// colourshift.speed = 0.01f;
-		// Loader::getProvinceMap()[id]->setColourShift(colourshift);
-		// Loader::getProvinceMap()[id]->loadScript("data/scripts/anim.txt");
 	}
 	log_t("Loaded map position data for all provinces");
 	fclose(dimensions_file);
 }
 
 static int paused = 0;
+static ColourShift fadeShift(Colour first_colour, Colour second_colour, bool swap, ColourShift::DIRECTION = ColourShift::DIRECTION::UP) {
+	ColourShift colourshift = ColourShift(first_colour, second_colour);
+	if (swap) colourshift.reswap();
+	colourshift.setCondition(&paused);
+	colourshift.loop = false;
+	colourshift.speed = 0.03f;
+	colourshift.with_gradient = true;
+	return colourshift;
+}
 
-void Game::pauseGame() {
-	// move background to front and increase alpha instead?
+void Game::pauseGame() { // move background to front and increase alpha instead?
 	paused++;
-	if (paused % 2 == 0) {
-		game_paused = false;
-		pause_panel->hide();
+	if (paused % 2 == 1) {
+		game_paused = true;
+		pause_panel->show();
 
-		ColourShift colourshift = ColourShift(objects[0]->getColour(), objects[0]->getDefaultColour());
-		colourshift.reswap();
-		// colourshift.direction = ColourShift::DIRECTION::UP;
-		colourshift.setCondition(&paused);
-		colourshift.loop = false;
-		colourshift.speed = 0.02f;
-		colourshift.with_gradient = false;
-		objects[0]->setColourShift(colourshift);
+		for (Moveable* panel_moveable : *pause_panel->get()) {
+			panel_moveable->colour = COLOUR_INVIS;
+			panel_moveable->setColourShift(fadeShift(panel_moveable->getColour(), panel_moveable->getDefaultColour(), true, ColourShift::DIRECTION::DOWN));
+		}
+
+		ColourShift background_shift = fadeShift(objects[0]->getColour(), COLOUR_INVIS, false);
+		background_shift.with_gradient = false;
+		objects[0]->setColourShift(background_shift);
 
 		for (Nation* nation : nations) {
 			for (Province* province : nation->getOwnedProvinces()) {
-				ColourShift colourshift2 = ColourShift(province->getColour(), province->getDefaultColour());
-				colourshift2.reswap();
-				colourshift2.direction = ColourShift::DIRECTION::UP;
-				colourshift2.setCondition(&paused);
-				// olourshift2.loop = false;
-				colourshift2.speed = 0.02f;
-				province->setColourShift(colourshift2);
+				province->setColourShift(fadeShift(province->getColour(), COLOUR_INVIS, false));
 			}
 			for (Unit* unit : nation->getOwnedUnits()) {
-				ColourShift colourshift2 = ColourShift(unit->getColour(), unit->getDefaultColour());
-				colourshift2.reswap();
-				colourshift2.direction = ColourShift::DIRECTION::UP;
-				colourshift2.setCondition(&paused);
-				colourshift2.loop = false;
-				colourshift2.speed = 0.02f;
-				unit->setColourShift(colourshift2);
+				unit->setColourShift(fadeShift(unit->getColour(), COLOUR_INVIS, false));
+				if (Text* text = unit->getText()) {
+					text->setColourShift(fadeShift(text->getColour(), COLOUR_INVIS, false));
+				}
+			}
+		}
+	} else {
+		game_paused = false;
+		pause_panel->hide();
 
+		ColourShift background_shift = fadeShift(objects[0]->getColour(), objects[0]->getDefaultColour(), true);
+		background_shift.with_gradient = false;
+		objects[0]->setColourShift(background_shift);
+
+		for (Nation* nation : nations) {
+			for (Province* province : nation->getOwnedProvinces()) {
+				province->setColourShift(fadeShift(province->getColour(), province->getDefaultColour(), true, ColourShift::DIRECTION::DOWN));
+			}
+			for (Unit* unit : nation->getOwnedUnits()) {
+				unit->setColourShift(fadeShift(unit->getColour(), unit->getDefaultColour(), true, ColourShift::DIRECTION::DOWN));
 				if (unit->getText()) {
 					Text* text = unit->getText();
-					ColourShift colourshift3 = ColourShift(text->getColour(), text->getDefaultColour());
-					colourshift3.reswap();
-					colourshift3.direction = ColourShift::DIRECTION::UP;
-					colourshift3.setCondition(&paused);
-					colourshift2.loop = false;
-					colourshift3.speed = 0.02f;
-					text->setColourShift(colourshift3);
+					text->setColourShift(fadeShift(text->getColour(), text->getDefaultColour(), true, ColourShift::DIRECTION::DOWN));
 				}
-
-				
 			}
-		}
-		return;
+		} return;
 	}
+}
 
-	game_paused = true;
-	pause_panel->show();
-	ColourShift colourshift = ColourShift(objects[0]->getColour(), COLOUR_INVIS);
-	colourshift.setCondition(&paused);
-	colourshift.loop = false;
-	colourshift.speed = 0.02f;
-	colourshift.with_gradient = false;
-	objects[0]->setColourShift(colourshift);
+void Game::incrementDay() {
+	if (++date.day > month_days[date.month]) {
+		date.day = 1;
+		date.month++;
 
-	for (Nation* nation : nations) {
-		for (Province* province : nation->getOwnedProvinces()) {
-			ColourShift colourshift2 = ColourShift(province->getColour(), COLOUR_INVIS);
-			colourshift2.setCondition(&paused);
-			colourshift2.loop = false;
-			colourshift2.speed = 0.02f;
-			province->setColourShift(colourshift2);
+		if (date.month > 12) {
+			date.month = 1;
+			date.year++;
 		}
-
-		for (Unit* unit : nation->getOwnedUnits()) {
-			ColourShift colourshift2 = ColourShift(unit->getColour(), COLOUR_INVIS);
-			colourshift2.setCondition(&paused);
-			colourshift2.loop = false;
-			colourshift2.speed = 0.02f;
-			unit->setColourShift(colourshift2);
-			if (Text* text = unit->getText()) {
-				ColourShift colourshift3 = ColourShift(text->getColour(), COLOUR_INVIS);
-				colourshift3.direction = ColourShift::DIRECTION::UP;
-				colourshift3.setCondition(&paused);
-				// olourshift2.loop = false;
-				colourshift3.speed = 0.02f;
-				text->setColourShift(colourshift3);
-			}
-		}
-
-
 	}
+}
+
+string Game::getDate() {
+	string day_suffix;
+	switch (date.day % 10) {
+		case 1: day_suffix = "st"; break;
+		case 2: day_suffix = "nd"; break;
+		case 3: day_suffix = "rd"; break;
+		default: day_suffix = "th"; break;
+	}
+	return to_string(date.day) + day_suffix + " " + month_names[date.month - 1] + " " + to_string(date.year) + " AD";
 }
 
 void Game::checkCollision() {
@@ -400,7 +373,8 @@ void Game::updateStatistics(int f, int u) {
 		t_PlayerAcceleration.setColour(player_nation->getColour());
 	}
 
-	t_PlayerLocation.setContent("Day #" + to_string(elapsed_days));
+	// t_PlayerLocation.setContent("Day #" + to_string(elapsed_days));
+	// t_PlayerLocation.setContent(getDate());
 	t_PlayerVelocity.setContent("Money: 0.00");
 	t_PlayerAcceleration.setContent("Playing as: " + nation_string);
 	log_t("FPS: ", f, " \tUpdates: ", u, " \tGame time: ", update_time_, "s \t[", (int)(1 / update_time_), "]");
@@ -412,7 +386,7 @@ static bool within(Vector2 location, Vector2 size, Vector2 point) {
 
 void Game::moveUnit(Province* province) {
 	Unit* unit = reinterpret_cast<Unit*>(selected_object);
-	if (unit->getState() != FIGHTING) {
+	if (unit->getState() != Unit::FIGHTING && unit->getState() != Unit::DEAD ) {
 		unit->setPath(Province::getShortestPath(unit->getProvince(), province));
 		unit->initiate();
 	}
@@ -451,7 +425,7 @@ Moveable* Game::getObjectUnderMouse() { // Cache each update
 				}
 			}
 		} else if (object->hasFlag(UNIT)) {
-			hoverUnit((Unit*)object);
+			hoverUnit(reinterpret_cast<Unit*>(object));
 		}
 	} else {
 		province_tooltip->hide();
@@ -488,6 +462,7 @@ void Game::updateCursor() {
 }
 
 void Game::executeAction(ACTIONS action) {
+	log_t("Executing button action: " CON_RED, action);
 	switch (action) {
 		case CHANGE_CONTROLS:
 			game->mouse->debug_control_scheme ^= true;
@@ -495,29 +470,21 @@ void Game::executeAction(ACTIONS action) {
 			break;
 		case CLOSE_GAME:
 			pauseGame();
-			log_t("Close game!");
 			break;
 		case SWITCH_NATION:
 			picking_nation ^= true;
-			log_t("Switching nation");
 			t_Notification.setContent("Select a nation to control it");
 			break;
-		case CHANGE_MAP_VIEW:
+		case CHANGE_MAP_VIEW: // Change to a mask
 			value_view ^= true;
-			 // enqueue action to be executed in getObjectUnderMouse() instead of cycling through moveables again?
+			 // queue action to be executed in getObjectUnderMouse() instead of cycling through moveables again?
 			for (Moveable* moveable : objects) {
 				if (moveable->hasFlag(PROVINCE)) {
 					Colour colour = moveable->getColour();
-					if (value_view) { // add interrupt colour shift
-						colour.setW(75 + (reinterpret_cast<Province*>(moveable)->getValue()) * 300);
-					}
-					else {
-						colour.setW(200);
-					}
+					colour.setW(!value_view ? 200 : 75 + (reinterpret_cast<Province*>(moveable)->getValue()) * 300);
 					moveable->setColour(colour);
 				}
 			}
-			
 			break;
 	}
 }
@@ -526,36 +493,35 @@ void Game::updateProperties() {
 	updateCursor();
 	getObjectUnderMouse();
 
-	if (selected_object) {
-		if (selected_object->hasFlag(BUTTON)) {
-			executeAction(selected_object->getButtonAction());
-			selected_object = nullptr;
-		}
+	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
+		render.offsets.x += (cursor_position.x - original_position.x) * 0.01, render.offsets.y += (cursor_position.y - original_position.y) * 0.01;
 	}
 
-	if (selected_object && selected_object->getFlags() & PROVINCE && picking_nation) {
+	if (!selected_object) return;
+
+	if (selected_object->hasFlag(PROVINCE) && picking_nation) {
 		player_nation = reinterpret_cast<Province*>(selected_object)->getNation();
 		picking_nation = false;
+		log_t("Player is now controlling nation " CON_RED, player_nation->getName(), CON_NORMAL " (" CON_RED, player_nation->getID(), CON_NORMAL ")");
 	}
 
 	if (mouse->debug_control_scheme) {
-		if (selected_object) {
-			if (selected_object->getFlags() & PROVINCE) {
-				selected_object->setColour(Colour(255, 255, 0, 80));
-				Province* province = reinterpret_cast<Province*>(selected_object);
-				for (Province* neighbour : province->getNeighbours()) {
-					neighbour->setColour(Colour(255, 0, 255, 80));
-				}
+		if (selected_object->getFlags() & PROVINCE) {
+			selected_object->setColour(Colour(255, 255, 0, 80));
+			for (Province* neighbour : reinterpret_cast<Province*>(selected_object)->getNeighbours()) {
+				neighbour->setColour(Colour(255, 0, 255, 80));
 			}
 		}
-		if (getButton(GLFW_MOUSE_BUTTON_RIGHT) && selected_object) {
+		if (getButton(GLFW_MOUSE_BUTTON_RIGHT)) {
 			Vector2 new_size = Vector2(abs(game->mouse_position.x - cursor_position.x), abs(game->mouse_position.y - cursor_position.y));
 			selected_object->setSize(new_size.x, new_size.y);
 			t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
 	}
-	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
-		render.offsets.x += (cursor_position.x - original_position.x) * 0.01, render.offsets.y += (cursor_position.y - original_position.y) * 0.01;
+
+	if (selected_object->hasFlag(BUTTON)) {
+		executeAction(selected_object->getButtonAction());
+		selected_object = nullptr;
 	}
 }
 
@@ -628,6 +594,7 @@ int Game::gameLoop() {
 			if (!game_paused) for (Nation* nation : nations) nation->evaluate();
 #endif
 			elapsed_days++;
+			incrementDay();
 			updateObjects(60.0 / update_rate);
 			// checkCollision();
 			updateProperties();

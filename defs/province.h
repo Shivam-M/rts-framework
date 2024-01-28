@@ -3,20 +3,27 @@
 #include <queue>
 #include "../assets/text.h"
 
+enum PROV_STATE { NORMAL, BESIEGING, UNDER_CONTROL };
+
+static int SiegeID = 0;
+
 class Province : public Moveable {
 	enum TERRAIN { FLAT, MOUNTAIN, FOREST, NUM_TERRAINS };
-	enum PROV_STATE { NORMAL, BESIEGING, UNDER_CONTROL };
+	
 
 	private:
 		int identifier_ = -1;
 		int level_ = 0;
-		float value_ = 0.50;
+		float value_ = 0.50f;
+		float siege_progress_ = 0.f;
 
 		TERRAIN terrain_ = FLAT;
-		PROV_STATE state_ = NORMAL;
+		PROV_STATE state_ = PROV_STATE::NORMAL;
 		vector<Province*> neighbours_;
 		vector<Unit*> stationed_units;
 		Nation* nation_ = nullptr;
+		Unit* besieger_ = nullptr;
+
 
 	public:
 		Province(int identifier) : identifier_(identifier) {}
@@ -47,6 +54,27 @@ class Province : public Moveable {
 
 		void setNation(Nation* nation) { nation_ = nation; }
 		Nation* getNation() { return nation_; }
+
+		void beginSiege(Unit* unit, Colour colour) {
+			besieger_ = unit;
+			ColourShift colourshift = ColourShift(getColour(), colour);
+			colourshift.speed = 0.03f;
+			colourshift.setCondition(&SiegeID);
+			setColourShift(colourshift);
+		}
+
+		void progressSiege(float amount) {
+			siege_progress_ += amount;
+		}
+
+		float getSiegeProgress() { return siege_progress_; }
+
+		void endSiege() {
+			setState(PROV_STATE::NORMAL);
+			siege_progress_ = 0;
+			besieger_ = nullptr;
+			SiegeID++;
+		}
 
 		void evaluate() {
 			return;

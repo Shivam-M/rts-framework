@@ -6,11 +6,11 @@ class Text;
 using namespace std;
 
 struct QuadData {
-	Vector2 location; Vector2 size; Colour colour; Colour gradient;
+	Vector2 location; Vector2 size; Colour& colour; Colour& gradient;
 };
 
 struct TextureData {
-	Vector2 location; Vector2 size; Texture* texture; Colour colour; bool flip;
+	Vector2 location; Vector2 size; Texture* texture; Colour& colour; bool flip;
 };
 
 class Render { // TODO: Switch from immediate mode to direct mode rendering
@@ -32,23 +32,23 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering
 		Render() {}
 		Render(GLFWwindow*, vector<Moveable*>*, vector<Text*>*);
 
-		void drawQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient);
+		void drawQuad(Vector2 location, Vector2 size, Colour& colour, Colour& gradient);
 		void drawQuadBatch();
-		void drawQuadB(Vector2 location, Vector2 size, Colour colour, Colour gradient) {
+		void drawQuadB(Vector2 location, Vector2 size, Colour& colour, Colour& gradient) {
 			quadBatch.push_back({ location, size, colour, gradient });
 		}
 
-		void drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour colour, bool flip = false);
+		void drawTexture(Vector2 location, Vector2 size, Texture* texture, Colour& colour, bool flip = false);
 		void drawTextureBatch();
-		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour colour, bool flip = false) {
+		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour& colour, bool flip = false) {
 			textureBatch.push_back({ location, size, texture, colour, flip });
 		}
 
-		void drawCurvedQuad(Vector2 location, Vector2 size, Colour colour, Colour gradient, float radius = 0.025);
+		void drawCurvedQuad(Vector2 location, Vector2 size, Colour& colour, Colour& gradient, float radius = 0.025);
 
 		void drawCustom(vector<Vector2> points, Colour colour, Colour gradient);
 
-		void drawText(Vector2 location, string message, Font* font, Colour colour, float scale = 1.0f);
+		void drawText(Vector2 location, string message, Font* font, Colour& colour, float scale = 1.0f);
 
 		void drawCircle(Circle*);
 		void drawCircle(Vector2 location, Colour colour, Colour gradient, float radius, float generality);

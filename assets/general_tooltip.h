@@ -17,6 +17,7 @@ class GeneralTooltip : public Panel {
 		Text* subtitle = new Text({ 0.01, 0.085 }, subtitle_font, Colour(255, 255, 255, 255), "Owned by: Mercia", 0.5f);
 		Text* subtitle2 = new Text({ 0.01, 0.11 }, subtitle_font, Colour(255, 255, 255, 255), "Value: 2.32", 0.5f);
 		Text* subtitle3 = new Text({ 0.01, 0.135 }, subtitle_font, Colour(255, 255, 255, 255), "Terrain: Hills", 0.5f);
+		Text* subtitle4 = new Text({ 0.01, 0.16 }, subtitle_font, Colour("f39c12"), "Under siege!", 0.5f);
 
 		GeneralTooltip() : Panel() {
 			background_->addFlag(CURVED);
@@ -25,6 +26,7 @@ class GeneralTooltip : public Panel {
 			add(reinterpret_cast<Moveable*>(subtitle));
 			add(reinterpret_cast<Moveable*>(subtitle2));
 			add(reinterpret_cast<Moveable*>(subtitle3));
+			add(reinterpret_cast<Moveable*>(subtitle4));
 			setSize(background_->size.x, background_->size.y);
 		}
 

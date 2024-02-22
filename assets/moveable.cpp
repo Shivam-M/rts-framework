@@ -101,3 +101,16 @@ void Moveable::update(float modifier) {
 		shiftColour();
 	}
 }
+
+void Moveable::onHover() {
+	if (!shifting_colour) colour.w_ /= 1.25;
+	if (hover_tooltip && hasFlag(BUTTON)) {
+		getText()->removeFlag(DISABLED);
+	}
+}
+void Moveable::onHoverStop() {
+	if (!shifting_colour) resetColour();
+	if (hover_tooltip && hasFlag(BUTTON)) {
+		getText()->addFlag(DISABLED);
+	}
+}

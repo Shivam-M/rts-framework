@@ -11,6 +11,9 @@
 #include "assets/particle_group.h"
 #include "tools/text_renderer.h"
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 #define MAX_RESTRICTED_GAME_SPEED 2000
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
@@ -20,6 +23,10 @@
 using namespace std;
 
 Game* Game::game = nullptr;
+
+Moveable* button7 = nullptr;
+Moveable* button8 = nullptr;
+Moveable* button9 = nullptr;
 
 Game::Game(int argc, char** argv) {
 	float launch_time = glfwGetTime();
@@ -53,14 +60,16 @@ Game::Game(int argc, char** argv) {
 	t_Alt3 =				Text({0.550, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
 	t_Notification =		Text({0.150, 0.050}, debug_font, Colour(189, 195, 199, 255), "");
 
+	/*
 	Moveable star = Moveable({}, { 0.005 * 9 / 16.0, 0.005 }, COLOUR_WHITE, COLOUR_WHITE);
 	ColourShift colourshift = ColourShift(star.getColour(), Colour(255, 255, 255, 0));
 	colourshift.speed = 0.02f;
 	colourshift.with_gradient = true;
 	colourshift.fade_to_death = true;
 	star.setColourShift(colourshift);
-	// ParticleGroup* stars = new ParticleGroup({ 0.0, 0.0 }, { 1.0, 1.0 }, star, 50, &queue_objects);
-	// registerObject(stars);
+	ParticleGroup* stars = new ParticleGroup({ 0.0, 0.0 }, { 1.0, 1.0 }, star, 50, &queue_objects);
+	registerObject(stars);
+	*/
 
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 	loadLevels("data/levels/rts/");
@@ -77,19 +86,58 @@ Game::Game(int argc, char** argv) {
 	registerObject(&t_PlayerAcceleration);
 	registerObject(&t_PlayerLocation);
 
+
+	
+	Moveable* panel_bg = new Moveable({ 0.037, 0.22 }, { 0.285, 0.55 }, Colour(200, 200, 200, 200), Colour(200, 200, 200, 200));
+	panel_bg->setTexture(Image::getImage("images/panel.png"));
+	// registerObject(panel_bg);
+
+
+	Moveable* buttons_bg = new Moveable({ 0.005, 0.225 }, { 0.04, 0.35 }, Colour(200, 200, 200, 200), Colour(200, 200, 200, 200));
+	// buttons_bg->addFlag(CURVED);
+	buttons_bg->setTexture(Image::getImage("images/panel.png"));
+	registerObject(buttons_bg);
+
 	Font* font = Fonts::getFont(CONSOLAS_BOLD_ITALIC, 22);
 	font = Fonts::getFont("data/fonts/MedievalSharp-Bold.ttf", 22, true);
 	Colour button_colour = Colour("6c5ce7", 0.5);
 	Vector2 button_size = { 0.125, 0.05 };
 
+	Text* text0 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Placeholder", 0.5f);
+	Moveable* button0 = createButton({ 0.85, 0.24 }, button_size, button_colour, button_colour, TEST_FONTS2, text0);
 	Text* text = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Pause Game", 0.5f);
 	Moveable* button = createButton({ 0.85, 0.3 }, button_size, button_colour, button_colour, CLOSE_GAME, text);
 	Text* text2 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Switch Nation", 0.5f);
 	Moveable* button2 = createButton({ 0.85, 0.36 }, button_size, button_colour, button_colour, SWITCH_NATION, text2);
 	Text* text3 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Toggle Map View", 0.5f);
 	Moveable* button3 = createButton({ 0.85, 0.42 }, button_size, button_colour, button_colour, CHANGE_MAP_VIEW, text3);
-	Text* text4 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Debug Command", 0.5f);
+	Text* text4 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Debug Controls", 0.5f);
 	Moveable* button4 = createButton({ 0.85, 0.48 }, button_size, button_colour, button_colour, CHANGE_CONTROLS, text4);
+	Text* text5 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Debug Command", 0.5f);
+	Moveable* button5 = createButton({ 0.85, 0.54 }, button_size, button_colour, button_colour, DEBUG, text5);
+	Text* text6 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Cycle Fonts", 0.5f);
+	Moveable* button6 = createButton({ 0.85, 0.60 }, button_size, button_colour, button_colour, TEST_FONTS, text6);
+
+	Colour button_colour2 = nations[0]->getColour();
+	button_colour2.w_ *= 0.85;
+
+	Text* text7 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Economy", 0.5f);
+	button7 = createButton({ 0.0075, 0.25 }, { 0.035, 0.05 }, button_colour2, button_colour, TEST_FONTS, text7); // Show on hover
+	button7->hover_tooltip = true;
+	button7->setTexture(Image::getImage("images/coin2.png"));
+	button7->setTextOffset(0.05, button7->getTextOffset().y);
+
+	Text* text8 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Military", 0.5f);
+	button8 = createButton({ 0.0075, 0.30 }, { 0.035, 0.05 }, button_colour2, button_colour, TEST_FONTS, text8);
+	button8->hover_tooltip = true;
+	button8->setTexture(Image::getImage("images/war.png"));
+	button8->setTextOffset(0.05, button8->getTextOffset().y);
+
+	Text* text9 = new Text({ 0.225, 0.33 }, font, Colour(200, 200, 200, 175), "Diplomacy", 0.5f);
+	button9 = createButton({ 0.0075, 0.35 }, { 0.035, 0.05 }, button_colour2, button_colour, TEST_FONTS, text9);
+	button9->hover_tooltip = true;
+	button9->setTexture(Image::getImage("images/diplomacy.png"));
+	button9->setTextOffset(0.05, button9->getTextOffset().y);
 
 	pause_panel = new Panel(); // roman sd, hamlet, cinzel bold & reg, augustus
 	Font* pause_font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 50, true);
@@ -132,6 +180,8 @@ Moveable* Game::createButton(Vector2 location, Vector2 size, Colour colour, Colo
 	float x_offset = (size.x - (dimensions.x / render.resolution.x)) / 2.0f;
 	float y_offset = (size.y - (dimensions.y / render.resolution.y)) / 1.1f;
 	button->setTextOffset(x_offset, y_offset);
+
+	button->setTexture(Image::getImage("images/panel.png"));
 
 	registerObject(button);
 	registerObject(text);
@@ -392,7 +442,7 @@ void Game::moveUnit(Province* province) {
 	}
 }
 
-Moveable* Game::getObjectUnderMouse() { // Cache each update
+Moveable* Game::getObjectUnderMouse() {
 	vector<Moveable*> over_objects;
 	Moveable* object = nullptr;
 	float min_distance = 100;
@@ -463,30 +513,82 @@ void Game::updateCursor() {
 
 void Game::executeAction(ACTIONS action) {
 	log_t("Executing button action: " CON_RED, action);
+	static int index;
+	static string files[3] = { "images/test.png", "images/whitesea.png", "images/bluesea.png" };
+
+	static int index_font;
+	static vector<string> files_font;
+
 	switch (action) {
-		case CHANGE_CONTROLS:
-			game->mouse->debug_control_scheme ^= true;
-			t_Notification.setContent("Set debug control mode to: " + to_string(game->mouse->debug_control_scheme));
-			break;
-		case CLOSE_GAME:
-			pauseGame();
-			break;
-		case SWITCH_NATION:
-			picking_nation ^= true;
-			t_Notification.setContent("Select a nation to control it");
-			break;
-		case CHANGE_MAP_VIEW: // Change to a mask
-			value_view ^= true;
-			 // queue action to be executed in getObjectUnderMouse() instead of cycling through moveables again?
-			for (Moveable* moveable : objects) {
-				if (moveable->hasFlag(PROVINCE)) {
-					Colour colour = moveable->getColour();
-					colour.setW(!value_view ? 200 : 75 + (reinterpret_cast<Province*>(moveable)->getValue()) * 300);
-					moveable->setColour(colour);
+	case CHANGE_CONTROLS:
+		game->mouse->debug_control_scheme ^= true;
+		t_Notification.setContent("Set debug control mode to: " + to_string(game->mouse->debug_control_scheme));
+		break;
+	case CLOSE_GAME:
+		pauseGame();
+		break;
+	case SWITCH_NATION:
+		picking_nation ^= true;
+		t_Notification.setContent("Select a nation to control it");
+		break;
+	case CHANGE_MAP_VIEW: // Change to a mask
+		value_view ^= true;
+		// queue action to be executed in getObjectUnderMouse() instead of cycling through moveables again?
+		for (Moveable* moveable : objects) {
+			if (moveable->hasFlag(PROVINCE)) {
+				Colour colour = moveable->getColour();
+				colour.setW(!value_view ? 200 : 75 + (reinterpret_cast<Province*>(moveable)->getValue()) * 300);
+				moveable->setColour(colour);
+			}
+		}
+		break;
+	case DEBUG:
+		if (index > 2) index = 0;
+		objects[0]->setTexture(Image::getImage(files[index]));
+		index += 1;
+		break;
+	case TEST_FONTS:
+		
+
+		if (files_font.size() == 0) {
+			string path = ".\\data\\fonts";
+			for (const auto& file : fs::directory_iterator(path))
+				files_font.push_back(file.path().string());
+		}
+
+		if (index_font > files_font.size() - 1) index_font = 0;
+		for (const auto& u : Loader::getUnitMap()) {
+			Unit* unit = u.second;
+			unit->getText()->setFont(Fonts::getFont(files_font[index_font], 16, true));
+		}
+
+		t_Notification.setContent("Set game font to " + files_font[index_font]);
+		index_font++;
+		break;
+
+	case TEST_FONTS2:
+		if (files_font.size() == 0) {
+			string path = ".\\data\\fonts";
+			for (const auto& file : fs::directory_iterator(path))
+				files_font.push_back(file.path().string());
+		}
+
+		if (index_font > files_font.size() - 1) index_font = 0;
+		for (const auto& u : Loader::getUnitMap()) {
+			for (Moveable* moveable : *province_tooltip->get()) {
+				if (moveable->hasFlag(TEXT)) {
+					Text* text = reinterpret_cast<Text*>(moveable);
+					int size = text->getFont()->h;
+					text->setFont(Fonts::getFont(files_font[index_font], 20, true));
 				}
 			}
-			break;
+		}
+
+		t_Notification.setContent("Set game font to " + files_font[index_font]);
+		index_font++;
+		break;
 	}
+
 }
 
 void Game::updateProperties() {
@@ -502,6 +604,9 @@ void Game::updateProperties() {
 	if (selected_object->hasFlag(PROVINCE) && picking_nation) {
 		player_nation = reinterpret_cast<Province*>(selected_object)->getNation();
 		picking_nation = false;
+		button7->setColour(player_nation->getColour());
+		button8->setColour(player_nation->getColour());
+		button9->setColour(player_nation->getColour());
 		log_t("Player is now controlling nation " CON_RED, player_nation->getName(), CON_NORMAL " (" CON_RED, player_nation->getID(), CON_NORMAL ")");
 	}
 

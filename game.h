@@ -80,7 +80,7 @@ class Game {
 		bool picking_nation = false;
 		bool show_console = false;
 		bool god_mode = true;
-		int fps_limit = 0;
+		int fps_limit = 200;
 		int update_rate = 60;
 		
 		void loadLevels(string level_directory);

@@ -28,7 +28,7 @@ struct ColourShift {
 	float speed = 0.1f;
 };
 
-enum ACTIONS {CLOSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, OTHER};
+enum ACTIONS {CLOSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, DEBUG, TEST_FONTS, TEST_FONTS2, OTHER};
 
 class Moveable {
 	public:
@@ -54,7 +54,7 @@ class Moveable {
 		Colour gradient_colour = colour;
 		Colour default_colour = colour;
 
-		bool shifting_colour = false, is_active = true;
+		bool shifting_colour = false, is_active = true, hover_tooltip = false;
 
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
@@ -107,8 +107,10 @@ class Moveable {
 		void tickTimer(float modifier);
 		void loadScript(string script_path);
 		
-		virtual void onHover() { if (!shifting_colour) colour.w_ /= 1.25; }
-		virtual void onHoverStop() { if (!shifting_colour) resetColour();}
+		// Change to new button class override
+		virtual void onHover();
+		
+		virtual void onHoverStop();
 
 		void common(float modifier);
 		virtual void update(float modifier = 1.0);

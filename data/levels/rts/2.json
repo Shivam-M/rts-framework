@@ -1,5 +1,5 @@
 {
-  "level_name": "Example",
+  "level_name": "Nations",
   "background": "222F3E",
   "background_alpha": 0.31,
   "alt_background": "222F3E",
@@ -85,7 +85,7 @@
       "colour": "cd84f1",
       "name": "Strathclyde",
       "provinces": [ 41, 7, 44],
-      "units": [3]
+      "units": [ 3 ]
     },
     {
       "type": "NATION",
@@ -94,7 +94,7 @@
       "colour": "686de0",
       "name": "Dumonia",
       "provinces": [ 8 ],
-      "units": [4]
+      "units": [ 4 ]
     }
   ]
 }

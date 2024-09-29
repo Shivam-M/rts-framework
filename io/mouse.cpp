@@ -1,5 +1,5 @@
 #include "mouse.h"
-#include <cmath>
+#include "../game_rts.h" // Change to game.h to make this agnostic
 
 Game* Mouse::game = nullptr;
 Mouse::Mouse(Game* instance) { Mouse::game = instance; }
@@ -67,7 +67,7 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 			if (game->selected_object) {
 				if (game->selected_object->getFlags() & UNIT) {
 					if (moveable->getFlags() & PROVINCE) {
-						game->moveUnit(reinterpret_cast<Province*>(moveable));
+						reinterpret_cast<GameRTS*>(game)->moveUnit(reinterpret_cast<Province*>(moveable));
 					}
 				}
 			}

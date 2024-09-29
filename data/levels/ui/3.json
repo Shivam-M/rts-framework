@@ -1,0 +1,77 @@
+{
+  "alt_background": "FFFFFF",
+  "alt_background_alpha": 0.00,
+  "background": "FFFFFF",
+  "background_alpha": 0.00,
+  "foreground": "FFFFFF",
+  "offset_positions": false,
+  "image": "images/test.png",
+  "level_name": "UI 3",
+  "variables": {
+    "name": "ui_menu_pause",
+    "font": "data/fonts/Cinzel-Bold.ttf",
+    "colour": "bdc3c7"
+  },
+  "objects": [
+    {
+      "name": "ui_menu_pause",
+      "type": "PANEL",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 1.00,
+      "height": 1.00,
+      "priority": 0.05
+    },
+    {
+      "name": "ui_menu_pause_background",
+      "parent": "ui_menu_pause",
+      "type": "MOVEABLE",
+      "colour": "130f40",
+      "alpha": 1.00,
+      "alt_colour": "130f40",
+      "alt_alpha": 0.00
+    },
+    {
+      "name": "ui_menu_pause_resume",
+      "parent": "&name",
+      "content": "Resume",
+      "font": "&font",
+      "font_custom": true,
+      "size": 50,
+      "scale": 1,
+      "type": "TEXT",
+      "colour": "&colour",
+      "alpha": 0.75,
+      "x": 0.025,
+      "y": 0.3
+    },
+    {
+      "name": "ui_menu_pause_reload",
+      "parent": "&name",
+      "content": "Reload scenario",
+      "font": "&font",
+      "font_custom": true,
+      "size": 30,
+      "scale": 1,
+      "type": "TEXT",
+      "colour": "&colour",
+      "alpha": 0.75,
+      "x": 0.025,
+      "y": 0.4
+    },
+    {
+      "name": "ui_menu_pause_quit",
+      "parent": "&name",
+      "content": "Quit game",
+      "font": "&font",
+      "font_custom": true,
+      "size": 30,
+      "scale": 1,
+      "type": "TEXT",
+      "colour": "&colour",
+      "alpha": 0.75,
+      "x": 0.025,
+      "y": 0.475
+    }
+  ]
+}

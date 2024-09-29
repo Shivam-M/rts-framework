@@ -1,0 +1,101 @@
+{
+  "alt_background": "FFFFFF",
+  "alt_background_alpha": 0.00,
+  "background": "FFFFFF",
+  "background_alpha": 0.00,
+  "foreground": "FFFFFF",
+  "offset_positions": false,
+  "image": "images/test.png",
+  "level_name": "UI 0",
+  "variables": {
+    "name": "ui_unit_tooltip",
+    "font": "data/fonts/MedievalSharp-Book.ttf",
+    "colour": "bdc3c7"
+  },
+  "objects": [
+    {
+      "name": "&name",
+      "type": "PANEL",
+      "x": 0.0,
+      "y": 0.79,
+      "width": 0.20,
+      "height": 0.175
+    },
+    {
+      "name": "ui_unit_tooltip_background",
+      "parent": "&name",
+      "type": "MOVEABLE",
+      "colour": "000000",
+      "alpha": 0.20,
+      "alt_colour": "000000",
+      "alt_alpha": 0.0,
+      "fixed": true
+    },
+    {
+      "name": "ui_unit_tooltip_name",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 32,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "alpha": 0.75,
+      "x": 0.075,
+      "y": 0.25
+    },
+    {
+      "name": "ui_unit_tooltip_owned_by",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "alpha": 0.75,
+      "x": 0.075,
+      "y": 0.45
+    },
+    {
+      "name": "ui_unit_tooltip_value",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "alpha": 0.75,
+      "x": 0.075,
+      "y": 0.6
+    },
+    {
+      "name": "ui_unit_tooltip_terrain",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "alpha": 0.75,
+      "x": 0.075,
+      "y": 0.75
+    },
+    {
+      "name": "ui_unit_tooltip_siege",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "f39c12",
+      "alpha": 0.75,
+      "x": 0.075,
+      "y": 0.9,
+      "content": ""
+    }
+  ]
+}

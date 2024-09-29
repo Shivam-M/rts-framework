@@ -11,7 +11,27 @@ class Collidable : public Moveable {
 		float shuffle_size = 0;
 		float shuffle_limit = 125;
 
-		void update(float = 1.0);
+		void update(float modifier = 1.0) override {
+			common(modifier);
 
-		Collidable();
+			if (getFlags() & MOVING) {
+				if (direction_right && shuffle_size >= shuffle_limit || !direction_right && shuffle_size <= -shuffle_limit) {
+					direction_right = !direction_right;
+				}
+
+				if (direction_right) {
+					velocity.x = 0.001 * modifier;
+					shuffle_size += 1 * modifier;
+				}
+				else {
+					velocity.x = -0.001 * modifier;
+					shuffle_size -= 1 * modifier;
+				}
+
+				location.x += velocity.x;
+				location.y += velocity.y;
+			}
+		}
+
+		Collidable() { addFlag(COLLIDABLE); }
 };

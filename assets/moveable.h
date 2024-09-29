@@ -5,7 +5,7 @@ using namespace std;
 #include <fstream>
 
 #include "../tools/image.h"
-#include "../defs/colour.h"
+#include "../assets/colour.h"
 
 class Text;
 
@@ -23,25 +23,27 @@ struct ColourShift {
 	DIRECTION direction = DOWN;
 	Colour first_colour, second_colour;
 	bool loop = true, fade_to_death = false, with_gradient = false;
-	int* condition;
-	int target;
+	int* condition = nullptr;
+	int target = -1;
 	float speed = 0.1f;
 };
 
-enum ACTIONS {CLOSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, DEBUG, TEST_FONTS, TEST_FONTS2, OTHER};
+enum BUTTON_ACTION {PAUSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, SAVE_GAME, TEST_FONTS, TOGGLE_TOOLTIP, HIRE_UNIT, OTHER};
 
 class Moveable {
 	public:
 		string name = "Generic Moveable";
 		Texture* texture = nullptr;
+		Texture* secondary_texture = nullptr;
 		Text* text = nullptr;
 		vector<string> script;
 		vector<Vector2> points;
+		float priority = 0.0f;
 
 		float script_timer = 0;
 		int script_line = 0;
 		int flags = ENABLED;
-		ACTIONS button_action = OTHER;
+		BUTTON_ACTION button_action = OTHER;
 
 		Vector2 acceleration;
 		Vector2 velocity;
@@ -59,9 +61,11 @@ class Moveable {
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
 
+		float getPriority() { return priority; }
 		virtual vector<Vector2> getPoints() { return points; }
 		Text* getText() { return text; }
 		Texture* getTexture() { return texture; }
+		Texture* getSecondaryTexture() { return secondary_texture; }
 		string getName() { return name; }
 	
 		Vector2 getAcceleration() { return acceleration; }
@@ -85,14 +89,16 @@ class Moveable {
 		void setText(Text* t) { text = t; }
 		void setTextOffset(float x, float y);
 		void setTexture(Texture* tex) { addFlag(TEXTURED); texture = tex; }
+		void setSecondaryTexture(Texture* tex) { addFlag(TEXTURED); secondary_texture = tex; }
 		void setName(string n) { name = n; }
-		void setAcceleration(float x, float y) { acceleration.set(x, y); }
-		void setVelocity(float x, float y) { velocity.set(x, y); }
+		void setPriority(float p) { priority = p; }
+		virtual void setAcceleration(float x, float y) { acceleration.set(x, y); }
+		virtual void setVelocity(float x, float y) { velocity.set(x, y); }
 		virtual void setLocation(float x, float y) { location.set(x, y); }
-		void setSize(float x, float y) { size.set(x, y); }
+		virtual void setSize(float x, float y) { size.set(x, y); }
 		
-		ACTIONS getButtonAction() { return button_action; }
-		void setButtonAction(ACTIONS action) {
+		BUTTON_ACTION getButtonAction() { return button_action; }
+		void setButtonAction(BUTTON_ACTION action) {
 			addFlag(BUTTON);
 			button_action = action;
 		}
@@ -109,7 +115,6 @@ class Moveable {
 		
 		// Change to new button class override
 		virtual void onHover();
-		
 		virtual void onHoverStop();
 
 		void common(float modifier);

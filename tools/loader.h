@@ -5,7 +5,7 @@
 using namespace nlohmann;
 using namespace std;
 
-#include "../defs/colour.h"
+#include "../assets/colour.h"
 #include "../tools/fonts.h"
 
 class Province;
@@ -15,41 +15,43 @@ class Moveable;
 class Circle;
 class Text;
 class Collidable;
+class ParticleGroup;
+class Panel;
 
 struct Level {
 	Vector2 player_position;
 	vector<Moveable*> objects;
 	vector<Text*> text_objects;
+	bool offset_positions = true;
 };
 
 class Loader {
 	private:
-		// static Fire* parseFire();
-		// static Stars* parseStars();
+		static void parseCommon(Moveable*);
+		static ParticleGroup* parseStars(vector<Moveable*>*);
 		static Collidable* parseCollidable();
 		static Collidable* parseCustom();
-		static Moveable* parseMoveable();
-		// static Square* parseSquare();
-		static Circle* parseCircle();
+		static Moveable* parseMoveable();;
 		static string getVariable(string);
 		static Text* parseText();
+		static Moveable* parseButton();
 		static Collidable* parseSlider();
 		static Province* parseProvince();
 		static Nation* parseNation();
 		static Unit* parseUnit();
+		static Panel* parsePanel();
 
-		static void parseCommon(Moveable*);
-
-		static json::array_t getArray(string);
 		static float getFloat(string);
 		static int getInt(string);
 		static string getString(string, string = "");
+		static json::array_t getArray(string);
 
-		static json level_data;
+		static json current_level_data;
 
 	public:
-		static Level* load_font(string, vector<Moveable*>*, vector<Text*>*, int);
+		static Level* load_level(string, vector<Moveable*>*, vector<Text*>*, int);
 		static map<int, Province*> getProvinceMap();
 		static map<int, Nation*> getNationMap();
 		static map<int, Unit*> getUnitMap();
+		static void writeObjects(vector<Moveable*> objects, vector<Text*> text_objects);
 };

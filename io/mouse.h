@@ -6,9 +6,9 @@ class Mouse {
 		static Game* game;
 
 	public:
-		static inline bool debug_control_scheme = false;
-
 		Mouse(Game*);
+
+		static inline bool debug_control_scheme = false;
 
 		static void scroll_callback(GLFWwindow*, double, double);
 		static void callback(GLFWwindow*, int, int, int);

@@ -72,6 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\intermediate</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,15 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="assets\collidable.cpp" />
-    <ClInclude Include="assets\general_tooltip.h" />
+    <ClCompile Include="tools\ui_manager.cpp" />
     <ClCompile Include="assets\moveable.cpp" />
+    <ClCompile Include="assets\player.cpp" />
     <ClCompile Include="assets\text.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="game_rts.cpp" />
+    <ClCompile Include="game_sidescroller.cpp" />
     <ClCompile Include="io\keyboard.cpp" />
     <ClCompile Include="io\mouse.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="shapes\circle.cpp" />
     <ClCompile Include="tools\common.cpp" />
     <ClCompile Include="tools\console.cpp" />
     <ClCompile Include="tools\fonts.cpp" />
@@ -150,24 +152,27 @@
     <ClCompile Include="tools\loader.cpp" />
     <ClCompile Include="tools\render.cpp" />
     <ClCompile Include="tools\text_renderer.cpp" />
+    <ClInclude Include="tools\ui_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\collidable.h" />
     <ClInclude Include="assets\moveable.h" />
     <ClInclude Include="assets\panel.h" />
     <ClInclude Include="assets\particle_group.h" />
+    <ClInclude Include="assets\player.h" />
     <ClInclude Include="assets\text.h" />
-    <ClInclude Include="defs\colour.h" />
-    <ClInclude Include="defs\nation.h" />
-    <ClInclude Include="defs\province.h" />
-    <ClInclude Include="defs\unit.h" />
+    <ClInclude Include="assets\colour.h" />
+    <ClInclude Include="assets\nation.h" />
+    <ClInclude Include="assets\province.h" />
+    <ClInclude Include="assets\unit.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="game_rts.h" />
+    <ClInclude Include="game_sidescroller.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\stb_image_write.h" />
     <ClInclude Include="io\keyboard.h" />
     <ClInclude Include="io\mouse.h" />
-    <ClInclude Include="shapes\circle.h" />
     <ClInclude Include="tools\common.h" />
     <ClInclude Include="tools\console.h" />
     <ClInclude Include="tools\fonts.h" />
@@ -178,8 +183,97 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="data\gen_neighbours.py" />
+    <None Include="data\levels\debug\0.json" />
+    <None Include="data\levels\level_example.json" />
+    <None Include="data\levels\rts\0.json" />
+    <None Include="data\levels\rts\1.json" />
+    <None Include="data\levels\rts\2.json" />
+    <None Include="data\levels\rts\config.json" />
+    <None Include="data\levels\sidescroller\0 - Copy.json" />
+    <None Include="data\levels\sidescroller\0.json" />
+    <None Include="data\levels\sidescroller\1.json" />
+    <None Include="data\levels\sidescroller\2.json" />
+    <None Include="data\levels\sidescroller\3.json" />
+    <None Include="data\levels\sidescroller\4.json" />
+    <None Include="data\levels\sidescroller\5.json" />
+    <None Include="data\levels\sidescroller\6.json" />
+    <None Include="data\levels\sidescroller\7.json" />
+    <None Include="data\levels\sidescroller\8.json" />
+    <None Include="data\levels\sidescroller\9.json" />
+    <None Include="data\levels\ui\0.json" />
+    <None Include="data\levels\ui\1.json" />
+    <None Include="data\levels\ui\2.json" />
+    <None Include="data\levels\ui\3.json" />
+    <None Include="data\levels\ui\4.json" />
+    <None Include="shaders\coloured.frag" />
+    <None Include="shaders\coloured.vert" />
     <None Include="shaders\text.frag" />
     <None Include="shaders\text.vert" />
+    <None Include="shaders\textured.frag" />
+    <None Include="shaders\textured.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\generated\10_province.png" />
+    <Image Include="data\generated\11_province.png" />
+    <Image Include="data\generated\12_province.png" />
+    <Image Include="data\generated\13_province.png" />
+    <Image Include="data\generated\14_province.png" />
+    <Image Include="data\generated\15_province.png" />
+    <Image Include="data\generated\16_province.png" />
+    <Image Include="data\generated\17_province.png" />
+    <Image Include="data\generated\18_province.png" />
+    <Image Include="data\generated\19_province.png" />
+    <Image Include="data\generated\20_province.png" />
+    <Image Include="data\generated\21_province.png" />
+    <Image Include="data\generated\22_province.png" />
+    <Image Include="data\generated\23_province.png" />
+    <Image Include="data\generated\24_province.png" />
+    <Image Include="data\generated\25_province.png" />
+    <Image Include="data\generated\26_province.png" />
+    <Image Include="data\generated\27_province.png" />
+    <Image Include="data\generated\28_province.png" />
+    <Image Include="data\generated\29_province.png" />
+    <Image Include="data\generated\30_province.png" />
+    <Image Include="data\generated\31_province.png" />
+    <Image Include="data\generated\32_province.png" />
+    <Image Include="data\generated\33_province.png" />
+    <Image Include="data\generated\34_province.png" />
+    <Image Include="data\generated\35_province.png" />
+    <Image Include="data\generated\36_province.png" />
+    <Image Include="data\generated\37_province.png" />
+    <Image Include="data\generated\38_province.png" />
+    <Image Include="data\generated\39_province.png" />
+    <Image Include="data\generated\40_province.png" />
+    <Image Include="data\generated\41_province.png" />
+    <Image Include="data\generated\42_province.png" />
+    <Image Include="data\generated\43_province.png" />
+    <Image Include="data\generated\44_province.png" />
+    <Image Include="data\generated\45_province.png" />
+    <Image Include="data\generated\5_province.png" />
+    <Image Include="data\generated\6_province.png" />
+    <Image Include="data\generated\7_province.png" />
+    <Image Include="data\generated\8_province.png" />
+    <Image Include="data\generated\9_province.png" />
+    <Image Include="data\images\coin.png" />
+    <Image Include="data\images\diplomacy.png" />
+    <Image Include="data\images\map.png" />
+    <Image Include="data\images\map_blue.png" />
+    <Image Include="data\images\map_white.png" />
+    <Image Include="data\images\panel.png" />
+    <Image Include="data\images\province.png" />
+    <Image Include="data\images\siege_lines.png" />
+    <Image Include="data\images\unit.png" />
+    <Image Include="data\images\unit_thick.png" />
+    <Image Include="data\images\war.png" />
+    <Image Include="data\world_map.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\generated\province_dimensions.txt" />
+    <Text Include="data\generated\province_neighbours.txt" />
+    <Text Include="data\province_colours.txt" />
+    <Text Include="data\scripts\bounce.txt" />
+    <Text Include="data\scripts\slide.txt" />
+    <Text Include="data\scripts\switcher.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

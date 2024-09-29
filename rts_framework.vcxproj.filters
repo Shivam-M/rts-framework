@@ -33,16 +33,10 @@
     <ClCompile Include="tools\render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shapes\circle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="assets\text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tools\loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="assets\collidable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="game.cpp">
@@ -60,9 +54,21 @@
     <ClCompile Include="tools\text_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="assets\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game_sidescroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game_rts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tools\ui_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="defs\colour.h">
+    <ClInclude Include="assets\colour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GLFW\glfw3.h">
@@ -89,9 +95,6 @@
     <ClInclude Include="tools\render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shapes\circle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="assets\text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -107,13 +110,13 @@
     <ClInclude Include="tools\console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="defs\province.h">
+    <ClInclude Include="assets\province.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="defs\unit.h">
+    <ClInclude Include="assets\unit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="defs\nation.h">
+    <ClInclude Include="assets\nation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="io\keyboard.h">
@@ -131,7 +134,16 @@
     <ClInclude Include="assets\particle_group.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="assets\general_tooltip.h">
+    <ClInclude Include="assets\player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game_sidescroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game_rts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tools\ui_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -139,5 +151,200 @@
     <None Include="shaders\text.frag" />
     <None Include="shaders\text.vert" />
     <None Include="data\gen_neighbours.py" />
+    <None Include="shaders\textured.frag" />
+    <None Include="shaders\textured.vert" />
+    <None Include="shaders\coloured.vert" />
+    <None Include="shaders\coloured.frag" />
+    <None Include="data\levels\rts\0.json" />
+    <None Include="data\levels\rts\1.json" />
+    <None Include="data\levels\rts\2.json" />
+    <None Include="data\levels\rts\config.json" />
+    <None Include="data\levels\debug\0.json" />
+    <None Include="data\levels\level_example.json" />
+    <None Include="data\levels\ui\0.json" />
+    <None Include="data\levels\ui\1.json" />
+    <None Include="data\levels\ui\2.json" />
+    <None Include="data\levels\ui\3.json" />
+    <None Include="data\levels\ui\4.json" />
+    <None Include="data\levels\sidescroller\0 - Copy.json" />
+    <None Include="data\levels\sidescroller\0.json" />
+    <None Include="data\levels\sidescroller\1.json" />
+    <None Include="data\levels\sidescroller\2.json" />
+    <None Include="data\levels\sidescroller\3.json" />
+    <None Include="data\levels\sidescroller\4.json" />
+    <None Include="data\levels\sidescroller\5.json" />
+    <None Include="data\levels\sidescroller\6.json" />
+    <None Include="data\levels\sidescroller\7.json" />
+    <None Include="data\levels\sidescroller\8.json" />
+    <None Include="data\levels\sidescroller\9.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\images\coin.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\diplomacy.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\map.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\map_blue.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\map_white.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\panel.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\siege_lines.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\unit.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\unit_thick.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\war.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\world_map.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\5_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\6_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\7_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\8_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\9_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\10_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\11_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\12_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\13_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\14_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\15_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\16_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\17_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\18_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\19_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\20_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\21_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\22_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\23_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\24_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\25_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\26_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\27_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\28_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\29_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\30_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\31_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\32_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\33_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\34_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\35_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\36_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\37_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\38_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\39_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\40_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\41_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\42_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\43_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\44_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\generated\45_province.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\scripts\bounce.txt" />
+    <Text Include="data\scripts\slide.txt" />
+    <Text Include="data\scripts\switcher.txt" />
+    <Text Include="data\province_colours.txt" />
+    <Text Include="data\generated\province_dimensions.txt" />
+    <Text Include="data\generated\province_neighbours.txt" />
   </ItemGroup>
 </Project>

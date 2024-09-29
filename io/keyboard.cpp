@@ -6,16 +6,21 @@ Keyboard::Keyboard(Game* instance) { Keyboard::game = instance; }
 void Keyboard::movement(int direction, int action) {
 	switch (direction) {
 		case GLFW_KEY_LEFT:
-			return;
+			if (action == GLFW_PRESS) game->player.setAcceleration(-0.0001, game->player.acceleration.y);
+			if (action == GLFW_RELEASE) game->player.stop();
+			break;
 		case GLFW_KEY_RIGHT:
-			return;
+			if (action == GLFW_PRESS) game->player.setAcceleration(0.0001, game->player.acceleration.y);
+			if (action == GLFW_RELEASE) game->player.stop();
+			break;
 		case GLFW_KEY_UP:
-			return;
+			if (action == GLFW_PRESS) game->player.executeJump();
+			break;
 	}
 }
 
 void Keyboard::callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	if (GLFW_KEY_RIGHT >= key && key <= GLFW_KEY_UP)			movement(key, action);
+	if (key >= GLFW_KEY_RIGHT and key <= GLFW_KEY_UP)			movement(key, action);
 
 	if (action == GLFW_RELEASE) {
 		if (key == GLFW_KEY_F && !game->console->visible())		game->render.toggleFullscreen();

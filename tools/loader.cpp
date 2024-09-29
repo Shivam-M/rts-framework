@@ -1,20 +1,24 @@
 #include "loader.h"
 
-#include "../defs/province.h"
-#include "../defs/unit.h"
-#include "../defs/nation.h"
+#include "../assets/province.h"
+#include "../assets/unit.h"
+#include "../assets/nation.h"
 
+#include "../assets/particle_group.h"
 #include "../assets/text.h"
 #include "../assets/collidable.h"
-#include "../shapes/circle.h"
 
-json Loader::level_data;
+#include "../tools/ui_manager.h"
+
+json Loader::current_level_data;
 
 const json DEFAULTS = {
 	{"colour",			"FFFFFF"},
 	{"alpha",			1},
 	{"alt_colour",		"FFFFFF"},
-	{"alt_alpha",		1.0},
+	{"alt_alpha",		1.0f},
+	{"secondary_colour","FFFFFF"},
+	{"secondary_alpha",	1.0f},
 	{"level_name",      "LEVEL"},
 	{"width",			1},
 	{"height",			1},
@@ -28,25 +32,33 @@ const json DEFAULTS = {
 	{"font_custom",		0},
 	{"size",			10},
 	{"content",			"Sample Text"},
+	{"scale",			1.0f},
 	{"texture",			"NULL"},
 	{"variables",		nullptr},
 	{"image",			nullptr},
-	{"value",			0.10},
+	{"parent",			nullptr},
+	{"value",			0.10f},
 	{"id",				-1},
+	{"flags",			0},
 	{"provinces",		json::array()},
 	{"units",			json::array()},
-	{"neighbours",		json::array()}
+	{"neighbours",		json::array()},
+	{"offset",			true},
+	{"fixed",			0},
+	{"priority",		0.00},
 };
 
 static map<int, Province*> province_map;
 static map<int, Nation*> nation_map;
 static map<int, Unit*> unit_map;
+static map<string, Panel*> panel_map;
 
 static json properties;
 
 void Loader::parseCommon(Moveable* moveable) {
 	string script = getString("script");
 	if (script != "") moveable->loadScript(script);
+	moveable->addFlag(getInt("flags"));
 	moveable->setName(getString("name"));
 	moveable->setSize(getFloat("width"), getFloat("height"));
 	moveable->setLocation(getFloat("x"), getFloat("y"));
@@ -54,18 +66,28 @@ void Loader::parseCommon(Moveable* moveable) {
 	if (getString("alt_colour") != "") {
 	 	moveable->setGradientColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
 	}
+	if (getString("texture", "NULL") != "NULL") {
+		moveable->setTexture(Image::getImage(getString("texture")));
+	}
+	if (getString("parent", "NULL") != "NULL") {
+		Panel* parent_panel = panel_map[getString("parent")];
+		parent_panel->add(moveable);
+	}
+	if (getInt("fixed")) {
+		moveable->addFlag(FIXED_POS);
+	}
 }
 
-/* Fire* Loader::parseFire() { return nullptr; }
-
-Stars* Loader::parseStars() { return nullptr; }
-
-Square* Loader::parseSquare() { return nullptr;} */
-
-Circle* Loader::parseCircle() {
-	Circle* circle = new Circle();
-	parseCommon(circle);
-	return circle;
+ParticleGroup* Loader::parseStars(vector<Moveable*>* queue) { // TODO PARSE VALUES
+	Moveable star = Moveable({}, { 0.0025f, 0.0025f * (16.0f / 9.0f) }, Colour(255, 255, 255, 150), Colour(255, 255, 255, 150));
+	ColourShift colourshift = ColourShift(star.getColour(), Colour(255, 255, 255, 0));
+	colourshift.speed = 0.05f;
+	colourshift.with_gradient = true;
+	colourshift.fade_to_death = true;
+	star.setColourShift(colourshift);
+	ParticleGroup* stars = new ParticleGroup({ 0.0f, 0.0f }, { 1.0f, 1.0f }, star, 75, queue);
+	parseCommon(stars);
+	return stars;
 }
 
 Collidable* Loader::parseCollidable() {
@@ -104,11 +126,32 @@ Collidable* Loader::parseCustom() {
 	return quad;
 }
 
+Moveable* Loader::parseButton() {
+	Moveable* button = new Moveable();
+	Text* text = parseText();
+	parseCommon(button);
+
+	Vector2 dimensions = TextRenderer::calculate_text_dimensions(text->getFont(), text->getContent(), text->getScale());
+	float x_offset = (button->size.x - (dimensions.x / WINDOW_WIDTH)) / 2.0f;
+	float y_offset = (button->size.y - (dimensions.y / WINDOW_HEIGHT)) / 1.1f;
+
+	// text->setColour(Colour::HexToRGB(getString("secondary_colour"), (getFloat("secondary_alpha"))));
+
+	text->colour.setW(200);
+
+	button->setText(text);
+	button->setTextOffset(x_offset, y_offset);
+	button->setButtonAction((BUTTON_ACTION)getInt("action"));
+	return button;
+}
+
 Text* Loader::parseText() {
 	Text* text = new Text();
 	parseCommon(text);
+	text->setScale(getFloat("scale"));
+	string a = getString("font");
+	text->setFont(Fonts::getFont(getString("font"), getInt("size"), getInt("font_custom")));
 	text->setContent(getString("content"));
-	text->setFont(Fonts::getFont(getString("font"), getInt( "size"), getInt("font_custom")));
 	return text;
 }
 
@@ -117,6 +160,16 @@ Collidable* Loader::parseSlider() {
 	parseCommon(slider);
 	slider->addFlag(MOVING);
 	return slider;
+}
+
+Panel* Loader::parsePanel() {
+	Panel* panel = new Panel();
+	panel->setPriority(getFloat("priority"));
+	panel->addFlag(PANEL);
+	parseCommon(panel);
+	panel_map[getString("name")] = panel;
+	UIManager::Register(getString("name"), panel);
+	return panel;
 }
 
 map<int, Province*> Loader::getProvinceMap() { return province_map; }
@@ -133,6 +186,7 @@ Province* Loader::parseProvince() {
 	province->setTexture(Image::getImage("data/generated/" + to_string(province->getID()) + "_province.png"));
 	province->setValue(getFloat("value"));
 	province->setText(new Text(province->getLocation(), font, Colour(189, 195, 199, 150), province->getName()));
+	province->addFlag(PROVINCE);
 	province_map[province->getID()] = province;
 
 	if (province->getTexture()->image == nullptr) {
@@ -146,14 +200,13 @@ Unit* Loader::parseUnit() {
 	Unit* unit = new Unit(getInt("id"), nullptr, getInt("size"), getFloat("skill"), province_map[getInt("province")]);
 	parseCommon(unit);
 
-	// Font* font = Fonts::getFont(CONSOLAS_BOLD, 16); // (189, 195, 199, 250)
 	Font* font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
 	Text* unit_text = new Text(unit->getLocation(), font, Colour(220, 221, 225, 200), unit->getName(), 0.5f);
-	unit_text->addFlag(TEXT_BACKGROUND);
+	unit_text->addFlag(TEXT_BACKGROUND | UNSAVEABLE);
 	unit_text->removeFlag(FIXED_POS);
 	unit->setText(unit_text);
 	unit->setTextOffset(0, -0.0025);
-	unit->location.x -= 1; // Offset x by -1 (sidescroller levelling)
+	// unit->location.x -= 1; // Offset x by -1 (sidescroller levelling) -- unused?
 
 	unit_map[getInt("id")] = unit;
 	return unit;
@@ -188,9 +241,9 @@ Nation* Loader::parseNation() {
 }
 
 string Loader::getVariable(string var) {
-	auto target_value = level_data.find("variables");
-	if (target_value == level_data.end()) return "";
-	json vars = level_data["variables"];
+	auto target_value = current_level_data.find("variables");
+	if (target_value == current_level_data.end()) return "";
+	json vars = current_level_data["variables"];
 	return vars[var];
 }
 
@@ -199,7 +252,7 @@ string Loader::getString(string key, string def) {
 		string value = properties[key];
 		if (value[0] == 38) return getVariable(value.erase(0, 1)); // '&'
 		return properties[key];
-	}  return !def.empty() ? def : (string)DEFAULTS[key];
+	} return !def.empty() ? def : (string)DEFAULTS[key];
 }
 
 int Loader::getInt(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
@@ -211,16 +264,19 @@ json::array_t Loader::getArray(string key) {
 	return target_value != properties.end() && target_value.value().is_array() ? properties[key] : DEFAULTS[key];
 }
 
-Level* Loader::load_font(string f, vector <Moveable*>* q, vector<Text*>* t, int identifier) {
+Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, int identifier) {
 	Level* level = new Level();
 	ifstream level_file(f);
 	json level_data = json::parse(level_file);
 
-	log_t("Loading level... " CON_RED + f + CON_NORMAL " [" + CON_RED + to_string(level_data["name"]) + CON_NORMAL + "]");
+	log_t("Loading level... " CON_RED + f + CON_NORMAL " [" + CON_RED + (string)level_data["level_name"] + CON_NORMAL + "]");
 
-	Moveable* background = new Moveable(Vector2(), Vector2(1.0, 1.0),
+	Moveable* background = new Moveable(
+		Vector2(),
+		Vector2(1.0, 1.0),
 		Colour(level_data["background"], level_data["background_alpha"]), 
-		Colour(level_data["alt_background"], level_data["alt_background_alpha"]));
+		Colour(level_data["alt_background"], level_data["alt_background_alpha"])
+	);
 	background->addFlag(UNEDITABLE);
 	background->setName("Background " + to_string(identifier));
 
@@ -229,8 +285,22 @@ Level* Loader::load_font(string f, vector <Moveable*>* q, vector<Text*>* t, int 
 		background->setTexture(Image::getImage(level_data["image"]));
 	}
 
+	target_value = level_data.find("fixed_position");
+	if (target_value != level_data.end()) {
+		if ((bool)level_data["fixed_position"]) {
+			background->addFlag(FIXED_POS);
+		}
+	}
+
+	target_value = level_data.find("offset_positions");
+	if (target_value != level_data.end()) {
+		if (!(bool)level_data["offset_positions"]) {
+			level->offset_positions = false;
+		}
+	}
+
 	level->objects.push_back(background);
-	level_data = level_data;
+	current_level_data = level_data;
 
 	for (auto& el : level_data["objects"].items()) {
 		properties = el.value();
@@ -238,47 +308,141 @@ Level* Loader::load_font(string f, vector <Moveable*>* q, vector<Text*>* t, int 
 
 		if (type == "COLLIDABLE") {
 			level->objects.push_back(parseCollidable());
+		} else if (type == "PANEL") {
+			level->objects.push_back(parsePanel());
+		} else if (type == "STARS") {
+			level->objects.push_back(parseStars(q));
 		} else if (type == "QUAD") {
 			level->objects.push_back(parseCustom());
 		} else if (type == "MOVEABLE") {
 			level->objects.push_back(parseMoveable());
-		} else if (type == "CIRCLE") {
-			level->objects.push_back(parseCircle());
-		} /*else if (type == "SQUARE") {
-			level->objects.push_back(parseSquare());
-		}*/ else if (type == "TEXT") {
+		} else if (type == "TEXT") {
 			level->text_objects.push_back(parseText());
+		} else if (type == "BUTTON") {
+			level->objects.push_back(parseButton());
 		} else if (type == "SLIDER") {
 			level->objects.push_back(parseSlider());
 		} else if (type == "PROVINCE") {
-			Province* province = parseProvince();
-			province->addFlag(PROVINCE);
-			level->objects.push_back(province);
-			// level->text_objects.push_back(province->getText());
+			level->objects.push_back(parseProvince());
+		} else if (type == "NATION") {
+			level->objects.push_back(parseNation());
 		} else if (type == "UNIT") {
 			Unit* unit = parseUnit();
 			level->objects.push_back(unit);
 			level->text_objects.push_back(unit->getText());
-		} else if (type == "NATION") {
-			Nation* nation = parseNation();
-			level->objects.push_back(nation);
-		}
-		/* else if (type == "FIRE") {
-			Fire* fire_object = parseFire(object_data);
-			fire_object->objects = q;
-			level->objects.push_back(fire_object);
-		}
-		else if (type == "STARS") {
-			Stars* stars_object = parseStars(object_data);
-			stars_object->objects = q;
-			level->objects.push_back(stars_object);
-		} */
-		else {
+		} else {
 			level->objects.push_back(parseMoveable());
 		}
 	}
 
-	log_t("Finished parsing ", level->objects.size(), " object(s).");
+	log_t("Finished parsing " CON_RED, level->objects.size(), CON_NORMAL " object(s).");
 	level_file.close();
 	return level;
+}
+
+void Loader::writeObjects(vector<Moveable*> objects, vector<Text*> text_objects) {
+	ifstream file("data/levels/debug/0.json");
+	if (!file.is_open()) return;
+
+	json level_data;
+	file >> level_data;
+	file.close();
+
+	json delayed_additions = json::array();
+	json objects_array = json::array();
+	for (Moveable* m : objects) {
+		if (m->hasFlag(DEBUG)) continue;
+		if (m->hasFlag(PANEL)) continue; // temp
+		if (m->hasFlag(UNSAVEABLE)) continue;
+		if (m->hasFlag(UI)) continue;
+		if (m->getName().find("Background") != string::npos) continue;
+		json moveable_data = {
+			{"type", "MOVEABLE"},
+			{"x", m->location.x },
+			{"y", m->location.y },
+			{"width", m->size.x },
+			{"height", m->size.y },
+			{"colour", m->getColour().getHex() },
+			{"alt_colour", m->getGradientColour().getHex() },
+			{"alpha", m->getColour().getW() / 255.0f},
+			{"alt_alpha", m->getGradientColour().getW() / 255.0f},
+			{"name", m->getName()},
+			{"flags", m->getFlags() }
+		};
+		if (m->hasFlag(BUTTON)) {
+			moveable_data["type"] = "BUTTON";
+			moveable_data["action"] = reinterpret_cast<Moveable*>(m)->getButtonAction();
+
+			Text* t = m->getText();
+			moveable_data["font"] = Fonts::getProperties(t->getFont()).first;
+			moveable_data["font_custom"] = (int)(Fonts::getProperties(t->getFont()).second);
+			moveable_data["size"] = t->getFont()->h;
+			moveable_data["content"] = t->getContent();
+			moveable_data["scale"] = t->getScale();
+		}
+		// Note: in the level loader, units are pushed by -1 on the x-axis -- shouldn't be a problem if assigned to a province
+		if (m->hasFlag(TEXTURED)) {
+			moveable_data["texture"] = m->getTexture()->path;
+		}
+		if (m->hasFlag(PROVINCE)) {
+			moveable_data["type"] = "PROVINCE";
+			moveable_data["id"] = reinterpret_cast<Province*>(m)->getID();
+		}
+		if (m->hasFlag(UNIT)) {
+			moveable_data["type"] = "UNIT";
+			moveable_data["id"] = reinterpret_cast<Unit*>(m)->getID();
+			moveable_data["province"] = reinterpret_cast<Unit*>(m)->getProvince()->getID();
+			moveable_data["skill"] = reinterpret_cast<Unit*>(m)->getSkill();
+			moveable_data["size"] = reinterpret_cast<Unit*>(m)->getAmount();
+		}
+		if (m->hasFlag(NATION)) {
+			moveable_data["type"] = "NATION";
+			moveable_data["id"] = reinterpret_cast<Nation*>(m)->getID();
+			moveable_data["capital"] = reinterpret_cast<Nation*>(m)->getCapital()->getID();
+			moveable_data["provinces"] = {};
+			moveable_data["units"] = {};
+			for (Unit* unit : reinterpret_cast<Nation*>(m)->getOwnedUnits()) moveable_data["units"].push_back(unit->getID());
+			for (Province* province : reinterpret_cast<Nation*>(m)->getOwnedProvinces()) moveable_data["provinces"].push_back(province->getID());
+			delayed_additions.push_back(moveable_data);
+			continue;
+		}
+		if (m->hasFlag(COLLIDABLE)) moveable_data["type"] = "SLIDER";
+
+		objects_array.push_back(moveable_data);
+	}
+
+	objects_array.insert(objects_array.end(), delayed_additions.begin(), delayed_additions.end());
+
+	for (Text* t : text_objects) {
+		if (t->hasFlag(DEBUG)) continue;
+		if (t->hasFlag(UI)) continue;
+		if (t->hasFlag(UNSAVEABLE)) continue;
+		json moveable_data = {
+			{"x", t->location.x },
+			{"y", t->location.y },
+			{"width", t->size.x },
+			{"height", t->size.y },
+			{"colour", t->getColour().getHex() },
+			{"alpha", t->getColour().getW() / 255.0f},
+			{"name", t->getName()}
+		};
+		if (t->hasFlag(TEXT)) {
+			moveable_data["type"] = "TEXT";
+			moveable_data["font"] = Fonts::getProperties(t->getFont()).first;
+			moveable_data["font_custom"] = (int)(Fonts::getProperties(t->getFont()).second);
+			moveable_data["size"] = t->getFont()->h;
+			moveable_data["content"] = t->getContent();
+			moveable_data["scale"] = t->getScale();
+		}
+		objects_array.push_back(moveable_data);
+	}
+	log_t(objects_array.dump(4));
+
+	ofstream level_file("data/levels/debug/0.json");
+	if (!level_file.is_open()) return;
+
+	level_data["objects"].clear();
+	level_data["objects"] = objects_array;
+	level_file << level_data.dump(4);
+	level_file.close();
 }

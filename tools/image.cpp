@@ -12,9 +12,7 @@
 
 map<string, Texture*> Image::images = {};
 
-struct Rectangle {
-    int left, top, right, bottom;
-};
+struct Rectangle { int left, top, right, bottom; };
 
 void cropRectangle(const unsigned char* image, int width, int height, unsigned char target_colour[3], Rectangle& rect) {
     rect.left = width;
@@ -119,6 +117,7 @@ void Image::loadImage(string path) {
 
     glGenTextures(1, &texture->data);
     texture->image = stbi_load(path.c_str(), &texture->width, &texture->height, &texture->composition, STBI_rgb_alpha);
+    texture->path = path;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

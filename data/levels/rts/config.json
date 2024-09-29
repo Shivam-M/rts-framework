@@ -1,0 +1,12 @@
+{
+	"game_name": "RTS",
+	"version": 0.03,
+	"options": {
+		"default_control_mode": 0,
+		"render_culling": false,
+		"extra_information_text": false,
+		"initialise_player": false,
+		"defined_control_mapping": 1,
+		"debug_1": 1
+	}
+}

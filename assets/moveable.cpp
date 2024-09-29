@@ -50,6 +50,7 @@ void Moveable::loadScript(string path) {
 }
 
 void Moveable::shiftColour() {
+	
 	Colour change = (colour_shift.first_colour - colour_shift.second_colour) * colour_shift.speed;
 	ColourShift::DIRECTION direction = colour_shift.direction;
 
@@ -59,8 +60,7 @@ void Moveable::shiftColour() {
 			colour = max(colour_shift.first_colour, colour_shift.second_colour);
 			colour_shift.direction = ColourShift::DOWN;
 		}
-	}
-	else {	
+	} else {	
 		if (colour_shift.loop == false && ((default_colour.sum() - colour.sum()) < -10)) {
 			shifting_colour = false;
 			return;
@@ -76,11 +76,13 @@ void Moveable::shiftColour() {
 	if (colour_shift.loop == false && (direction != colour_shift.direction || colour.getW() <= 0)) // temp
 		shifting_colour = false;
 	if (colour_shift.fade_to_death && colour.getW() <= 0) addFlag(DISABLED);
-	if (*colour_shift.condition != colour_shift.target) stopColourShift();
+	if (colour_shift.condition != nullptr) {
+		if (*colour_shift.condition != colour_shift.target) stopColourShift();
+	}
 }
 
 void Moveable::stopColourShift() {
-	colour = default_colour;
+	// colour = default_colour; -- check particles impact
 	shifting_colour = false;
 }
 
@@ -108,6 +110,7 @@ void Moveable::onHover() {
 		getText()->removeFlag(DISABLED);
 	}
 }
+
 void Moveable::onHoverStop() {
 	if (!shifting_colour) resetColour();
 	if (hover_tooltip && hasFlag(BUTTON)) {

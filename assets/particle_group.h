@@ -1,5 +1,7 @@
 #pragma once
-#include "panel.h"
+
+#include "moveable.h"
+
 
 class ParticleGroup : public Moveable {
 	private:
@@ -16,8 +18,8 @@ class ParticleGroup : public Moveable {
 			queue->reserve(queue->size() + amount);
 			for (int i = 0; i < amount; i++) {
 				Moveable* particle = new Moveable(template_moveable);
-				particle->colour_shift.speed = ((double)rand() / (RAND_MAX)) * 0.01f;
-				particle->setLocation(getLocation().x + (getSize().x * ((double)rand() / (RAND_MAX))), getLocation().y + (getSize().y * ((double)rand() / (RAND_MAX))));
+				particle->colour_shift.speed *= random_float();
+				particle->setLocation(getLocation().x + (getSize().x  * random_float()), getLocation().y + (getSize().y * random_float()));
 				particles.push_back(particle);
 				queue->push_back(particle);
 			}
@@ -28,8 +30,8 @@ class ParticleGroup : public Moveable {
 			for (auto& particle : particles) {
 				// particle->update();
 				if (particle->getFlags() & DISABLED) {
-					particle->setColour(template_moveable.getColour());
-					particle->setLocation(getLocation().x + (getSize().x * ((double)rand() / (RAND_MAX))), getLocation().y + (getSize().y * ((double)rand() / (RAND_MAX))));
+					// particle->setColour(template_moveable.getColour());
+					particle->setLocation(getLocation().x + (getSize().x * random_float()), getLocation().y + (getSize().y * random_float()));
 					particle->removeFlag(DISABLED);
 				}
 			}

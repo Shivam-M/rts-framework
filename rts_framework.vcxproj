@@ -205,6 +205,8 @@
     <None Include="data\levels\ui\2.json" />
     <None Include="data\levels\ui\3.json" />
     <None Include="data\levels\ui\4.json" />
+    <None Include="data\levels\ui\5.json" />
+    <None Include="data\levels\ui\6.json" />
     <None Include="shaders\coloured.frag" />
     <None Include="shaders\coloured.vert" />
     <None Include="shaders\text.frag" />

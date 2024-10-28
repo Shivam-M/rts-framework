@@ -14,7 +14,7 @@ void GameSidescroller::extendedInitialisation() {
 	player.size = { 80.0f / WINDOW_WIDTH, 80.0f / WINDOW_HEIGHT };
 	player.addFlag(TEXTURED);
 	player.setTexture(Image::getImage("img.png"));
-	player.loadScript("data/switcher.txt");
+	player.loadScript("data/scripts/switcher.txt");
 	mouse->debug_control_scheme = true;
 
 	registerObject(&player);

@@ -17,29 +17,6 @@
 using namespace std;
 namespace fs = filesystem;
 
-/*
-Release notes
-
-- Huge optimisations for text renderer
-- Replaced some immediate mode rendering with shader-based direct mode
-- Added batched rendering for coloured and textured quads
-- Reimplemented particle functionality in a more efficient way
-- Modularised RTS/Sidescroller game types
-- Added dynamic UI panels which can be loaded from level files
-- Added UIManager to manage UI panels
-- Added province/unit/nation tooltips
-- Implemented button functionality
-- Enabled dumping of moveables to level files
-- Reimplemented basic sidescroller functionality
-- Reduced number of variable copies by passing references
-- Added ability to use multiple textures on a quad
-- Improve RTS sieging functionality
-- Fixed variables not working in level files
-- Remove unused moveable flags
-- General code clean-up and restructuring
-
-*/
-
 void GameRTS::extendedInitialisation() {
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 #ifdef dbg
@@ -55,6 +32,7 @@ void GameRTS::extendedInitialisation() {
 	console->build();
 
 	UIManager::Hide("ui_menu_pause");
+	UIManager::Hide("ui_nation_tooltip");
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to load the game.");
 }

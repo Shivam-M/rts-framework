@@ -56,7 +56,8 @@ enum {
     DEBUG =             1 << 23,
     UNSAVEABLE =        1 << 24,
     UI =                1 << 25,
-    UNDER_PANEL =       1 << 26
+    UNDER_PANEL =       1 << 26,
+    DRAGGABLE =         1 << 27,
 };
  
 void log_impl(ostream& os);

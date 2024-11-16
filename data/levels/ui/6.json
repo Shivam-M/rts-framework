@@ -12,7 +12,9 @@
     "font2": "data/fonts/MedievalSharp-Book.ttf",
     "font": "data/fonts/TrajanPro-Bold.ttf",
     "font3": "data/fonts/TrajanPro-Regular.ttf",
-    "colour": "bdc3c7"
+    "colour": "cdb5ac",
+    "colour2": "371f17",
+    "colour3": "550000"
   },
   "objects": [
     {
@@ -28,23 +30,23 @@
       "name": "ui_war_declaration_header",
       "parent": "&name",
       "type": "MOVEABLE",
-      "colour": "bdc3c7",
-      "alpha": 0.85,
+      "colour": "&colour",
+      "alpha": 0.80,
       "y": -0.195,
       "width": 1.00,
       "height": 0.2,
-      "alt_colour": "bdc3c7",
-      "alt_alpha": 0.85,
+      "alt_colour": "&colour",
+      "alt_alpha": 0.80,
       "fixed": true
     },
     {
       "name": "ui_war_declaration_background",
       "parent": "&name",
       "type": "MOVEABLE",
-      "colour": "550000",
-      "alpha": 0.85,
-      "alt_colour": "550000",
-      "alt_alpha": 0.85,
+      "colour": "&colour2",
+      "alpha": 0.80,
+      "alt_colour": "&colour2",
+      "alt_alpha": 0.80,
       "fixed": true,
       "texture": "data/images/map.png"
     },
@@ -56,10 +58,11 @@
       "size": 45,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "550000",
+      "colour": "&colour2",
       "content": "Declaration of War!",
       "alpha": 0.75,
-      "x": 0.025,
+      "x": 0.5,
+      "alignment": 1,
       "y": -0.05
     },
     {
@@ -73,7 +76,8 @@
       "colour": "&colour",
       "content": "Mercia",
       "alpha": 0.75,
-      "x": 0.025,
+      "alignment": 2,
+      "x": 0.4,
       "y": 0.2
     },
     {
@@ -81,11 +85,11 @@
       "parent": "&name",
       "font": "&font",
       "font_custom": true,
-      "size": 24,
+      "size": 18,
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "-- has declared war against --",
+      "content": "vs",
       "alignment": 1,
       "alpha": 0.75,
       "x": 0.5,
@@ -99,13 +103,63 @@
       "size": 32,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "&colour",
-      "content": "Cumbria",
-      "alignment": 2,
+      "colour": "&colour", 
+      "content": "Strathclyde",
+      "alignment": 0,
       "alpha": 0.775,
-      "x": 0.975,
+      "x": 0.6,
       "y": 0.2
     },
+
+    {
+      "name": "ui_war_declaration_text_allies",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "allies",
+      "alpha": 0.75,
+      "alignment": 1,
+      "x": 0.5,
+      "y": 0.4
+    },
+
+    {
+      "name": "ui_war_declaration_text_strength",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "strength",
+      "alpha": 0.75,
+      "alignment": 1,
+      "x": 0.5,
+      "y": 0.5
+    },
+
+    {
+      "name": "ui_war_declaration_text_provinces",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "provinces",
+      "alpha": 0.75,
+      "alignment": 1,
+      "x": 0.5,
+      "y": 0.6
+    },
+
+
     {
       "name": "ui_war_declaration_attackers_allies",
       "parent": "&name",
@@ -115,9 +169,10 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Allies: Northumberland, Kent, Sussex",
+      "content": "Northumberland, Kent, Sussex",
       "alpha": 0.75,
-      "x": 0.025,
+      "alignment": 2,
+      "x": 0.4,
       "y": 0.4
     },
     {
@@ -129,9 +184,10 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Army Strength: 9,830",
+      "content": "9,830",
       "alpha": 0.75,
-      "x": 0.025,
+      "alignment": 2,
+      "x": 0.4,
       "y": 0.5
     },
     {
@@ -143,9 +199,10 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Controlled provinces: 19",
+      "content": "19",
       "alpha": 0.75,
-      "x": 0.025,
+      "alignment": 2,
+      "x": 0.4,
       "y": 0.6
     },
     {
@@ -157,10 +214,10 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Allies: Strathclyde, Dumonia, Wales",
+      "content": "Wessex, Dumonia, Wales",
       "alpha": 0.75,
-      "alignment": 2,
-      "x": 0.975,
+      "alignment": 0,
+      "x": 0.6,
       "y": 0.4
     },
     {
@@ -172,10 +229,10 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Army Strength: 12,480",
+      "content": "12,480",
       "alpha": 0.75,
-      "alignment": 2,
-      "x": 0.975,
+      "alignment": 0,
+      "x": 0.6,
       "y": 0.5
     },
     {
@@ -187,10 +244,10 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Controlled provinces: 24",
+      "content": "24",
       "alpha": 0.75,
-      "alignment": 2,
-      "x": 0.975,
+      "alignment": 0,
+      "x": 0.6,
       "y": 0.6
     }
   ]

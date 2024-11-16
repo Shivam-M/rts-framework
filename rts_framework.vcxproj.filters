@@ -349,4 +349,7 @@
     <Text Include="data\generated\province_dimensions.txt" />
     <Text Include="data\generated\province_neighbours.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="data\levels\ui\6-test.xml" />
+  </ItemGroup>
 </Project>

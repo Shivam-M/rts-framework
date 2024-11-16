@@ -11,6 +11,7 @@
     "name": "ui_war_declaration",
     "font2": "data/fonts/MedievalSharp-Book.ttf",
     "font": "data/fonts/TrajanPro-Bold.ttf",
+    "font3": "data/fonts/TrajanPro-Regular.ttf",
     "colour": "bdc3c7"
   },
   "objects": [
@@ -73,6 +74,21 @@
       "content": "Mercia",
       "alpha": 0.75,
       "x": 0.025,
+      "y": 0.2
+    },
+    {
+      "name": "ui_war_declaration_info_text",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 24,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "-- has declared war against --",
+      "alignment": 1,
+      "alpha": 0.75,
+      "x": 0.5,
       "y": 0.2
     },
     {

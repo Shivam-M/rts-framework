@@ -30,11 +30,13 @@ class Text: public Moveable {
 				return Moveable::location;
 			}
 			else if (alignment == CENTRE) {
-				return Moveable::location;
+				Vector2 temp_location = location;
+				temp_location.x -= text_size.x / WINDOW_WIDTH / 2;
+				return temp_location;
 			}
 			else if (alignment == RIGHT) {
 				Vector2 temp_location = location;
-				temp_location.x -= text_size.x / 1280.0;
+				temp_location.x -= text_size.x / WINDOW_WIDTH;
 				return temp_location;
 			}
 		}

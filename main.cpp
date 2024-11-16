@@ -1,5 +1,5 @@
 // #include "game.h"
-#define SSs
+#define SSw
 #ifdef SS
 #include "game_sidescroller.h"
 #else

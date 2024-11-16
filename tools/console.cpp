@@ -109,6 +109,15 @@ void Console::execute() {
 			game->render.offsets = { 0, 0 };
 			feedback("Reset view offsets");
 		}
+		else if (args[0] == "SHOW") {
+			UIManager::Show(args[1]);
+		}
+		else if (args[0] == "HIDE") {
+			UIManager::Hide(args[1]);
+		}
+		else if (args[0] == "TOGGLE") {
+			UIManager::Toggle(args[1]);
+		}
 		else if (args[0] == "VY") {
 			if (game->selected_object) {
 				game->selected_object->velocity.y = stod(args[1]);

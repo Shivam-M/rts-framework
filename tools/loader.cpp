@@ -46,6 +46,7 @@ const json DEFAULTS = {
 	{"offset",			true},
 	{"fixed",			0},
 	{"priority",		0.00},
+	{"alignment",		0}
 };
 
 static map<int, Province*> province_map;
@@ -152,6 +153,7 @@ Text* Loader::parseText() {
 	string a = getString("font");
 	text->setFont(Fonts::getFont(getString("font"), getInt("size"), getInt("font_custom")));
 	text->setContent(getString("content"));
+	text->setAlignment((ALIGNMENT)getInt("alignment"));
 	return text;
 }
 

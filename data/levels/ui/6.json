@@ -10,7 +10,7 @@
   "variables": {
     "name": "ui_war_declaration",
     "font2": "data/fonts/MedievalSharp-Book.ttf",
-    "font": "data/fonts/Cinzel-Bold.ttf",
+    "font": "data/fonts/TrajanPro-Bold.ttf",
     "colour": "bdc3c7"
   },
   "objects": [
@@ -40,9 +40,9 @@
       "name": "ui_war_declaration_background",
       "parent": "&name",
       "type": "MOVEABLE",
-      "colour": "2f3640",
+      "colour": "550000",
       "alpha": 0.85,
-      "alt_colour": "2f3640",
+      "alt_colour": "550000",
       "alt_alpha": 0.85,
       "fixed": true,
       "texture": "data/images/map.png"
@@ -55,7 +55,7 @@
       "size": 45,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "2f3640",
+      "colour": "550000",
       "content": "Declaration of War!",
       "alpha": 0.75,
       "x": 0.025,
@@ -85,12 +85,13 @@
       "type": "TEXT",
       "colour": "&colour",
       "content": "Cumbria",
+      "alignment": 2,
       "alpha": 0.775,
-      "x": 0.75,
+      "x": 0.975,
       "y": 0.2
     },
     {
-      "name": "ui_war_declaration_target",
+      "name": "ui_war_declaration_attackers_allies",
       "parent": "&name",
       "font": "&font",
       "font_custom": true,
@@ -104,7 +105,7 @@
       "y": 0.4
     },
     {
-      "name": "ui_unit_tooltip_value",
+      "name": "ui_war_declaration_attackers_strength",
       "parent": "&name",
       "font": "&font",
       "font_custom": true,
@@ -112,13 +113,13 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Army Strength: 10,000",
+      "content": "Army Strength: 9,830",
       "alpha": 0.75,
       "x": 0.025,
       "y": 0.5
     },
     {
-      "name": "ui_unit_tooltip_terrain",
+      "name": "ui_war_declaration_attackers_provinces",
       "parent": "&name",
       "font": "&font",
       "font_custom": true,
@@ -126,9 +127,54 @@
       "scale": 0.5,
       "type": "TEXT",
       "colour": "&colour",
-      "content": "Controlled provinces: 20",
+      "content": "Controlled provinces: 19",
       "alpha": 0.75,
       "x": 0.025,
+      "y": 0.6
+    },
+    {
+      "name": "ui_war_declaration_defenders_allies",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "Allies: Strathclyde, Dumonia, Wales",
+      "alpha": 0.75,
+      "alignment": 2,
+      "x": 0.975,
+      "y": 0.4
+    },
+    {
+      "name": "ui_war_declaration_defenders_strength",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "Army Strength: 12,480",
+      "alpha": 0.75,
+      "alignment": 2,
+      "x": 0.975,
+      "y": 0.5
+    },
+    {
+      "name": "ui_war_declaration_defenders_provinces",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 20,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "Controlled provinces: 24",
+      "alpha": 0.75,
+      "alignment": 2,
+      "x": 0.975,
       "y": 0.6
     }
   ]

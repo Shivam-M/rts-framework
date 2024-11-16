@@ -33,6 +33,8 @@ void GameRTS::extendedInitialisation() {
 
 	UIManager::Hide("ui_menu_pause");
 	UIManager::Hide("ui_nation_tooltip");
+	// UIManager::Hide("ui_war_declaration");
+	UIManager::Hide("ui_war_indicator");
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to load the game.");
 }

@@ -1,0 +1,23 @@
+<level alt_background="FFFFFF" alt_background_alpha="0.00" background="FFFFFF" background_alpha="0.00" foreground="FFFFFF" offset_positions="false" image="images/test.png" level_name="UI 0">
+  <variables
+	  name="ui_war_declaration"
+	  font2="data/fonts/MedievalSharp-Book.ttf"
+	  font="data/fonts/TrajanPro-Bold.ttf"
+	  font3="data/fonts/TrajanPro-Regular.ttf"
+	  colour="bdc3c7" />
+  <objects>
+    <PANEL name="&name" x="0.225" y="0.35" width="0.55" height="0.325" draggable="true" />
+    <MOVEABLE name="ui_war_declaration_header" parent="&name" colour="bdc3c7" alpha="0.85" y="-0.195" width="1.00" height="0.2" alt_colour="bdc3c7" alt_alpha="0.85" fixed="true" />
+    <MOVEABLE name="ui_war_declaration_background" parent="&name" colour="550000" alpha="0.85" alt_colour="550000" alt_alpha="0.85" fixed="true" texture="data/images/map.png" />
+    <TEXT name="ui_war_declaration_title_header" parent="&name" font="&font" font_custom="true" size="45" scale="0.5" colour="550000" content="Declaration of War!" alpha="0.75" x="0.025" y="-0.05" />
+    <TEXT name="ui_war_declaration_attackers_text" parent="&name" font="&font" font_custom="true" size="32" scale="0.5" colour="&colour" content="Mercia" alpha="0.75" x="0.025" y="0.2" />
+    <TEXT name="ui_war_declaration_info_text" parent="&name" font="&font" font_custom="true" size="24" scale="0.5" colour="&colour" content="-- has declared war against --" alignment="1" alpha="0.75" x="0.5" y="0.2" />
+    <TEXT name="ui_war_declaration_defenders_text" parent="&name" font="&font" font_custom="true" size="32" scale="0.5" colour="&colour" content="Cumbria" alignment="2" alpha="0.775" x="0.975" y="0.2" />
+    <TEXT name="ui_war_declaration_attackers_allies" parent="&name" font="&font" font_custom="true" size="20" scale="0.5" colour="&colour" content="Allies: Northumberland, Kent, Sussex" alpha="0.75" x="0.025" y="0.4" />
+    <TEXT name="ui_war_declaration_attackers_strength" parent="&name" font="&font" font_custom="true" size="20" scale="0.5" colour="&colour" content="Army Strength: 9,830" alpha="0.75" x="0.025" y="0.5" />
+    <TEXT name="ui_war_declaration_attackers_provinces" parent="&name" font="&font" font_custom="true" size="20" scale="0.5" colour="&colour" content="Controlled provinces: 19" alpha="0.75" x="0.025" y="0.6" />
+    <TEXT name="ui_war_declaration_defenders_allies" parent="&name" font="&font" font_custom="true" size="20" scale="0.5" colour="&colour" content="Allies: Strathclyde, Dumonia, Wales" alpha="0.75" alignment="2" x="0.975" y="0.4" />
+    <TEXT name="ui_war_declaration_defenders_strength" parent="&name" font="&font" font_custom="true" size="20" scale="0.5" colour="&colour" content="Army Strength: 12,480" alpha="0.75" alignment="2" x="0.975" y="0.5" />
+    <TEXT name="ui_war_declaration_defenders_provinces" parent="&name" font="&font" font_custom="true" size="20" scale="0.5" colour="&colour" content="Controlled provinces: 24" alpha="0.75" alignment="2" x="0.975" y="0.6" />
+  </objects>
+</level>

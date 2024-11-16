@@ -277,6 +277,9 @@
     <Text Include="data\scripts\slide.txt" />
     <Text Include="data\scripts\switcher.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="data\levels\ui\6-test.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

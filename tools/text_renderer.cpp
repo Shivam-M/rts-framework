@@ -5,7 +5,7 @@
 #include <algorithm>
 
 GLuint VAO, VBO, TextShader;
-int AtlasWidth = 2048, AtlasHeight = 512;
+int AtlasWidth = 4096, AtlasHeight = 1024;
 GLuint uniformColour, uniformPriority;
 
 void TextRenderer::setup() {
@@ -127,6 +127,7 @@ void TextRenderer::render_text(Font* ft_font, float x, float y, string const& te
 
         xpos = x + ch.bearing.x * scale;
         ypos = y - (ch.size.y - ch.bearing.y) * scale;
+
         w = ch.size.x * scale;
         h = ch.size.y * scale;
 

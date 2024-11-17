@@ -134,12 +134,13 @@ Moveable* Loader::parseButton() {
 
 	Vector2 dimensions = TextRenderer::calculate_text_dimensions(text->getFont(), text->getContent(), text->getScale());
 	float x_offset = (button->size.x - (dimensions.x / WINDOW_WIDTH)) / 2.0f;
-	float y_offset = (button->size.y - (dimensions.y / WINDOW_HEIGHT)) / 1.1f;
-
-	// text->setColour(Colour::HexToRGB(getString("secondary_colour"), (getFloat("secondary_alpha"))));
+	float y_offset = (button->size.y + (dimensions.y / WINDOW_HEIGHT)) / 2.0f;
 
 	text->colour.setW(200);
 
+	if (getString("alt_colour") != "") {
+		button->setColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
+	}
 	button->setText(text);
 	button->setTextOffset(x_offset, y_offset);
 	button->setButtonAction((BUTTON_ACTION)getInt("action"));

@@ -14,7 +14,7 @@
     "font3": "data/fonts/TrajanPro-Regular.ttf",
     "colour": "cdb5ac",
     "colour2": "371f17",
-    "colour3": "550000"
+    "colour3": "9e908b"
   },
   "objects": [
     {
@@ -88,7 +88,7 @@
       "size": 18,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "&colour",
+      "colour": "&colour3",
       "content": "vs",
       "alignment": 1,
       "alpha": 0.75,
@@ -103,7 +103,7 @@
       "size": 32,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "&colour", 
+      "colour": "&colour",
       "content": "Strathclyde",
       "alignment": 0,
       "alpha": 0.775,
@@ -119,7 +119,7 @@
       "size": 20,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "&colour",
+      "colour": "&colour3",
       "content": "allies",
       "alpha": 0.75,
       "alignment": 1,
@@ -135,7 +135,7 @@
       "size": 20,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "&colour",
+      "colour": "&colour3",
       "content": "strength",
       "alpha": 0.75,
       "alignment": 1,
@@ -151,12 +151,44 @@
       "size": 20,
       "scale": 0.5,
       "type": "TEXT",
-      "colour": "&colour",
+      "colour": "&colour3",
       "content": "provinces",
       "alpha": 0.75,
       "alignment": 1,
       "x": 0.5,
       "y": 0.6
+    },
+
+    {
+      "name": "ui_war_declaration_text_war_goal_header",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 26,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour",
+      "content": "WAR GOAL",
+      "alpha": 0.75,
+      "alignment": 1,
+      "x": 0.5,
+      "y": 0.75
+    },
+
+    {
+      "name": "ui_war_declaration_text_war_goal_details",
+      "parent": "&name",
+      "font": "&font",
+      "font_custom": true,
+      "size": 22,
+      "scale": 0.5,
+      "type": "TEXT",
+      "colour": "&colour3",
+      "content": "Control province 'Cumbria'",
+      "alpha": 0.75,
+      "alignment": 1,
+      "x": 0.5,
+      "y": 0.85
     },
 
 

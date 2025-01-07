@@ -130,17 +130,24 @@ void GameRTS::updateStatistics(int f, int u) {
 	Game::updateStatistics(f, u);
 
 	string nation_string = "-- [X]";
+	ostringstream nation_treasury;
 	if (player_nation) {
 		nation_string = player_nation->getName() + " [" + to_string(player_nation->getID()) + "]";
+		nation_treasury << fixed << setprecision(2) << player_nation->getMoney();
+		t_Information2.setContent("Money: " + nation_treasury.str());
 		t_Information3.setColour(player_nation->getColour());
 	}
 
 	t_Information.setContent(getDate());
-	t_Information2.setContent("Money: 0.00");
 	t_Information3.setContent("Playing as: " + nation_string);
 }
 
 static bool within(Vector2 location, Vector2 size, Vector2 point) { return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y; }
+
+void GameRTS::expandNation(Province* province) {
+	viewed_nation = province->getNation();
+	UIManager::Show("ui_nation_tooltip");
+}
 
 void GameRTS::moveUnit(Province* province) {
 	Unit* unit = reinterpret_cast<Unit*>(selected_object);
@@ -156,15 +163,19 @@ Moveable* GameRTS::getObjectUnderMouse() {
 	float min_distance = 100.f;
 	for (Moveable* moveable : game->objects) {
 		if (!game_paused) moveable->onHoverStop();
-		if (!(moveable->getFlags() & (UNEDITABLE | DISABLED))) {
-			Vector2 location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
-			if (within(location, size, cursor_position)) {
-				Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
-				float distance = pow(centre.x - cursor_position.x, 2.f) + pow(centre.y - cursor_position.y, 2.f);
-				if (distance < min_distance) {
-					min_distance = distance;
-					object = moveable;
-				}
+		if (moveable->getFlags() & (UNEDITABLE | DISABLED)) continue;
+		Vector2 location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
+		if (within(location, size, cursor_position)) {
+			if (moveable->hasFlag(UI)) {
+				object = moveable;
+				min_distance = -1;
+				continue;
+			}
+			Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
+			float distance = pow(centre.x - cursor_position.x, 2.f) + pow(centre.y - cursor_position.y, 2.f);
+			if (distance < min_distance) {
+				min_distance = distance;
+				object = moveable;
 			}
 		}
 	}
@@ -207,7 +218,7 @@ void GameRTS::updateCursor() {
 	cursor_position.set(static_cast<float>(x / render.resolution.x), static_cast<float>(y / render.resolution.y));
 }
 
-void GameRTS::executeAction(BUTTON_ACTION action) {
+void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep option for action-only
 	log_t("Executing button action: " CON_RED, action);
 	static int index;
 	static string files[3] = { "data/images/map.png", "data/images/map_white.png", "data/images/map_blue.png" };
@@ -215,6 +226,7 @@ void GameRTS::executeAction(BUTTON_ACTION action) {
 	static int index_font;
 	static vector<string> files_font;
 	Unit* hired_unit;
+	War war;
 
 	switch (action) {
 		case CHANGE_CONTROLS:
@@ -281,14 +293,33 @@ void GameRTS::executeAction(BUTTON_ACTION action) {
 		case TOGGLE_TOOLTIP:
 			UIManager::Toggle("ui_nation_tooltip");
 			break;
-		}
+		case UI_DEBUG_TOGGLE:
+			UIManager::Toggle("ui_war_declaration");
+			UIManager::Toggle("ui_event_choice");
+			break;
+		case DECLARE_WAR:
+			war.attacker = player_nation;
+			war.defender = viewed_nation;
+			war.war_goal = TAKE_KEY_PROVINCE;
+			war.war_goal_target.target_province = viewed_nation->getCapital();
+			/*war.attacker_allies.push_back(nations[1]);
+			war.attacker_allies.push_back(nations[3]);
+			war.defender_allies.push_back(nations[4]);
+			war.defender_allies.push_back(nations[5]);
+			war.defender_allies.push_back(nations[6]);
+			war.defender_allies.push_back(nations[9]);*/
+			UIManager::AssignValues("ui_war_declaration", &war);
+			UIManager::Hide("ui_nation_tooltip");
+			UIManager::Show("ui_war_declaration");
+	}
 }
 
 void GameRTS::updateProperties() {
 	updateCursor();
 	getObjectUnderMouse();
 
-	UIManager::AssignValues("ui_nation_tooltip", player_nation);
+	if (viewed_nation)
+		UIManager::AssignValues("ui_nation_tooltip", viewed_nation);
 
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) render.offsets.x += (cursor_position.x - original_position.x) * 0.01f, render.offsets.y += (cursor_position.y - original_position.y) * 0.01f;
 
@@ -322,7 +353,7 @@ void GameRTS::updateProperties() {
 	}
 
 	if (selected_object->hasFlag(BUTTON)) {
-		executeAction(selected_object->getButtonAction());
+		executeAction(selected_object->getButtonAction(), selected_object);
 		selected_object = nullptr;
 	}
 }

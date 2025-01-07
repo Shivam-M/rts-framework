@@ -182,19 +182,23 @@ void Render::drawTextureBatch() {
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
         Colour& colour = tx.colour;
-        glUniform4f(uniformColour, colour.getX() / 255.0f, colour.getY() / 255.0f, colour.getZ() / 255.0f, colour.getW() / 255.0f);
+        glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tx.texture->data);
-
+        const Colour& secondary_colour = tx.secondary_colour;
         if (tx.secondary_texture) {
-            const Colour& secondary_colour = tx.secondary_colour;
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, tx.secondary_texture->data);
             glUniform1i(uniformUseSecondTexture, 1);
-            glUniform4f(uniformColourSecondary, secondary_colour.x_ / 255.0f, secondary_colour.y_ / 255.0f, secondary_colour.z_ / 255.0f, secondary_colour.w_ / 255.0f);
         } else {
             glUniform1i(uniformUseSecondTexture, 0);
+        }
+        
+        if (tx.secondary_colour.null()) {
+            glUniform4f(uniformColourSecondary, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
+        } else {
+            glUniform4f(uniformColourSecondary, secondary_colour.x_ / 255.0f, secondary_colour.y_ / 255.0f, secondary_colour.z_ / 255.0f, secondary_colour.w_ / 255.0f);
         }
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -221,9 +225,22 @@ void Render::renderWindow() {
     float time_shapes = glfwGetTime();
     int culled_moveables = 0;
 
+    /*float left = 0 + offsets.x * -1;
+    float right = 1 + offsets.x * -1;
+    float top = 0 + offsets.y * -1;
+    float bottom = 1 + offsets.y * -1;*/
+
+    /*log_t("left ", left);
+    log_t("right ", right);
+    log_t("top ", top);
+    log_t("bottom ", bottom);
+    log_t("--");*/
+
     for (Moveable* moveable: *objects_) {
         if (moveable->getFlags() & (DISABLED | PARTICLES | PANEL)) continue;
         if ((moveable->location.x + moveable->size.x <= 0) || (moveable->location.y + moveable->size.y <= 0) || (moveable->location.x >= 1) || (moveable->location.y >= 1)) {
+        // if ((moveable->location.x + moveable->size.x <= left) || (moveable->location.x >= right)) {
+        // if (not (moveable->location.x >= left && moveable->location.x <= right)) {
             culled_moveables++;
         } else renderMoveable(moveable);
     }

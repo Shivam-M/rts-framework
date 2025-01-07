@@ -38,7 +38,7 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		}
 
 		void drawTextureBatch();
-		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour& colour, bool fixed_position = false, Texture* secondary_texture = nullptr, Colour secondary_colour = Colour(255, 255, 255, 255)) {
+		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour& colour, bool fixed_position = false, Texture* secondary_texture = nullptr, Colour secondary_colour = Colour(-1, -1, -1, -1)) {
 			batched_textures_.push_back({ location, size, texture, colour, fixed_position, secondary_texture, secondary_colour });
 		}
 

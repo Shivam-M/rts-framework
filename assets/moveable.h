@@ -28,7 +28,7 @@ struct ColourShift {
 	float speed = 0.1f;
 };
 
-enum BUTTON_ACTION {PAUSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, SAVE_GAME, TEST_FONTS, TOGGLE_TOOLTIP, HIRE_UNIT, OTHER};
+enum BUTTON_ACTION {PAUSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, SAVE_GAME, TEST_FONTS, TOGGLE_TOOLTIP, HIRE_UNIT, UI_DEBUG_TOGGLE, DECLARE_WAR, OTHER};
 
 class Moveable {
 	public:
@@ -39,6 +39,7 @@ class Moveable {
 		vector<string> script;
 		vector<Vector2> points;
 		float priority = 0.0f;
+		string metadata = "";
 
 		float script_timer = 0;
 		int script_line = 0;
@@ -53,7 +54,7 @@ class Moveable {
 
 		ColourShift colour_shift;
 		Colour colour = Colour("FFFFFF");
-		Colour gradient_colour = colour;
+		Colour gradient_colour = COLOUR_NULL;
 		Colour default_colour = colour;
 
 		bool shifting_colour = false, is_active = true, hover_tooltip = false;

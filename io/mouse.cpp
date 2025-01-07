@@ -38,7 +38,7 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 			game->original_position = game->cursor_position;
-			game->selected_object = game->hovered_object;
+			game->selected_object = game->getObjectUnderMouse(); // hovered_object;
 			game->t_Notification.setContent("");
 
 			if (game->selected_object) {
@@ -69,6 +69,15 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 					if (moveable->getFlags() & PROVINCE) {
 						reinterpret_cast<GameRTS*>(game)->moveUnit(reinterpret_cast<Province*>(moveable));
 					}
+				} else {
+					if (moveable->getFlags() & PROVINCE) {
+						reinterpret_cast<GameRTS*>(game)->expandNation(reinterpret_cast<Province*>(moveable));
+					}
+				}
+			}
+			else {
+				if (moveable->getFlags() & PROVINCE) {
+					reinterpret_cast<GameRTS*>(game)->expandNation(reinterpret_cast<Province*>(moveable));
 				}
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {

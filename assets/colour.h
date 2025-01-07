@@ -87,6 +87,7 @@ class Vector4 {
 #define COLOUR_WHITE Colour(255, 255, 255, 255)
 #define COLOUR_BLACK Colour(0, 0, 0, 255)
 #define COLOUR_INVIS Colour(0, 0, 0, 0)
+#define COLOUR_NULL  Colour(-1, -1, -1, -1)
 
 class Colour: public Vector4 { 
 	public:
@@ -131,6 +132,10 @@ class Colour: public Vector4 {
 		Colour& setW(float w) {
 			w_ = w;
 			return *this;
+		}
+
+		bool null() const {
+			return (x_ <= -1 && y_ <= -1 && z_ <= -1 && w_ <= -1);
 		}
 
 		string getHex() { return RGBToHex(*this); }

@@ -118,6 +118,9 @@ void Console::execute() {
 		else if (args[0] == "TOGGLE") {
 			UIManager::Toggle(args[1]);
 		}
+		else if (args[0] == "SCRIPT") {
+			game->selected_object->loadScript("data/scripts/" + args[1]);  // todo: make safer
+		}
 		else if (args[0] == "VY") {
 			if (game->selected_object) {
 				game->selected_object->velocity.y = stod(args[1]);

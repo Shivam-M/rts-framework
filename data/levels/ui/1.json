@@ -95,6 +95,26 @@
       "alpha": 0.75,
       "x": 0.04,
       "y": 0.5
+    },
+    {
+      "parent": "&name",
+      "action": 9,
+      "alpha": 0.85,
+      "alt_alpha": 0.85,
+      "alt_colour": "&colour",
+      "colour": "181818",
+      "content": "Declare War",
+      "flags": 0,
+      "font": "&font",
+      "font_custom": 1,
+      "height": 0.125,
+      "name": "ui_nation_tooltip_declare_war",
+      "scale": 0.5,
+      "size": 30,
+      "type": "BUTTON",
+      "width": 0.375,
+      "x": 0.04,
+      "y": 0.7
     }
   ]
 }

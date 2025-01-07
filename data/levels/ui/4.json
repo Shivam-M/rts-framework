@@ -188,6 +188,27 @@
       "width": 1.00,
       "x": 0,
       "y": 0.8936
+    },
+    {
+      "parent": "&name",
+      "action": 8,
+      "alpha": 0.5,
+      "alt_alpha": 0.5,
+      "alt_colour": "&colour",
+      "colour": "&colour",
+      "content": "UI Debug Toggle",
+      "flags": 4203664,
+      "font": "&font",
+      "font_custom": 1,
+      "height": 0.1064,
+      "name": "Button UI Debug",
+      "scale": 0.5,
+      "size": 22.0,
+      "texture": "data/images/panel.png",
+      "type": "BUTTON",
+      "width": 1.00,
+      "x": 0,
+      "y": 1.02
     }
   ]
 }

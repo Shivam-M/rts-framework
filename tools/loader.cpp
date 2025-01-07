@@ -15,9 +15,9 @@ json Loader::current_level_data;
 const json DEFAULTS = {
 	{"colour",			"FFFFFF"},
 	{"alpha",			1},
-	{"alt_colour",		"FFFFFF"},
+	{"alt_colour",		""},
 	{"alt_alpha",		1.0f},
-	{"secondary_colour","FFFFFF"},
+	{"secondary_colour",""},
 	{"secondary_alpha",	1.0f},
 	{"level_name",      "LEVEL"},
 	{"width",			1},
@@ -46,7 +46,8 @@ const json DEFAULTS = {
 	{"offset",			true},
 	{"fixed",			0},
 	{"priority",		0.00},
-	{"alignment",		0}
+	{"alignment",		0},
+	{"metadata",		""}
 };
 
 static map<int, Province*> province_map;
@@ -64,6 +65,7 @@ void Loader::parseCommon(Moveable* moveable) {
 	moveable->setSize(getFloat("width"), getFloat("height"));
 	moveable->setLocation(getFloat("x"), getFloat("y"));
 	moveable->setColour(Colour::HexToRGB(getString("colour"), (getFloat("alpha"))));
+	moveable->metadata = getString("metadata");
 	if (getString("alt_colour") != "") {
 	 	moveable->setGradientColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
 	}

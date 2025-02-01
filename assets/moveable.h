@@ -40,6 +40,7 @@ class Moveable {
 		vector<Vector2> points;
 		float priority = 0.0f;
 		string metadata = "";
+		Moveable* parent;
 
 		float script_timer = 0;
 		int script_line = 0;

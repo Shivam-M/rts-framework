@@ -17,6 +17,9 @@
 using namespace std;
 namespace fs = filesystem;
 
+// TODO: Use new text alignment on unit names and console
+// ADD text input field
+
 void GameRTS::extendedInitialisation() {
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
 #ifdef dbg
@@ -325,6 +328,28 @@ void GameRTS::updateProperties() {
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) render.offsets.x += (cursor_position.x - original_position.x) * 0.01f, render.offsets.y += (cursor_position.y - original_position.y) * 0.01f;
 
 	if (!selected_object) return;
+
+	if (holding_left_mouse_button) {
+		Moveable* draggable_panel = selected_object;
+
+		while (draggable_panel && draggable_panel->parent && !(draggable_panel->getFlags() & DRAGGABLE)) {
+			draggable_panel = draggable_panel->parent;
+		}
+
+		Vector2 loc = game->cursor_position;
+
+		if (draggable_panel) {
+			if (draggable_panel != dragged_object) {
+				drag_offset = loc - draggable_panel->location;
+				dragged_object = draggable_panel;
+			}
+
+			draggable_panel->setLocation((loc - drag_offset).x, (loc - drag_offset).y);
+		} else {
+			dragged_object = nullptr;
+		}
+	}
+
 
 	if (selected_object->hasFlag(PROVINCE) && picking_nation) {
 		player_nation = reinterpret_cast<Province*>(selected_object)->getNation();

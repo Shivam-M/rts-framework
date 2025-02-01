@@ -41,6 +41,9 @@ class Loader {
 		static Unit* parseUnit();
 		static Panel* parsePanel();
 
+		template <typename T>
+		static T getValue(string key);
+		static bool getBool(string);
 		static float getFloat(string);
 		static int getInt(string);
 		static string getString(string, string = "");

@@ -27,6 +27,7 @@ class Panel: public Moveable {
 			moveable->addFlag(UNDER_PANEL);
 			moveable->size = moveable->size * getSize();
 			moveable->location = getLocation() + (moveable->location * getSize());
+			moveable->parent = this;
 			bundle_.push_back(moveable);
 		}
 
@@ -54,7 +55,7 @@ class Panel: public Moveable {
 			}
 		}
 
-		void remove(Moveable* moveable) { bundle_.erase(std::remove(bundle_.begin(), bundle_.end(), moveable), bundle_.end()); }
+		void remove(Moveable* moveable) { bundle_.erase(std::remove(bundle_.begin(), bundle_.end(), moveable), bundle_.end()); moveable->parent = nullptr; }
 
 		void clear() { bundle_.clear(); }
 

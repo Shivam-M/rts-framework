@@ -23,6 +23,7 @@ class Game {
 		Vector2 mouse_position;
 		Vector2 original_position;
 		Vector2 cursor_position;
+		Vector2 drag_offset;
 
 		Render render;
 		Loader loader;
@@ -33,6 +34,8 @@ class Game {
 		vector<Moveable*> objects;
 		Moveable* selected_object = nullptr;
 		Moveable* hovered_object = nullptr;
+		Moveable* dragged_object = nullptr;
+		bool holding_left_mouse_button = false; // TODO: move to button_map
 
 		map<int, int> button_map;
 

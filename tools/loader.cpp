@@ -47,7 +47,8 @@ const json DEFAULTS = {
 	{"fixed",			0},
 	{"priority",		0.00},
 	{"alignment",		0},
-	{"metadata",		""}
+	{"metadata",		""},
+	{"draggable",		false}
 };
 
 static map<int, Province*> province_map;
@@ -174,6 +175,9 @@ Panel* Loader::parsePanel() {
 	parseCommon(panel);
 	panel_map[getString("name")] = panel;
 	UIManager::Register(getString("name"), panel);
+	if (getBool("draggable")) {
+		panel->addFlag(DRAGGABLE);
+	}
 	return panel;
 }
 
@@ -260,9 +264,12 @@ string Loader::getString(string key, string def) {
 	} return !def.empty() ? def : (string)DEFAULTS[key];
 }
 
-int Loader::getInt(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
+template <typename T>
+T Loader::getValue(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
 
-float Loader::getFloat(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
+bool Loader::getBool(string key) { return getValue<bool>(key); }
+int Loader::getInt(string key) { return getValue<int>(key); }
+float Loader::getFloat(string key) { return getValue<float>(key); }
 
 json::array_t Loader::getArray(string key) {
 	auto target_value = properties.find(key);

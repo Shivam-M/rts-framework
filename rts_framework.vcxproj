@@ -182,6 +182,9 @@
     <ClInclude Include="tools\text_renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="data\adding_new_provinces.md" />
+    <None Include="data\controls.md" />
     <None Include="data\gen_neighbours.py" />
     <None Include="data\levels\debug\0.json" />
     <None Include="data\levels\level_example.json" />
@@ -252,6 +255,7 @@
     <Image Include="data\generated\43_province.png" />
     <Image Include="data\generated\44_province.png" />
     <Image Include="data\generated\45_province.png" />
+    <Image Include="data\generated\4_province.png" />
     <Image Include="data\generated\5_province.png" />
     <Image Include="data\generated\6_province.png" />
     <Image Include="data\generated\7_province.png" />

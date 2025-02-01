@@ -348,6 +348,8 @@ void GameRTS::updateProperties() {
 		} else {
 			dragged_object = nullptr;
 		}
+	} else {
+		dragged_object = nullptr;
 	}
 
 	if (selected_object->hasFlag(PROVINCE) && picking_nation) {

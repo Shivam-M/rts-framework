@@ -1,5 +1,5 @@
 #pragma once
-#include "../assets/text.h"
+#include "../assets/text_entry.h"
 
 using namespace std;
 
@@ -13,7 +13,8 @@ class Console {
 		bool visible_ = false;
 
 		Moveable entry_box, debug_box;
-		Text entry_text, debug_text, feedback_text;
+		Text debug_text, feedback_text;
+		TextEntry entry_text;
 		vector<Moveable*> cMoveable;
 		vector<Text*> cText;
 

@@ -10,10 +10,12 @@ enum ALIGNMENT { LEFT, CENTRE, RIGHT };
 class Text: public Moveable {
 	private:
 		float scale = 1.0f;
-		string content;
 		Font* font;
 		Vector2 text_size;
 		ALIGNMENT alignment = LEFT;
+
+	protected:
+		string content;
 
 	public:
 		Text();

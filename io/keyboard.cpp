@@ -30,6 +30,6 @@ void Keyboard::callback(GLFWwindow* window, int key, int scancode, int action, i
 		else if (key == GLFW_KEY_Z)								game->toggleDebug();
 	} else {
 		if (game->console->visible())
-			if ((key >= 65 && key <= 90 || key == 259 || key == 32 || (key >= 45 && key <= 57))) game->console->entry(key);
+			game->console->entry(key);
 	}
 }

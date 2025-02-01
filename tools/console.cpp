@@ -18,7 +18,7 @@ void Console::build() {
 	entry_box.setSize(0.45, 0.1);
 	entry_box.addFlag(CURVED | DISABLED | FIXED_POS);
 
-	entry_text = Text(Vector2(0.30, 0.47), Fonts::getFont(CONSOLAS_BOLD, 30), Colour(189, 195, 199, 175), "");
+	entry_text = TextEntry(Vector2(0.30, 0.47), Fonts::getFont(CONSOLAS_BOLD, 30), Colour(189, 195, 199, 175), "");
 	entry_text.addFlag(DISABLED | FIXED_POS);
 
 	debug_box.setColour(Colour(20, 20, 20, 250));
@@ -64,12 +64,7 @@ void Console::toggle() {
 }
 
 void Console::entry(int character) {
-	string text = entry_text.getContent();
-	if (character == 259) { if (text.size() > 0) text.pop_back(); }
-	else if (character == 32) text.push_back(' ');
-	else if (character >= 45 && character <= 57) text.push_back('0' + character - 48);
-	else text.push_back(ALPHABET[character - 65]);
-	entry_text.setContent(text);
+	entry_text.input(character);
 }
 
 void Console::feedback(string message) {

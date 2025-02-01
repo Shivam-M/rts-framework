@@ -152,6 +152,7 @@
     <ClCompile Include="tools\loader.cpp" />
     <ClCompile Include="tools\render.cpp" />
     <ClCompile Include="tools\text_renderer.cpp" />
+    <ClInclude Include="assets\text_entry.h" />
     <ClInclude Include="tools\ui_manager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -183,8 +184,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="data\adding_new_provinces.md" />
-    <None Include="data\controls.md" />
+    <None Include="data\tutorial\adding_new_provinces.md" />
+    <None Include="data\tutorial\controls.md" />
     <None Include="data\gen_neighbours.py" />
     <None Include="data\levels\debug\0.json" />
     <None Include="data\levels\level_example.json" />

@@ -10,15 +10,18 @@ struct War {
 	vector<Nation*> attacker_allies;
 	vector<Nation*> defender_allies;
 	WarGoal war_goal = TAKE_KEY_PROVINCE;
+
 	union WarGoalTarget {
 		Province* target_province;
 		int target_number;
 	} war_goal_target;
+
 	vector<Province*>* provinces_sieged_by_attacker;
 	vector<Province*>* provinces_sieged_by_defender;
 	int get_province_swing() { return provinces_sieged_by_attacker->size() - provinces_sieged_by_defender->size(); }
 	int army_swing = 0;
 };
+
 struct Date { short year, month, day; };
 const short month_days[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 const string month_names[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };

@@ -336,20 +336,19 @@ void GameRTS::updateProperties() {
 			draggable_panel = draggable_panel->parent;
 		}
 
-		Vector2 loc = game->cursor_position;
+		if (draggable_panel and draggable_panel->hasFlag(DRAGGABLE)) {
+			Vector2& cursor_position = game->cursor_position;
 
-		if (draggable_panel) {
 			if (draggable_panel != dragged_object) {
-				drag_offset = loc - draggable_panel->location;
+				drag_offset = cursor_position - draggable_panel->location;
 				dragged_object = draggable_panel;
 			}
 
-			draggable_panel->setLocation((loc - drag_offset).x, (loc - drag_offset).y);
+			draggable_panel->setLocation((cursor_position - drag_offset).x, (cursor_position - drag_offset).y);
 		} else {
 			dragged_object = nullptr;
 		}
 	}
-
 
 	if (selected_object->hasFlag(PROVINCE) && picking_nation) {
 		player_nation = reinterpret_cast<Province*>(selected_object)->getNation();

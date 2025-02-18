@@ -51,16 +51,14 @@ class Unit: public Moveable {
 		vector<Province*> getPath() { return travel_path_; }
 
 		void setPath(vector<Province*> path) {
+			PathCount++;
 			travel_path_ = path;
 			setTarget(travel_path_.at(0));
 			setState(TRAVELLING);
 			log_t("Set path for unit " CON_RED + getName() + CON_NORMAL " (" CON_RED, getID(), CON_NORMAL "):");
-			PathCount++;
 
 			for (Province* province : path) {
-				Colour col = province->getColour();
-				col.setW(150);
-				ColourShift colourshift = ColourShift(province->getColour(), col);
+				ColourShift colourshift = ColourShift(province->getColour(), province->getColour().setW(150));
 				colourshift.speed = 0.02f;
 				colourshift.setCondition(&PathCount);
 				province->setColourShift(colourshift);
@@ -70,7 +68,7 @@ class Unit: public Moveable {
 
 		void advancePath() {
 			travel_path_.erase(travel_path_.begin());
-			if (getPath().size() != 0) {
+			if (!travel_path_.empty()) {
 				setTarget(travel_path_.at(0));
 			}
 		}
@@ -109,11 +107,11 @@ class Unit: public Moveable {
 		void evaluate() {
 			Vector2 home_location = province_->getCentre();
 			Vector2 target_location;
+			Vector2 distance;
 			float magnet = 0.001f;
 
 			if (target_province_) target_location = target_province_->getCentre();
 
-			Vector2 distance;
 			switch (getState()) {
 				case FIGHTING:
 					enemy_unit_->takeFatalities(50 * skill_factor_ * random_float());
@@ -126,9 +124,7 @@ class Unit: public Moveable {
 					province_->progressSiege(skill_factor_ * random_float());
 					if (province_->getSiegeProgress() >= 100) {
 						province_->setSecondaryTexture(Image::getImage("data/images/siege_lines.png"));
-						Colour colour = getColour();
-						colour.w_ = 200;
-						province_->setGradientColour(colour);
+						province_->setGradientColour(getColour().setW(200));
 						// province_->setGradientColour(province_->getColour());
 					}
 					break;
@@ -139,51 +135,45 @@ class Unit: public Moveable {
 					distance.x = abs(target_location.x - location.x);
 					distance.y = abs(target_location.y - location.y);
 
-					if (location.x == target_location.x && location.y == target_location.y || (distance.x < magnet && distance.y < magnet)) {
+					if (distance.x < magnet && distance.y < magnet) {
 						province_->deregisterUnit(this);
 						province_->stopColourShift();
-						target_province_->registerUnit(this);
 						province_ = target_province_;
+						target_province_->registerUnit(this);
 						target_province_ = nullptr;
 
 						log_t("Unit " CON_RED, getName(), CON_NORMAL " (" CON_RED, getID(), CON_NORMAL ") arrived at province " CON_RED, province_->getName(), CON_NORMAL " (" CON_RED, province_->getID(), CON_NORMAL ")");
 
-						if (travel_path_.size() > 1) {
+						if (!travel_path_.empty()) {
 							advancePath();
-						} else {
+						}
+
+						if (travel_path_.empty()) {
 							province_->stopColourShift();
-							travel_path_.clear();
 							setState(NORMAL);
 						}
 
-						vector<Unit*> units = province_->getStationedUnits();
-						if (units.size() > 1) {
-							for (Unit* unit: units) {
-								if (unit == this) continue;
-								if (unit->getNation() != getNation()) {
-									if (unit->getState() != FIGHTING && unit->getState() != DEAD) {
-										initiateBattle(unit);
-										break;
-									}
-								}
+						const auto& units = province_->getStationedUnits();
+						for (Unit* unit: units) {
+							if (unit == this || unit->getNation() == getNation()) continue;
+							if (unit->getState() != FIGHTING && unit->getState() != DEAD) {
+								initiateBattle(unit);
+								break;
 							}
 						}
 					}
-
 					break;
 				case NORMAL:
-					if (getProvince()->getNation() != getNation()) {
-						if (getProvince()->getBesieger() == nullptr or getProvince()->getBesieger() == this) {
-							getProvince()->beginSiege(this, getColour()); // t: merc may be different colour
-							setState(SIEGING);
-						}
+					if (province_->getNation() == getNation()) break;
+
+					if (province_->getBesieger() == nullptr || province_->getBesieger() == this) {
+						province_->beginSiege(this, getColour()); // TODO: Mercenaries may be different colour
+						setState(SIEGING);
 					}
 					break;
 			}
 
-			if (text != nullptr) {
-				text->setContent(getName() + " - " + to_string(getAmount()));
-
+			if (text) {
 				Vector2 text_location = getCentre();
 				Vector2 text_size = text->getTextSize();
 
@@ -193,6 +183,7 @@ class Unit: public Moveable {
 				text_location.x -= text_size.x / 2;
 
 				// text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
+				text->setContent(getName() + " - " + to_string(getAmount()));
 				text->setLocation(text_location.x, text_location.y);
 			}
 		}

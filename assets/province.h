@@ -9,7 +9,7 @@ static int SiegeID = 0;
 
 class Province : public Moveable {
 	enum TERRAIN { FLAT, MOUNTAIN, FOREST, NUM_TERRAINS };
-	string TERRAIN_NAMES[3] = {"Plains", "Mountains", "Forest"};
+	string TERRAIN_NAMES[NUM_TERRAINS] = {"Plains", "Mountains", "Forest"};
 
 	private:
 		int identifier_ = -1;
@@ -45,13 +45,13 @@ class Province : public Moveable {
 		void setState(PROV_STATE state) { state_ = state; }
 		PROV_STATE getState() { return state_; }
 
-		vector<Province*> getNeighbours() { return neighbours_; }
+		vector<Province*>& getNeighbours() { return neighbours_; }
 		void addNeighbour(Province* neighbour) { neighbours_.push_back(neighbour); }
 		bool isNeighbour(Province* other) { return find(neighbours_.begin(), neighbours_.end(), other) != neighbours_.end(); }
 
 		void registerUnit(Unit* unit) { stationed_units.push_back(unit); }
 		void deregisterUnit(Unit* unit) { stationed_units.erase(remove(stationed_units.begin(), stationed_units.end(), unit), stationed_units.end()); }
-		vector<Unit*> getStationedUnits() { return stationed_units; }
+		vector<Unit*>& getStationedUnits() { return stationed_units; }
 
 		void setNation(Nation* nation) { nation_ = nation; }
 		Nation* getNation() { return nation_; }
@@ -77,15 +77,15 @@ class Province : public Moveable {
 
 		void progressSiege(float amount) {
 			if (getState() != PROV_STATE::BESIEGING) return;
+
+			siege_progress_ += amount;
+
 			if (siege_progress_ >= 100) {
 				controlled_by = besieger_;
 				besieger_ = nullptr;
 				setState(UNDER_CONTROL);
 				SiegeID++;
-			} else {
-				siege_progress_ += amount;
 			}
-			
 		}
 
 		float getSiegeProgress() { return siege_progress_; }
@@ -98,17 +98,17 @@ class Province : public Moveable {
 		}
 
 		void evaluate() {
-			return;
-			if (text != nullptr) {
+			/*if (text != nullptr) {
 				text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
 				text->setContent(getName() + " [" + to_string(getID()) + "] - (" + to_string(location.x) + ", " + to_string(location.y) + ")");
-			}
+			}*/
 		}
 
-		static vector<Province*> getShortestPath(Province* source, Province* destination) { // Cache paths
+		static vector<Province*> getShortestPath(Province* source, Province* destination) { // TODO: Cache paths
 			queue<Province*> q;
 			unordered_set<Province*> visited;
 			unordered_map<Province*, Province*> previous;
+			vector<Province*> path;
 
 			q.push(source);
 			visited.insert(source);
@@ -117,7 +117,6 @@ class Province : public Moveable {
 				q.pop();
 
 				if (current == destination) {
-					vector<Province*> path;
 					Province* current_province = destination;
 					while (current_province != nullptr) {
 						path.insert(path.begin(), current_province);
@@ -133,7 +132,7 @@ class Province : public Moveable {
 					}
 				}
 			}
-			return vector<Province*>();
+			return path;
 		}
 
 		bool operator==(const Province& other) const { return identifier_ == other.identifier_; }

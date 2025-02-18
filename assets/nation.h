@@ -35,7 +35,7 @@ class Nation : public Moveable {
 		Province* getCapital() { return capital_province_; }
 		void setCapital(Province* province) { if (ownsProvince(province)) capital_province_ = province; }
 
-		vector<Province*> getOwnedProvinces() { return owned_provinces_; }
+		vector<Province*>& getOwnedProvinces() { return owned_provinces_; }
 		int getNumberProvinces() { return owned_provinces_.size(); }
 		bool ownsProvince(Province* province) { return find(owned_provinces_.begin(), owned_provinces_.end(), province) != owned_provinces_.end(); }
 		void addProvince(Province* province) { owned_provinces_.push_back(province); province->setNation(this); }
@@ -47,7 +47,7 @@ class Nation : public Moveable {
 					owned_provinces_.erase(remove(owned_provinces_.begin(), owned_provinces_.end(), province), owned_provinces_.end());
 					setCapital(getOwnedProvinces()[0]);
 				} else {
-					log_t("** NATION TO LOSE CAPITAL **");
+					log_t("** NATION TO LOSE CAPITAL **");  // TODO: this
 				}
 			}
 		}
@@ -59,7 +59,7 @@ class Nation : public Moveable {
 			}
 			return army_size;
 		}
-		vector<Unit*> getOwnedUnits() { return owned_army_units_; }
+		vector<Unit*>& getOwnedUnits() { return owned_army_units_; }
 		void addUnit(Unit* unit) { owned_army_units_.push_back(unit); unit->setNation(this); unit->setColour(getColour()); }
 
 		float getMoney() { return money_; }
@@ -89,7 +89,7 @@ class Nation : public Moveable {
 			}
 
 			money_ += final_income - getOutgoings();
-			in_debt_ = money_ < 0.00f ? true : false;
+			in_debt_ = money_ < 0.00f;
 		}
 
 		Unit* hireUnit(int size, float skill = 1.00f) {

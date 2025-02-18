@@ -5,7 +5,7 @@
 #include <algorithm>
 
 GLuint VAO, VBO, TextShader;
-int AtlasWidth = 4096, AtlasHeight = 1024;
+int AtlasWidth = 2048, AtlasHeight = 1024;
 GLuint uniformColour, uniformPriority;
 
 void TextRenderer::setup() {
@@ -35,7 +35,7 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
     FT_Face face;
 
     if (FT_Init_FreeType(&library)) {
-        log_t(CON_RED "ERROR! FreeType initialization failed");
+        log_t(CON_RED "ERROR! FreeType initialisation failed");
         return nullptr;
     }
 
@@ -78,14 +78,16 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
         float u1 = (x + face->glyph->bitmap.width) / (float)AtlasWidth;
         float v1 = y / (float)AtlasHeight;
 
-        /*ft_font->characters.emplace(
+        /*
+        ft_font->characters.emplace(
             c,
             Character{ atlasTexture,
             static_cast<unsigned int>(face->glyph->advance.x),
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             glm::vec4(u0, v0, u1, v1)
-         });*/
+         });
+         */
 
         ft_font->characters[c] =
             Character{ atlasTexture,
@@ -172,7 +174,7 @@ Vector2 TextRenderer::calculate_text_dimensions(Font* ft_font, const string& tex
     float width = 0.0f, height = 0.0f;
 
     for (const char& c : text) {
-        const Character ch = ft_font->characters[c];
+        const Character& ch = ft_font->characters[c];
         width += (ch.advance >> 6) * scale;
         height = max(height, ch.size.y * scale);
     }
@@ -188,8 +190,10 @@ void TextRenderer::init_shader() {
 }
 
 void TextRenderer::reset_shader() {
-    /*glBindTexture(GL_TEXTURE_2D, 0);
+    /*
+    glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
     glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);*/
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    */
 }

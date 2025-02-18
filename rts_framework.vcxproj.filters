@@ -186,6 +186,7 @@
     <None Include="data    utorial\adding_new_provinces.md" />
     <None Include="data    utorial\controls.md" />
     <None Include=".gitignore" />
+    <None Include="data\levels\ui\8.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\images\coin.png">

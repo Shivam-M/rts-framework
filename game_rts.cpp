@@ -39,6 +39,7 @@ void GameRTS::extendedInitialisation() {
 	UIManager::Hide("ui_war_declaration");
 	UIManager::Hide("ui_event_choice");
 	UIManager::Hide("ui_war_indicator");
+	UIManager::Hide("ui_unit_hire");
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to load the game.");
 }
@@ -308,6 +309,7 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 		case UI_DEBUG_TOGGLE:
 			UIManager::Toggle("ui_war_declaration");
 			UIManager::Toggle("ui_event_choice");
+			UIManager::Toggle("ui_unit_hire");
 			break;
 		case DECLARE_WAR:
 			war.attacker = player_nation;

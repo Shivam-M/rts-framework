@@ -187,6 +187,8 @@
     <None Include="data\tutorial\controls.md" />
     <None Include=".gitignore" />
     <None Include="data\levels\ui\8.json" />
+    <None Include="data\level_designer.py" />
+    <None Include="data\tutorial\designing_ui_files.md" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\images\coin.png">

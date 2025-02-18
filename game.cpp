@@ -182,7 +182,6 @@ static bool within(Vector2 location, Vector2 size, Vector2 point) {
 }
 
 Moveable* Game::getObjectUnderMouse() {
-	vector<Moveable*> over_objects;
 	Moveable* object = nullptr;
 	float min_distance = 100;
 	for (Moveable* moveable : game->objects) {

@@ -184,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="data\levels\ui\8.json" />
     <None Include="data\tutorial\adding_new_provinces.md" />
     <None Include="data\tutorial\controls.md" />
     <None Include="data\gen_neighbours.py" />

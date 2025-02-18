@@ -56,6 +56,7 @@ class GameRTS : Game {
 		void executeAction(BUTTON_ACTION action, Moveable* button = nullptr);
 		void incrementDay();
 		int  gameLoop() override;
+		// void evaluateNations(const std::vector<Nation*>& nations);
 
 		string getDate();
 		Moveable* getObjectUnderMouse() override;

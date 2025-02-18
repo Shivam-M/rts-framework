@@ -146,7 +146,9 @@ void GameRTS::updateStatistics(int f, int u) {
 	t_Information3.setContent("Playing as: " + nation_string);
 }
 
-static bool within(Vector2 location, Vector2 size, Vector2 point) { return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y; }
+static bool within(Vector2 location, Vector2 size, Vector2 point) {
+	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
+}
 
 void GameRTS::expandNation(Province* province) {
 	viewed_nation = province->getNation();
@@ -162,35 +164,41 @@ void GameRTS::moveUnit(Province* province) {
 }
 
 Moveable* GameRTS::getObjectUnderMouse() {
-	vector<Moveable*> over_objects;
 	Moveable* object = nullptr;
 	float min_distance = 100.f;
 	for (Moveable* moveable : game->objects) {
-		if (!game_paused) moveable->onHoverStop();
 		if (moveable->getFlags() & (UNEDITABLE | DISABLED)) continue;
-		Vector2 location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
-		if (within(location, size, cursor_position)) {
-			if (moveable->hasFlag(UI)) {
-				object = moveable;
-				min_distance = -1;
-				continue;
-			}
-			Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
-			float distance = pow(centre.x - cursor_position.x, 2.f) + pow(centre.y - cursor_position.y, 2.f);
-			if (distance < min_distance) {
-				min_distance = distance;
-				object = moveable;
-			}
+		if (!game_paused) moveable->onHoverStop();
+
+		Vector2 location = moveable->getLocation() * render.scale + render.offsets;
+		Vector2 size = moveable->getSize() * render.scale;
+
+		if (!within(location, size, cursor_position)) continue;
+
+		if (moveable->hasFlag(UI)) {
+			object = moveable;
+			min_distance = -1;
+			continue;
+		}
+
+		Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
+		
+		float distance = (centre.x - cursor_position.x) * (centre.x - cursor_position.x) + (centre.y - cursor_position.y) * (centre.y - cursor_position.y);
+		if (distance < min_distance) {
+			min_distance = distance;
+			object = moveable;
 		}
 	}
 
 	UIManager::Hide("ui_province_tooltip");
 	UIManager::Hide("ui_unit_tooltip");
 
-	if (object != nullptr && !object->hasFlag(DISABLED)) {
+	if (object && !object->hasFlag(DISABLED)) {
 		object->onHover();
+
 		if (object->hasFlag(PROVINCE)) {
 			Province* province = reinterpret_cast<Province*>(object);
+
 			if (!picking_nation) {
 				hoverProvince(province);
 			} else {
@@ -337,13 +345,10 @@ void GameRTS::updateProperties() {
 		}
 
 		if (draggable_panel and draggable_panel->hasFlag(DRAGGABLE)) {
-			Vector2& cursor_position = game->cursor_position;
-
 			if (draggable_panel != dragged_object) {
 				drag_offset = cursor_position - draggable_panel->location;
 				dragged_object = draggable_panel;
 			}
-
 			draggable_panel->setLocation((cursor_position - drag_offset).x, (cursor_position - drag_offset).y);
 		} else {
 			dragged_object = nullptr;
@@ -358,7 +363,7 @@ void GameRTS::updateProperties() {
 
 		for (Moveable* m : objects) {
 			if (m->hasFlag(THEMED)) {
-				m->setColour(player_nation->getColour().setW(m->getColour().getW()));
+				m->setColour(player_nation->getColour().setW(m->getColourRef().getW()));
 			}
 		}
 
@@ -366,7 +371,7 @@ void GameRTS::updateProperties() {
 	}
 
 	if (mouse->debug_control_scheme) {
-		if (selected_object->getFlags() & PROVINCE) {
+		if (selected_object->hasFlag(PROVINCE)) {
 			selected_object->setColour(Colour(255, 255, 0, 80));
 			for (Province* neighbour : reinterpret_cast<Province*>(selected_object)->getNeighbours()) {
 				neighbour->setColour(Colour(255, 0, 255, 80));
@@ -416,6 +421,7 @@ int GameRTS::gameLoop() {
 	vector<float> temp_profiling_u;
 	vector<float> temp_profiling_t;
 	vector<float> temp_profiling_s;
+	fps_limit = 0;
 #endif
 
 	while (!glfwWindowShouldClose(window)) {

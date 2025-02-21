@@ -7,6 +7,8 @@
 
 #include <sstream>
 
+// TODO: Expose Moveable objects from their names for easier customisation
+
 void set_war_details_for_allies(map<string, Mapping>& war_mappings, string side, int strength, int provinces, vector<Nation*> allies);
 map<string, Panel*> UIManager::ui_mappings_ = {};
 

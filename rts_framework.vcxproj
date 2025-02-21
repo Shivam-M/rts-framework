@@ -184,36 +184,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="data\levels\ui\8.json" />
+    <None Include="data\levels\ui\08-ui-hire-unit.json" />
     <None Include="data\level_designer.py" />
     <None Include="data\tutorial\adding_new_provinces.md" />
     <None Include="data\tutorial\controls.md" />
     <None Include="data\gen_neighbours.py" />
     <None Include="data\levels\debug\0.json" />
     <None Include="data\levels\level_example.json" />
-    <None Include="data\levels\rts\0.json" />
-    <None Include="data\levels\rts\1.json" />
-    <None Include="data\levels\rts\2.json" />
+    <None Include="data\levels\rts\00-provinces.json" />
+    <None Include="data\levels\rts\01-units.json" />
+    <None Include="data\levels\rts\02-nations.json" />
     <None Include="data\levels\rts\config.json" />
-    <None Include="data\levels\sidescroller\0 - Copy.json" />
-    <None Include="data\levels\sidescroller\0.json" />
-    <None Include="data\levels\sidescroller\1.json" />
-    <None Include="data\levels\sidescroller\2.json" />
-    <None Include="data\levels\sidescroller\3.json" />
-    <None Include="data\levels\sidescroller\4.json" />
-    <None Include="data\levels\sidescroller\5.json" />
-    <None Include="data\levels\sidescroller\6.json" />
-    <None Include="data\levels\sidescroller\7.json" />
-    <None Include="data\levels\sidescroller\8.json" />
-    <None Include="data\levels\sidescroller\9.json" />
-    <None Include="data\levels\ui\0.json" />
-    <None Include="data\levels\ui\1.json" />
-    <None Include="data\levels\ui\2.json" />
-    <None Include="data\levels\ui\3.json" />
-    <None Include="data\levels\ui\4.json" />
-    <None Include="data\levels\ui\5.json" />
-    <None Include="data\levels\ui\6.json" />
-    <None Include="data\levels\ui\7.json" />
+    <None Include="data\levels\sidescroller\alternate-00.json" />
+    <None Include="data\levels\sidescroller\00.json" />
+    <None Include="data\levels\sidescroller\01.json" />
+    <None Include="data\levels\sidescroller\02.json" />
+    <None Include="data\levels\sidescroller\03.json" />
+    <None Include="data\levels\sidescroller\04.json" />
+    <None Include="data\levels\sidescroller\05.json" />
+    <None Include="data\levels\sidescroller\06.json" />
+    <None Include="data\levels\sidescroller\07.json" />
+    <None Include="data\levels\sidescroller\08.json" />
+    <None Include="data\levels\sidescroller\09.json" />
+    <None Include="data\levels\ui\00-ui-tooltip-province.json" />
+    <None Include="data\levels\ui\01-ui-tooltip-nation.json" />
+    <None Include="data\levels\ui\02-ui-tooltip-unit.json" />
+    <None Include="data\levels\ui\03-ui-menu-pause.json" />
+    <None Include="data\levels\ui\04-ui-debug-buttons.json" />
+    <None Include="data\levels\ui\05-ui-war-indicator.json" />
+    <None Include="data\levels\ui\06-ui-war-declaration.json" />
+    <None Include="data\levels\ui\07-ui-event-choice.json" />
     <None Include="data\tutorial\designing_ui_files.md" />
     <None Include="shaders\coloured.frag" />
     <None Include="shaders\coloured.vert" />
@@ -287,7 +287,7 @@
     <Text Include="data\scripts\switcher.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="data\levels\ui\6-test.xml" />
+    <Xml Include="data\levels\ui\test-06-alternate-formatting.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

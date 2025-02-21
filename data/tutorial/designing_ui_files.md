@@ -11,7 +11,7 @@
     - are automatically offset and scaled based on the parent panel location and size
     - can be copied/pasted/deleted with ctrl+c/ctrl+v/del
 7. The raw JSON can be viewed by going to `Edit -> Raw JSON`
-8. (Currently) level files are loaded from `0.json` onwards
+8. Level files that begin with a number are automatically loaded in order from `0.json` onwards (supports padding)
 9. Default behaviour is to show these UI panels - they can be hidden with `UIManager::Hide("[PANEL_NAME]");`
     #### Current Limitations and Unsupported Features
     - Left/Centre/Right alignment for `Text` objects
@@ -43,5 +43,13 @@
         return example_mappings;
     }
     ```
-4. Call `UIManager::AssignValues("ui_example", example);` from anywhere to map the object to the UI panel
-5. Toggle panel visibility with `UIManager::Toggle("ui_example");`
+4. Map an object to the UI panel from anywhere in the game
+    ```cpp
+    UIManager::AssignValues("ui_example", example);
+    ```
+5. Show/Hide/Toggle the panel visibility
+    ```cpp
+    UIManager::Show("ui_example");
+    UIManager::Hide("ui_example");
+    UIManager::Toggle("ui_example");
+    ```

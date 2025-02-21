@@ -1,5 +1,9 @@
 ﻿#include <windows.h>
 #include <Psapi.h>
+#include <filesystem>
+#include <vector>
+#include <algorithm>
+#include <fstream>
 
 #include "game.h"
 #include "io/mouse.h"
@@ -9,6 +13,7 @@
 // #define DEBUG_PROFILING
 
 using namespace std;
+namespace fs = std::filesystem;
 
 Game* Game::game = nullptr; // Switch to using smart pointers
 
@@ -70,19 +75,22 @@ Game::Game(int argc, char** argv) {
 
 void Game::loadLevels(string level_directory) {
 	int level_counter = 0;
-	while (true) {
-		if (ifstream(level_directory + to_string(level_counter) + ".json").fail()) break;
-		Level* level = loader.load_level(level_directory + to_string(level_counter) + ".json", &queue_objects, &text_objects, level_counter);
+	for (const auto& entry : fs::directory_iterator(level_directory)) {
+		if (entry.is_regular_file() && entry.path().extension() == ".json") {
+			if (!isdigit(entry.path().filename().string()[0])) continue;
 
-		for (Moveable* m : level->objects) {
-			if (level->offset_positions) m->location.x += level_counter;
-			registerObject(m);
+			Level* level = loader.load_level(entry.path().string(), &queue_objects, &text_objects, level_counter);
+
+			for (Moveable* m : level->objects) {
+				if (level->offset_positions) m->location.x += level_counter;
+				registerObject(m);
+			}
+
+			for (Text* t : level->text_objects) registerObject(t);
+			levels.push_back(*level);
+			level_counter++;
+			delete level;
 		}
-
-		for (Text* t : level->text_objects) registerObject(t);
-		levels.push_back(*level);
-		level_counter++;
-		delete level;
 	}
 }
 

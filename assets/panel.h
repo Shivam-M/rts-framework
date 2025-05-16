@@ -11,12 +11,14 @@ class Panel: public Moveable {
 		Panel() { addFlag(PANEL); }
 
 		void show(bool with_fade = false) {
+			if (!hasFlag(DISABLED)) return;
 			removeFlag(DISABLED);
 			for (Moveable* moveable : bundle_) moveable->removeFlag(DISABLED); // Move with fade() to prevent having to cycle twice
 			if (with_fade) fade();
 		}
 
 		void hide(bool with_fade = false) {
+			if (hasFlag(DISABLED)) return;
 			addFlag(DISABLED);
 			if (with_fade) fade_out();
 			else for (Moveable* moveable : bundle_) moveable->addFlag(DISABLED);
@@ -74,11 +76,14 @@ class Panel: public Moveable {
 		void setSize(float x, float y) override {
 			Vector2 updated_size = { x, y };
 			Vector2 current_size = getSize();
+			if (updated_size.x == 0 || updated_size.y == 0) return;
 			for (Moveable* moveable : bundle_) {
 				Vector2 original_size = moveable->size / current_size;
 				Vector2 original_location = (moveable->location - getLocation()) / current_size;
 				moveable->size = original_size * updated_size;
 				moveable->location = getLocation() + (original_location * updated_size);
+				/*printf("Size: %f, %f\n", moveable->size.x, moveable->size.y);
+				printf("Location: %f, %f\n", moveable->location.x, moveable->location.y);*/
 			}
 			Moveable::setSize(x, y);
 		}

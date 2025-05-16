@@ -185,6 +185,7 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="data\levels\ui\08-ui-hire-unit.json" />
+    <None Include="data\levels\ui\09-ui-information-header.json" />
     <None Include="data\level_designer.py" />
     <None Include="data\tutorial\adding_new_provinces.md" />
     <None Include="data\tutorial\controls.md" />

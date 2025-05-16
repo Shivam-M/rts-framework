@@ -61,8 +61,8 @@ class Game {
 
 		bool show_console = false;
 		bool god_mode = true;
-		int fps_limit = 200;
-		int update_rate = 60;
+		int fps_limit = 0;
+		int update_rate = 999;
 		
 		virtual void extendedInitialisation() {}
 		virtual void updateObjects(float modifier = 1.0f);
@@ -75,7 +75,7 @@ class Game {
 		void toggleDebug();
 		void updateCursor();
 		void setButton(int button, int state) { button_map[button] = state; }
-		int  getButton(int button) { return button_map[button]; }
+		const int&  getButton(const int& button) { return button_map[button]; }
 		virtual int gameLoop();
 		virtual Moveable* getObjectUnderMouse();
 

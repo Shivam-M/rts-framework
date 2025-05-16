@@ -23,7 +23,7 @@ class Text: public Moveable {
 
 		Font* getFont() { return font; }
 		string& getContent() { return content; }
-		float getScale() { return scale; }
+		const float& getScale() { return scale; }
 		Vector2 getTextSize() { return text_size; }
 		ALIGNMENT getAlignment() { return alignment; }
 		Vector2 getLocation() {
@@ -41,11 +41,13 @@ class Text: public Moveable {
 				temp_location.x -= text_size.x / WINDOW_WIDTH;
 				return temp_location;
 			}
+
+			return Moveable::location;
 		}
 
 		void updateCommon() { text_size = TextRenderer::calculate_text_dimensions(font, content, scale); }
 		void setFont(Font* f) { font = f; updateCommon(); }
-		void setContent(string c) { content = c; updateCommon(); }
+		void setContent(const string& c) { content = c; updateCommon(); }
 		void setScale(float s) { scale = s; updateCommon(); }
 		void setAlignment(ALIGNMENT a) { alignment = a; updateCommon(); }
 

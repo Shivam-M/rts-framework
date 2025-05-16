@@ -48,6 +48,16 @@ class Loader {
 		static int getInt(string);
 		static string getString(string, string = "");
 		static json::array_t getArray(string);
+		
+		// TODO: Come back to this - will need support in level_designer.py too
+		/*
+		template <typename T>
+		static T getJsonValue(string, string);
+		static bool getJsonBool(string);
+		static float getJsonFloat(string);
+		static int getJsonInt(string);
+		static string getJsonString(string, string = "");
+		*/
 
 		static json current_level_data;
 

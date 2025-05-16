@@ -25,7 +25,7 @@ class ParticleGroup : public Moveable {
 			}
 		}
 		
-		void update(float modifier) override {
+		void update(const float& modifier) override {
 			Moveable::update(modifier);
 			for (auto& particle : particles) {
 				// particle->update();

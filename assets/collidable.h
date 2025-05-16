@@ -11,7 +11,7 @@ class Collidable : public Moveable {
 		float shuffle_size = 0;
 		float shuffle_limit = 125;
 
-		void update(float modifier = 1.0) override {
+		void update(const float& modifier = 1.0) override {
 			common(modifier);
 
 			if (getFlags() & MOVING) {

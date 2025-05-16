@@ -14,11 +14,14 @@ void setValues(Vector2& vector, string values) {
 }
 
 // Add vars.
-void Moveable::tickTimer(float modifier) {
-	if (script_timer > 0) { script_timer -= (1.0 / 60) * modifier; return; }
-	if (script_line >= script.size()) return;
+void Moveable::tickTimer(const float& modifier) {
+	if (script == nullptr) return;
+	if (script_timer > 0) { script_timer -= (1.0f / 60) * modifier; return; }
+	if (script_line >= script->size()) return;
 
-	string line = script[script_line];
+	vector<string> dereferenced_sript = *script;  // todo
+
+	string line = dereferenced_sript[script_line];
 	size_t splitter = line.find(':');
 	string action = line.substr(0, splitter);
 	string data = line.substr(splitter + 1);
@@ -38,7 +41,7 @@ void Moveable::tickTimer(float modifier) {
 	else if (action == "GRADIENT_ALPHA") gradient_colour.setW(stof(data));
 	else if (action == "JUMP") script_line = stoi(data);
 	else if (action == "TEXTURE") setTexture(Image::getImage(data));
-	else if (action == "COLOUR_SHIFT"); // TODO
+	// TODO else if (action == "COLOUR_SHIFT");
 	script_line++;
 }
 
@@ -46,7 +49,15 @@ void Moveable::loadScript(string path) {
 	log_t("Loading script... " + path + " [" + getName() + "]");
 	string line;
 	fstream in(path);
-	while (getline(in, line)) if (line.size() > 0) script.push_back(line);
+	while (getline(in, line))
+		if (line.size() > 0)
+			if (script) {
+				script->push_back(line);
+			} 
+			else {
+				script = new vector<string>();
+				script->push_back(line);
+			}
 }
 
 void Moveable::shiftColour() {
@@ -86,11 +97,11 @@ void Moveable::stopColourShift() {
 	shifting_colour = false;
 }
 
-void Moveable::common(float modifier) {
+void Moveable::common(const float& modifier) {
 	tickTimer(modifier);
 }
 
-void Moveable::update(float modifier) {
+void Moveable::update(const float& modifier) {
 	common(modifier);
 
 	velocity.x += acceleration.x;

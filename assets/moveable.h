@@ -9,6 +9,7 @@ using namespace std;
 
 class Text;
 
+// TODO: Replace with new Blend value
 struct ColourShift {
 	ColourShift() {};
 	ColourShift(Colour first, Colour second) : first_colour(first), second_colour(second) {
@@ -28,7 +29,17 @@ struct ColourShift {
 	float speed = 0.1f;
 };
 
-enum BUTTON_ACTION {PAUSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, SAVE_GAME, TEST_FONTS, TOGGLE_TOOLTIP, HIRE_UNIT, UI_DEBUG_TOGGLE, DECLARE_WAR, OTHER};
+struct Blend {
+	Blend() {}
+	Blend(int typ, float spd, float sze, Vector2 dir, bool fxd) : type(typ), speed(spd), size(sze), direction(dir), fixed(fxd) {}
+	int type = 0;
+	float speed = 1.0f;
+	float size = 1.0f;
+	bool fixed = false;
+	Vector2 direction = Vector2(0.0f, 0.0f);
+};
+
+enum BUTTON_ACTION {PAUSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, SAVE_GAME, TEST_FONTS, TOGGLE_TOOLTIP, HIRE_UNIT, UI_DEBUG_TOGGLE, DECLARE_WAR, OTHER, PAUSE_SIMULATION};
 
 class Moveable {
 	public:
@@ -36,11 +47,12 @@ class Moveable {
 		Texture* texture = nullptr;
 		Texture* secondary_texture = nullptr;
 		Text* text = nullptr;
-		vector<string> script;
+		vector<string>* script = nullptr;
 		vector<Vector2> points;
 		float priority = 0.0f;
 		string metadata = "";
-		Moveable* parent;
+		Moveable* parent = nullptr;
+		Blend blend;
 
 		float script_timer = 0;
 		int script_line = 0;
@@ -63,12 +75,12 @@ class Moveable {
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
 
-		float getPriority() { return priority; }
+		const float& getPriority() { return priority; }
 		virtual vector<Vector2> getPoints() { return points; }
 		Text* getText() { return text; }
 		Texture* getTexture() { return texture; }
 		Texture* getSecondaryTexture() { return secondary_texture; }
-		string getName() { return name; }
+		string& getName() { return name; }
 	
 		Vector2 getAcceleration() { return acceleration; }
 		Vector2 getVelocity() { return velocity; }
@@ -83,10 +95,12 @@ class Moveable {
 		Colour getGradientColour() { return gradient_colour; }
 		Colour getDefaultColour() { return default_colour; }
 
-		int getFlags() { return flags; }
-		void addFlag(int f) { flags |= f; }
-		void removeFlag(int f) { flags &= ~f; }
-		bool hasFlag(int f) { return flags & f; }
+		Blend& getBlend() { return blend; }
+
+		const int& getFlags() { return flags; }
+		void addFlag(const int& f) { flags |= f; }
+		void removeFlag(const int& f) { flags &= ~f; }
+		bool hasFlag(const int& f) { return flags & f; }
 
 		void setText(Text* t) { text = t; }
 		void setTextOffset(float x, float y);
@@ -100,10 +114,7 @@ class Moveable {
 		virtual void setSize(float x, float y) { size.set(x, y); }
 		
 		BUTTON_ACTION getButtonAction() { return button_action; }
-		void setButtonAction(BUTTON_ACTION action) {
-			addFlag(BUTTON);
-			button_action = action;
-		}
+		void setButtonAction(BUTTON_ACTION action) { addFlag(BUTTON); button_action = action; }
 
 		void stopColourShift();
 		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; shifting_colour = true; }
@@ -112,13 +123,14 @@ class Moveable {
 		void setGradientColour(Colour col) { gradient_colour = col; }
 		void resetColour() { colour = default_colour; }
 		void shiftColour();
-		void tickTimer(float modifier);
+		void setBlend(Blend b) { blend = b; }
+		void tickTimer(const float& modifier);
 		void loadScript(string script_path);
 		
 		// Change to new button class override
 		virtual void onHover();
 		virtual void onHoverStop();
 
-		void common(float modifier);
-		virtual void update(float modifier = 1.0);
+		void common(const float& modifier);
+		virtual void update(const float& modifier = 1.0);
 };

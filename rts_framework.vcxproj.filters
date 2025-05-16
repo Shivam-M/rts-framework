@@ -189,6 +189,7 @@
     <None Include="data\levels\ui\08-ui-hire-unit.json" />
     <None Include="data\level_designer.py" />
     <None Include="data\tutorial\designing_ui_files.md" />
+    <None Include="data\levels\ui\09-ui-information-header.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\images\coin.png">

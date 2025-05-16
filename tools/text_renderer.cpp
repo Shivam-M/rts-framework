@@ -69,7 +69,7 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
             maxHeight = 0;
         }
 
-        maxHeight = std::max(maxHeight, (int)face->glyph->bitmap.rows);
+        maxHeight = max(maxHeight, (int)face->glyph->bitmap.rows);
 
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
@@ -77,17 +77,6 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
         float v0 = (y + face->glyph->bitmap.rows) / (float)AtlasHeight;
         float u1 = (x + face->glyph->bitmap.width) / (float)AtlasWidth;
         float v1 = y / (float)AtlasHeight;
-
-        /*
-        ft_font->characters.emplace(
-            c,
-            Character{ atlasTexture,
-            static_cast<unsigned int>(face->glyph->advance.x),
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            glm::vec4(u0, v0, u1, v1)
-         });
-         */
 
         ft_font->characters[c] =
             Character{ atlasTexture,
@@ -110,9 +99,11 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
 }
 
 GLuint lastBoundTexture = 0;
-float vertices[1024 * 6 * 4];
-void TextRenderer::render_text(Font* ft_font, float x, float y, string const& text, Colour& colour, float scale, float priority) {
-    glUniform4f(uniformColour, colour.getX() / 255.0f, colour.getY() / 255.0f, colour.getZ() / 255.0f, colour.getW() / 255.0f);
+float vertices[1024 * 6 * 4 * 2];
+float xpos, ypos, w, h;
+size_t vertexIndex = 0;
+void TextRenderer::render_text(Font* ft_font, float x, const float& y, string const& text, Colour& colour, const float& scale, const float& priority) {
+    glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
     glUniform1f(uniformPriority, priority);
 
     if (lastBoundTexture != ft_font->texture) {
@@ -120,11 +111,7 @@ void TextRenderer::render_text(Font* ft_font, float x, float y, string const& te
         lastBoundTexture = ft_font->texture;
     }
 
-    size_t numVertices = text.size() * 6 * 4;
-    size_t vertexIndex = 0;
-    float xpos, ypos, w, h;
-
-    for (char c : text) {
+    for (const char& c : text) {
         Character& ch = ft_font->characters[c];
 
         xpos = x + ch.bearing.x * scale;
@@ -168,18 +155,21 @@ void TextRenderer::render_text(Font* ft_font, float x, float y, string const& te
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertexIndex * sizeof(float), vertices);
     glDrawArrays(GL_TRIANGLES, 0, vertexIndex / 4);
+    vertexIndex = 0;
 }
 
-Vector2 TextRenderer::calculate_text_dimensions(Font* ft_font, const string& text, float scale) {
+Vector2 TextRenderer::calculate_text_dimensions(Font* ft_font, const string& text, const float& scale) {
     float width = 0.0f, height = 0.0f;
+
+    Vector2 dimensions;
 
     for (const char& c : text) {
         const Character& ch = ft_font->characters[c];
-        width += (ch.advance >> 6) * scale;
-        height = max(height, ch.size.y * scale);
+        dimensions.x += (ch.advance >> 6) * scale;
+        dimensions.y = max(dimensions.y, ch.size.y * scale);
     }
 
-    return Vector2(width, height);
+    return dimensions;
 }
 
 void TextRenderer::init_shader() {

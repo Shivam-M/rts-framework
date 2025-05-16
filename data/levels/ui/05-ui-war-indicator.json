@@ -1,8 +1,8 @@
 {
   "alt_background": "FFFFFF",
-  "alt_background_alpha": 0.00,
+  "alt_background_alpha": 0.0,
   "background": "FFFFFF",
-  "background_alpha": 0.00,
+  "background_alpha": 0.0,
   "foreground": "FFFFFF",
   "offset_positions": false,
   "image": "images/test.png",
@@ -18,19 +18,20 @@
       "type": "PANEL",
       "x": 0.77,
       "y": 0.79,
-      "width": 0.20,
-      "height": 0.175
+      "width": 0.2,
+      "height": 0.175,
+      "draggable": true
     },
     {
       "name": "ui_war_indicator_header",
       "parent": "&name",
       "type": "MOVEABLE",
       "colour": "&colour",
-      "alpha": 0.70,
+      "alpha": 0.7,
       "y": -0.25,
       "width": 0.55,
       "height": 0.25,
-      "alt_alpha": 0.70,
+      "alt_alpha": 0.7,
       "fixed": true,
       "texture": "data/images/map.png"
     },
@@ -39,9 +40,9 @@
       "parent": "&name",
       "type": "MOVEABLE",
       "colour": "192a56",
-      "alpha": 0.70,
+      "alpha": 0.7,
       "alt_colour": "192a56",
-      "alt_alpha": 0.70,
+      "alt_alpha": 0.7,
       "fixed": true,
       "texture": "data/images/map.png"
     },

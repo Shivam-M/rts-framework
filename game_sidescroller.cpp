@@ -28,7 +28,7 @@ void GameSidescroller::extendedInitialisation() {
 void GameSidescroller::checkCollision() {
 	Vector2 location = player.getLocation();
 	Vector2 size = player.getSize();
-	float x, y;
+	// float x, y;
 
 	for (Moveable* m : objects) {
 		Vector2 m_location = m->getLocation();

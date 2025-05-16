@@ -72,13 +72,13 @@ void Image::loadMap(string path, string data) { // add cache
         float relw = (rect.right - rect.left) / (float)width;
         float relh = (rect.bottom - rect.top) / (float)height;
 
-        relx *= 2.0;
-        rely *= 2.0;
-        relw *= 2.0;
-        relh *= 2.0;
+        relx *= 2.0f;
+        rely *= 2.0f;
+        relw *= 2.0f;
+        relh *= 2.0f;
         
-        relx -= 0.5;
-        rely -= 0.90;
+        relx -= 0.5f;
+        rely -= 0.90f;
 
         output_file << to_string(id) << "," << to_string(relx) << "," << to_string(rely) << "," << to_string(relw) << "," << to_string(relh) << endl;
 
@@ -110,7 +110,7 @@ void Image::loadMap(string path, string data) { // add cache
     output_file.close();
 }
 
-void Image::loadImage(string path) {
+void Image::loadImage(const string& path) {
     if (images.count(path)) return;
     log_t("Loading image... " CON_RED + path + CON_NORMAL);
     Texture* texture = new Texture();
@@ -132,7 +132,7 @@ void Image::loadImage(string path) {
     images[path] = texture;
 }
 
-Texture* Image::getImage(string path) {
+Texture* Image::getImage(const string& path) {
 	loadImage(path);
     return images[path];
 }

@@ -4,7 +4,7 @@
 Game* Mouse::game = nullptr;
 Mouse::Mouse(Game* instance) { Mouse::game = instance; }
 
-static bool within(Vector2 location, Vector2 size, Vector2 point) {
+static bool within(const Vector2& location, const Vector2& size, const Vector2& point) {
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
@@ -43,7 +43,7 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 
 			if (game->selected_object) {
 				game->t_Notification.setContent("Selected " + game->selected_object->getName());
-				log_t("Selected " + game->selected_object->getName());
+				log_t("Selected " CON_RED + game->selected_object->getName());
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 			game->mouse_position = GLFW_PRESS ? game->cursor_position : 0;
@@ -59,7 +59,7 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 
 				if (game->selected_object) {
 					game->t_Notification.setContent("Selected " + game->selected_object->getName());
-					log_t("Selected " + game->selected_object->getName());
+					log_t("Selected " CON_RED + game->selected_object->getName());
 				}
 			}
 			else if (action == GLFW_RELEASE) {

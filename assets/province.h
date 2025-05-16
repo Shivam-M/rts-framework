@@ -40,7 +40,7 @@ class Province : public Moveable {
 
 		void setTerrain(TERRAIN terrain) { terrain_ = terrain; }
 		TERRAIN getTerrain() { return terrain_; }
-		string getTerrainName() { return TERRAIN_NAMES[terrain_]; }
+		const string& getTerrainName() { return TERRAIN_NAMES[terrain_]; }
 
 		void setState(PROV_STATE state) { state_ = state; }
 		PROV_STATE getState() { return state_; }

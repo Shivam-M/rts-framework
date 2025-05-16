@@ -22,6 +22,11 @@ struct War {
 	int army_swing = 0;
 };
 
+struct HeaderInformation {
+	const float& money;
+	const string& date;
+};
+
 struct Date { short year, month, day; };
 const short month_days[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 const string month_names[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
@@ -40,6 +45,7 @@ class GameRTS : Game {
 
 		bool value_view = false;
 		bool game_paused = false;
+		bool simulation_paused = false;
 		bool picking_nation = false;
 		
 		void extendedInitialisation() override;

@@ -48,7 +48,23 @@ const json DEFAULTS = {
 	{"priority",		0.00},
 	{"alignment",		0},
 	{"metadata",		""},
-	{"draggable",		false}
+	{"draggable",		false},
+	{"action",			0},
+	{"blend_type",		0},
+	{"blend_time",		1.0f},
+	{"blend_speed",		1.0f},
+	{"blend_size",		1.0f},
+	{"blend_fixed",		false},
+	{"blend_direction",	json::array()}
+	// TODO: See header json methods
+	//{"blend",			{
+	//						{"type",	0},
+	//						{"time",	1.0f},
+	//						{"speed",	1.0f},
+	//						{"size",	1.0f},
+	//						{"fixed",	false}
+	//						// {"direction", {0.5f, 0.5f}},
+	//					}}
 };
 
 static map<int, Province*> province_map;
@@ -79,6 +95,10 @@ void Loader::parseCommon(Moveable* moveable) {
 	}
 	if (getInt("fixed")) {
 		moveable->addFlag(FIXED_POS);
+	}
+	if (getInt("blend_type")) {
+		Blend blend = Blend(getInt("blend_type"), getFloat("blend_speed"), getFloat("blend_size"), Vector2(0.5f, 0.5f), getBool("blend_fixed"));
+		moveable->setBlend(blend);
 	}
 }
 
@@ -147,6 +167,9 @@ Moveable* Loader::parseButton() {
 	button->setText(text);
 	button->setTextOffset(x_offset, y_offset);
 	button->setButtonAction((BUTTON_ACTION)getInt("action"));
+	if (getInt("fixed")) {
+		button->addFlag(FIXED_POS);
+	}
 	return button;
 }
 
@@ -201,6 +224,9 @@ Province* Loader::parseProvince() {
 	if (province->getTexture()->image == nullptr) {
 		if (getString("texture", "NULL") != "NULL") province->setTexture(Image::getImage(getString("texture", "NULL")));
 	}
+
+	Blend blend = Blend(2, 1.0f, 1.0f, Vector2(-1.f, -1.5f), false);
+	province->setBlend(blend);
 
 	return province;
 }
@@ -271,6 +297,12 @@ bool Loader::getBool(string key) { return getValue<bool>(key); }
 int Loader::getInt(string key) { return getValue<int>(key); }
 float Loader::getFloat(string key) { return getValue<float>(key); }
 
+//template <typename T>
+//T Loader::getJsonValue(string key, string inner_key) {
+//	json main = getValue<json>(key);
+//	return main.find(inner_key) != main.end() ? main[inner_key] : DEFAULTS[key][inner_key];
+//}
+
 json::array_t Loader::getArray(string key) {
 	auto target_value = properties.find(key);
 	return target_value != properties.end() && target_value.value().is_array() ? properties[key] : DEFAULTS[key];
@@ -291,6 +323,9 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, int
 	);
 	background->addFlag(UNEDITABLE);
 	background->setName("Background " + to_string(identifier));
+
+	Blend blend = Blend(1, 1.0f, 1.0f, Vector2(0.5f, 1.0f), false);
+	background->setBlend(blend);
 
 	auto target_value = level_data.find("image");
 	if (target_value != level_data.end()) {

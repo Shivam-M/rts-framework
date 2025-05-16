@@ -20,8 +20,8 @@
     {
       "name": "&name",
       "type": "PANEL",
-      "x": 0.4,
-      "y": 0.375,
+      "x": 0.015,
+      "y": 0.4,
       "width": 0.2,
       "height": 0.225,
       "draggable": true
@@ -218,9 +218,9 @@
     },
     {
       "type": "BUTTON",
-      "x": 0.8,
+      "x": 0.7,
       "y": 0.8,
-      "width": 0.15,
+      "width": 0.25,
       "height": 0.1,
       "action": 0,
       "content": "PURCHASE",
@@ -232,7 +232,7 @@
       "alpha": 0.75,
       "parent": "&name",
       "name": "ui_unit_hire_button_purchase",
-      "alt_colour": "FFFFFF",
+      "alt_colour": "&colour3",
       "fixed": true
     }
   ]

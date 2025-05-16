@@ -47,14 +47,14 @@ Game::Game(int argc, char** argv) {
 	console = new Console(this);
 
 	debug_font =			Fonts::getFont(CONSOLAS_BOLD, 11);
-	t_FPSCounter =			Text({0.925, 0.050}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
-	t_Information =			Text({0.030, 0.050}, debug_font, Colour(34, 166, 179, 255), "");
-	t_Information2 =		Text({0.030, 0.075}, debug_font, Colour(34, 166, 179, 255), "");
-	t_Information3 =		Text({0.030, 0.100}, debug_font, Colour(34, 166, 179, 255), "");
-	t_Alt =					Text({0.675, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
-	t_Alt2 =				Text({0.800, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
-	t_Alt3 =				Text({0.550, 0.050}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
-	t_Notification =		Text({0.175, 0.050}, debug_font, Colour(189, 195, 199, 255), "");
+	t_FPSCounter =			Text({0.925f, 0.050f}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
+	t_Information =			Text({0.030f, 0.050f}, debug_font, Colour(34, 166, 179, 255), "");
+	t_Information2 =		Text({0.030f, 0.075f}, debug_font, Colour(34, 166, 179, 255), "");
+	t_Information3 =		Text({0.030f, 0.100f}, debug_font, Colour(34, 166, 179, 255), "");
+	t_Alt =					Text({0.675f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Alt2 =				Text({0.800f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Alt3 =				Text({0.550f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Notification =		Text({0.175f, 0.050f}, debug_font, Colour(189, 195, 199, 255), "");
 
 	registerObject(&t_FPSCounter);
 	registerObject(&t_Alt);
@@ -154,6 +154,7 @@ void Game::updateProperties() {
 
 void Game::updateObjects(float modifier) {
 	vector<Moveable*> inactive_objects;
+	// #pragma omp parralel for num_threads(12)
 	for (Moveable* m : objects) !m->is_active ? inactive_objects.push_back(m) : m->update(modifier);
 	for (Moveable* to : text_objects) !to->is_active ? inactive_objects.push_back(to) : to->update(modifier);
 
@@ -185,7 +186,7 @@ void Game::registerObject(Text* t) {
 	if (t->getFont() == debug_font) t->addFlag(DEBUG); // temp
 }
 
-static bool within(Vector2 location, Vector2 size, Vector2 point) {
+static bool within(const Vector2& location, const Vector2& size, const Vector2& point) {
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 

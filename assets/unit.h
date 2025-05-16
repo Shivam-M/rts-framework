@@ -19,7 +19,7 @@ class Unit: public Moveable {
 		Unit* enemy_unit_ = nullptr;
 
 	public:
-		static enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };
+		enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };
 		UNIT_STATE state_ = NORMAL;
 
 		Unit(int identifier, Nation* nation, int size, float skill = 1.00f, Province* province = nullptr) :
@@ -123,9 +123,10 @@ class Unit: public Moveable {
 				case SIEGING:
 					province_->progressSiege(skill_factor_ * random_float());
 					if (province_->getSiegeProgress() >= 100) {
-						province_->setSecondaryTexture(Image::getImage("data/images/siege_lines.png"));
+						// province_->setSecondaryTexture(Image::getImage("data/images/siege_lines.png"));
 						province_->setGradientColour(getColour().setW(200));
 						// province_->setGradientColour(province_->getColour());
+						//setState(NORMAL);
 					}
 					break;
 				case TRAVELLING:
@@ -183,7 +184,7 @@ class Unit: public Moveable {
 				text_location.x -= text_size.x / 2;
 
 				// text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
-				text->setContent(getName() + " - " + to_string(getAmount()));
+				text->setContent(format("{} - {}", name, amount_));
 				text->setLocation(text_location.x, text_location.y);
 			}
 		}

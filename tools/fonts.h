@@ -7,15 +7,15 @@
 
 using namespace std;
 
-class Font;
+struct Font;
 
 class Fonts {
 	public:
 		static map<pair<string, int>, Font*> fonts;
 		static map<pair<string, int>, bool> fonts_is_custom_temp;
 
-		static void loadFont(string, int, bool = false);
-		static Font* getFont(string, int, bool = false);
+		static void loadFont(const string&, int, bool = false);
+		static Font* getFont(const string&, int, bool = false);
 		static pair<string, int> getProperties(Font*);
 };
 

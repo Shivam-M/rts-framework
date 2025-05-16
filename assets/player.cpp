@@ -66,7 +66,7 @@ void Player::defaultPhysics(float modifier) {
 }
 
 
-void Player::update(float modifier) {
+void Player::update(const float& modifier) {
 	common(modifier);
 
 	defaultPhysics(modifier);

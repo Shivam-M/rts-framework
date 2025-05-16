@@ -45,10 +45,13 @@
       "type": "MOVEABLE",
       "colour": "&colour2",
       "alpha": 0.80,
-      "alt_colour": "&colour2",
+      "alt_colour": "192a56",
       "alt_alpha": 0.80,
       "fixed": true,
-      "texture": "data/images/map.png"
+      "texture": "data/images/map.png",
+      "blend_type": 2,
+      "blend_size": 50.0,
+      "blend_speed": 0.50
     },
     {
       "name": "ui_war_declaration_title_header",

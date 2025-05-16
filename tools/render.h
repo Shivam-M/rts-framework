@@ -1,5 +1,7 @@
 #pragma once
 
+#include <deque>
+
 class Circle;
 
 using namespace std;
@@ -9,7 +11,7 @@ struct QuadData {
 };
 
 struct TextureData {
-	Vector2 location; Vector2 size; Texture* texture; Colour& colour; bool fixed_position; Texture* secondary_texture; Colour secondary_colour;
+	Vector2 location; Vector2 size; Texture* texture; Colour& colour; bool fixed_position; Texture* secondary_texture; const Colour& secondary_colour; Blend& blend;
 };
 
 class Render { // TODO: Switch from immediate mode to direct mode rendering -- update: mostly done
@@ -17,8 +19,14 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		GLFWwindow* window_ = nullptr;
 		vector<Moveable*>* objects_ = nullptr;
 		vector<Text*>* text_objects_ = nullptr;
-		vector<QuadData> batched_quads_;
-		vector<TextureData> batched_textures_;
+		deque<QuadData> batched_quads_;
+		deque<TextureData> batched_textures_;
+
+		// TextureData all_textures[512];
+		// int texture_count = 0;
+
+		float time = glfwGetTime();
+
 		bool fullscreen_ = false;
 		float render_level_ = 0;
 
@@ -38,8 +46,8 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		}
 
 		void drawTextureBatch();
-		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour& colour, bool fixed_position = false, Texture* secondary_texture = nullptr, Colour secondary_colour = Colour(-1, -1, -1, -1)) {
-			batched_textures_.push_back({ location, size, texture, colour, fixed_position, secondary_texture, secondary_colour });
+		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour& colour, Blend& blend, const bool& fixed_position = false, Texture* secondary_texture = nullptr, const Colour& secondary_colour = Colour(-1, -1, -1, -1)) {
+			batched_textures_.push_back({ location, size, texture, colour, fixed_position, secondary_texture, secondary_colour, blend });
 		}
 
 		void drawCustom(vector<Vector2> points, Colour colour, Colour gradient);

@@ -7,7 +7,7 @@
 GLuint textureVAO, textureVBO, textureShader;
 GLuint colourShader;
 
-static GLint uniformColourQuad, uniformColourSecondaryQuad, uniformRadiusQuad, uniformPriorityQuad;
+static GLint uniformColourQuad, uniformColourSecondaryQuad, uniformRadiusQuad, uniformPriorityQuad, uniformTime, uniformType, uniformSpeed, uniformSize, uniformDirection;
 static GLint uniformColour, uniformColourSecondary, uniformTexture, uniformTextureSecondary, uniformUseSecondTexture;
 
 Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* text_objects) {
@@ -30,9 +30,19 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     uniformTexture = glGetUniformLocation(textureShader, "texturePrimary");
     uniformTextureSecondary = glGetUniformLocation(textureShader, "textureSecondary");
     uniformUseSecondTexture = glGetUniformLocation(textureShader, "useSecondTexture");
+    uniformTime = glGetUniformLocation(textureShader, "time");
+    uniformType = glGetUniformLocation(textureShader, "type");
+	uniformSpeed = glGetUniformLocation(textureShader, "speed");
+	uniformSize = glGetUniformLocation(textureShader, "size");
+	uniformDirection = glGetUniformLocation(textureShader, "direction");
 
     glUniform1i(uniformTexture, 0);
     glUniform1i(uniformTextureSecondary, 1);
+    glUniform1i(uniformType, 0);
+    glUniform1f(uniformTime, 1.f);
+    glUniform1f(uniformSpeed, 1.f);
+    glUniform1f(uniformSize, 1.f);
+    glUniform2f(uniformDirection, 0.5, 0.5);
 
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), 0.0f, static_cast<float>(WINDOW_HEIGHT));
     glUniformMatrix4fv(glGetUniformLocation(textureShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -165,6 +175,8 @@ void Render::drawTextureBatch() {
     vertices[10] = 1.0f;  vertices[11] = 1.0f;
     vertices[14] = 1.0f;  vertices[15] = 0.0f;
 
+	time = glfwGetTime();
+
     for (const TextureData& tx : batched_textures_) {
         float scale = tx.fixed_position ? 1.0f : this->scale;
         Vector2 offsets = tx.fixed_position ? Vector2{ 0, 0 } : this->offsets;
@@ -187,13 +199,37 @@ void Render::drawTextureBatch() {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tx.texture->data);
         const Colour& secondary_colour = tx.secondary_colour;
-        if (tx.secondary_texture) {
+        /*if (tx.secondary_texture) {
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, tx.secondary_texture->data);
             glUniform1i(uniformUseSecondTexture, 1);
         } else {
             glUniform1i(uniformUseSecondTexture, 0);
+        }*/
+
+        /*if (tx.location.x == 0 && tx.location.y == 0) {
+            glUniform1f(uniformTime, glfwGetTime());
         }
+        else {
+			glUniform1f(uniformTime, 0);
+        }
+
+        glUniform1f(uniformTime, glfwGetTime());*/
+
+
+        Blend& blend = tx.blend;
+
+        glUniform1i(uniformType, tx.blend.type);
+
+        if (blend.type != 0) {
+            glUniform1f(uniformTime, blend.fixed ? 1.0f : time);
+            glUniform1f(uniformSpeed, blend.speed);
+            glUniform1f(uniformSize, blend.size);
+			glUniform2f(uniformDirection, blend.direction.x, blend.direction.y);
+            //glUniform1f(uniformTime, 1.f);
+            // dir glm::vec2
+        }
+
         
         if (tx.secondary_colour.null()) {
             glUniform4f(uniformColourSecondary, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
@@ -213,7 +249,7 @@ void Render::renderMoveable(Moveable* moveable) {
     } else if (moveable->hasFlag(CURVED)) {
         drawQuadB(moveable->getLocation(), moveable->getSize(), moveable->getColourRef(), moveable->getGradientColourRef(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
     } else if (moveable->hasFlag(TEXTURED)) {
-        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColourRef(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), moveable->getGradientColourRef());
+        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColourRef(), moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), moveable->getGradientColourRef());
     } else {
         drawQuadB(moveable->getLocation(), moveable->getSize(), moveable->getColourRef(), moveable->getGradientColourRef(), moveable->getPriority(), 0.0f, moveable->hasFlag(FIXED_POS));
     }
@@ -249,10 +285,10 @@ void Render::renderWindow() {
 
     // glDepthMask(GL_FALSE);
     
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
     drawTextureBatch();
     
-    glEnable(GL_DEPTH_TEST);    
+    //glEnable(GL_DEPTH_TEST);    
     drawQuadBatch();
 
     draw_times[0] = glfwGetTime() - time_shapes;
@@ -276,7 +312,6 @@ void Render::renderWindow() {
 
         text_background_colour.setW(min(text->getColourRef().getW(), 200.f));
         drawQuadB(text_location, text_dimensions, text_background_colour, text_background_colour, 0.00, 0.0125);
- ;
     }
 
     drawQuadBatch();

@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-#include <string>
+#include <format>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -23,9 +23,9 @@
 using namespace std;
 
 struct Texture {
-	GLuint data;
-	int width, height, composition;
-	unsigned char* image;
+	GLuint data = 0;
+	int width = 0, height = 0, composition = 0;
+	unsigned char* image = nullptr;
 	string path;
 };
 

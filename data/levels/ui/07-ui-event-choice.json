@@ -53,6 +53,7 @@
       "scale": 0.5,
       "size": 22,
       "type": "BUTTON",
+      "fixed":  true,
       "width": 0.975,
       "x": 0.0125,
       "y": 0.1
@@ -73,6 +74,7 @@
       "scale": 0.5,
       "size": 22,
       "type": "BUTTON",
+      "fixed": true,
       "width": 0.975,
       "x": 0.0125,
       "y": 0.4
@@ -93,6 +95,7 @@
       "scale": 0.5,
       "size": 20,
       "type": "BUTTON",
+      "fixed": true,
       "width": 0.975,
       "x": 0.0125,
       "y": 0.7

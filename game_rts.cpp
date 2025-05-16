@@ -40,6 +40,7 @@ void GameRTS::extendedInitialisation() {
 	UIManager::Hide("ui_event_choice");
 	UIManager::Hide("ui_war_indicator");
 	UIManager::Hide("ui_unit_hire");
+	UIManager::Hide("ui_information_header");
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to load the game.");
 }
@@ -107,6 +108,8 @@ void loadProvinceAttributes(string attributes) { // TODO: Change to fstream
 }
 
 void GameRTS::pauseGame() {
+	game_paused = !game_paused;
+	simulation_paused = !simulation_paused;
 	UIManager::Toggle("ui_menu_pause", true);
 }
 
@@ -138,16 +141,17 @@ void GameRTS::updateStatistics(int f, int u) {
 	ostringstream nation_treasury;
 	if (player_nation) {
 		nation_string = player_nation->getName() + " [" + to_string(player_nation->getID()) + "]";
-		nation_treasury << fixed << setprecision(2) << player_nation->getMoney();
-		t_Information2.setContent("Money: " + nation_treasury.str());
-		t_Information3.setColour(player_nation->getColour());
+
+		const float& money = player_nation->getMoney();
+		t_Information2.setContent(format("Money: {:.2f}", money));
+		t_Information3.setColour(player_nation->getColourRef());
 	}
 
 	t_Information.setContent(getDate());
 	t_Information3.setContent("Playing as: " + nation_string);
 }
 
-static bool within(Vector2 location, Vector2 size, Vector2 point) {
+static bool within(const Vector2& location, const Vector2& size, const Vector2& point) {
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
@@ -241,6 +245,8 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 	Unit* hired_unit;
 	War war;
 
+	// Panel* panel = UIManager::GetPanel("ui_information_header");
+
 	switch (action) {
 		case CHANGE_CONTROLS:
 			game->mouse->debug_control_scheme ^= true;
@@ -248,6 +254,9 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			break;
 		case PAUSE_GAME:
 			pauseGame();
+			break;
+		case PAUSE_SIMULATION:
+			simulation_paused = !simulation_paused;
 			break;
 		case SWITCH_NATION:
 			picking_nation ^= true;
@@ -299,6 +308,17 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 				Unit* unit = u.second;
 				unit->getText()->setFont(Fonts::getFont(files_font[index_font], 16, true));
 			}
+			
+			/*for (Moveable* panel_item : *panel->get()) {
+				if (panel_item->getName() == "ui_information_header_date") {
+					Text* panel_text = reinterpret_cast<Text*>(panel_item);
+					panel_text->setFont(Fonts::getFont(files_font[index_font], panel_text->getFont()->h, true));
+				}
+				if (panel_item->getName() == "ui_information_header_gold") {
+					Text* panel_text = reinterpret_cast<Text*>(panel_item);
+					panel_text->setFont(Fonts::getFont(files_font[index_font], panel_text->getFont()->h, true));
+				}
+			}*/
 
 			t_Notification.setContent("Set game font to " + files_font[index_font]);
 			index_font++;
@@ -307,9 +327,11 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			UIManager::Toggle("ui_nation_tooltip");
 			break;
 		case UI_DEBUG_TOGGLE:
+			UIManager::Toggle("ui_war_indicator");
 			UIManager::Toggle("ui_war_declaration");
 			UIManager::Toggle("ui_event_choice");
 			UIManager::Toggle("ui_unit_hire");
+			UIManager::Toggle("ui_information_header");
 			break;
 		case DECLARE_WAR:
 			war.attacker = player_nation;
@@ -392,6 +414,7 @@ void GameRTS::updateProperties() {
 	}
 }
 
+
 void GameRTS::updateObjects(float modifier) {
 	// sort(objects.begin(), objects.end(), [](Moveable* a, Moveable* b) {
 	//	 return a->getPriority() < b->getPriority();
@@ -405,6 +428,11 @@ void GameRTS::updateObjects(float modifier) {
 		objects.erase(remove(objects.begin(), objects.end(), t), objects.end());
 		delete t;
 	}
+
+	HeaderInformation header_information = { player_nation->getMoney(), getDate()};
+
+	if (!UIManager::GetPanel("ui_information_header")->hasFlag(DISABLED))
+		UIManager::AssignValues("ui_information_header", &header_information);
 
 	for (Moveable* q : queue_objects) objects.push_back(q);
 	queue_objects.clear();
@@ -427,6 +455,8 @@ int GameRTS::gameLoop() {
 #endif
 
 	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+
 		current_time = glfwGetTime();
 		limit = 1.0f / update_rate;
 		delta_time += (current_time - last_time) / limit;
@@ -434,11 +464,13 @@ int GameRTS::gameLoop() {
 
 		while (delta_time >= 1.0f) {
 			update_time = glfwGetTime();
-			if (!game_paused) for (Nation* nation : nations) nation->evaluate();
-			incrementDay();
+			if (!game_paused && !simulation_paused) {
+				//#pragma omp parallel for num_threads(12)
+				for (Nation* nation : nations) nation->evaluate();
+				incrementDay();
+			}
 			updateObjects(60.0f / update_rate);
 			updateProperties();
-			glfwPollEvents();
 			updates++;
 			delta_time--;
 			update_time_ = static_cast<float>(glfwGetTime()) - update_time;

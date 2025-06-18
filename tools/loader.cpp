@@ -204,11 +204,11 @@ Panel* Loader::parsePanel() {
 	return panel;
 }
 
-map<int, Province*> Loader::getProvinceMap() { return province_map; }
+map<int, Province*>& Loader::getProvinceMap() { return province_map; }
 
-map<int, Nation*> Loader::getNationMap() { return nation_map; }
+map<int, Nation*>& Loader::getNationMap() { return nation_map; }
 
-map<int, Unit*> Loader::getUnitMap() { return unit_map; }
+map<int, Unit*>& Loader::getUnitMap() { return unit_map; }
 
 Province* Loader::parseProvince() {
 	Province* province = new Province(getInt("id"));
@@ -225,8 +225,8 @@ Province* Loader::parseProvince() {
 		if (getString("texture", "NULL") != "NULL") province->setTexture(Image::getImage(getString("texture", "NULL")));
 	}
 
-	Blend blend = Blend(2, 1.0f, 1.0f, Vector2(-1.f, -1.5f), false);
-	province->setBlend(blend);
+	/*Blend blend = Blend(2, 1.0f, 1.0f, Vector2(-1.f, -1.5f), false);
+	province->setBlend(blend);*/
 
 	return province;
 }

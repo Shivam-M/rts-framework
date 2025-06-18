@@ -272,6 +272,7 @@
     <Image Include="data\images\map_blue.png" />
     <Image Include="data\images\map_white.png" />
     <Image Include="data\images\panel.png" />
+    <Image Include="data\images\pause.png" />
     <Image Include="data\images\province.png" />
     <Image Include="data\images\siege_lines.png" />
     <Image Include="data\images\unit.png" />

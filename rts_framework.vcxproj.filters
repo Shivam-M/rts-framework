@@ -354,6 +354,9 @@
     <Image Include="data\generated\4_province.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="data\images\pause.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\scripts\bounce.txt" />

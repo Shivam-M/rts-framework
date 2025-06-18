@@ -40,7 +40,7 @@ void GameRTS::extendedInitialisation() {
 	UIManager::Hide("ui_event_choice");
 	UIManager::Hide("ui_war_indicator");
 	UIManager::Hide("ui_unit_hire");
-	UIManager::Hide("ui_information_header");
+	// UIManager::Hide("ui_information_header");
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to load the game.");
 }
@@ -250,7 +250,7 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 	switch (action) {
 		case CHANGE_CONTROLS:
 			game->mouse->debug_control_scheme ^= true;
-			t_Notification.setContent("Set debug control mode to: " + to_string(game->mouse->debug_control_scheme));
+			t_Notification.setContent(format("Set debug control mode to: {}", game->mouse->debug_control_scheme));
 			break;
 		case PAUSE_GAME:
 			pauseGame();
@@ -347,6 +347,9 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			UIManager::AssignValues("ui_war_declaration", &war);
 			UIManager::Hide("ui_nation_tooltip");
 			UIManager::Show("ui_war_declaration");
+			break;
+		default:
+			t_Notification.setContent(format("Unsupported button action: {}", (int)action));
 	}
 }
 

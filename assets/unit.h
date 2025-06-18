@@ -17,6 +17,7 @@ class Unit: public Moveable {
 		Province* target_province_ = nullptr;
 		vector<Province*> travel_path_;
 		Unit* enemy_unit_ = nullptr;
+		Blend blend_sieged = Blend(2, 1.0f, 1.0f, Vector2(-1.f, -1.5f), false);
 
 	public:
 		enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };
@@ -124,6 +125,7 @@ class Unit: public Moveable {
 					province_->progressSiege(skill_factor_ * random_float());
 					if (province_->getSiegeProgress() >= 100) {
 						// province_->setSecondaryTexture(Image::getImage("data/images/siege_lines.png"));
+						province_->setBlend(blend_sieged);
 						province_->setGradientColour(getColour().setW(200));
 						// province_->setGradientColour(province_->getColour());
 						//setState(NORMAL);

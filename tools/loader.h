@@ -63,8 +63,8 @@ class Loader {
 
 	public:
 		static Level* load_level(string, vector<Moveable*>*, vector<Text*>*, int);
-		static map<int, Province*> getProvinceMap();
-		static map<int, Nation*> getNationMap();
-		static map<int, Unit*> getUnitMap();
+		static map<int, Province*>& getProvinceMap();
+		static map<int, Nation*>& getNationMap();
+		static map<int, Unit*>& getUnitMap();
 		static void writeObjects(vector<Moveable*> objects, vector<Text*> text_objects);
 };

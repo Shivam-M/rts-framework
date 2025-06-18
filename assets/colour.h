@@ -101,6 +101,7 @@ class Colour: public Vector4 {
 			int r = static_cast<int>(rgb.getX());
 			int g = static_cast<int>(rgb.getY());
 			int b = static_cast<int>(rgb.getZ());
+			if (r < 0 || g < 0 || b < 0) return "000000";
 			char hex[7];
 			sprintf_s(hex, sizeof(hex), "%02x%02x%02x", r, g, b);
 			return string(hex);

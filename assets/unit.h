@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../assets/text.h"
+#include "../game_rts.h"
 
 class Nation;
 
@@ -18,6 +19,7 @@ class Unit: public Moveable {
 		vector<Province*> travel_path_;
 		Unit* enemy_unit_ = nullptr;
 		Blend blend_sieged = Blend(2, 1.0f, 1.0f, Vector2(-1.f, -1.5f), false);
+		BattleInformation* battle_info_ = nullptr;
 
 	public:
 		enum UNIT_STATE { NORMAL, SIEGING, TRAVELLING, FIGHTING, DEAD };
@@ -86,15 +88,30 @@ class Unit: public Moveable {
 			}
 		}
 
-		void receiveBattle(Unit* unit) {
+		void receiveBattle(Unit* unit, BattleInformation* battle_info) {
 			setState(FIGHTING);
 			enemy_unit_ = unit;
+			battle_info_ = battle_info;
 		}
 
 		void initiateBattle(Unit* unit) {
 			setState(FIGHTING);
+			BattleInformation* battle_information = new BattleInformation();
+			battle_information->attacker_units.push_back(this);
+			battle_information->defender_units.push_back(unit);
+			battle_information->total_attacker_starting_strength = amount_;
+			battle_information->total_defender_starting_strength = unit->amount_;
+			battle_info_ = battle_information;
+			
 			enemy_unit_ = unit;
-			enemy_unit_->receiveBattle(this);
+			enemy_unit_->receiveBattle(this, battle_info_);
+			GameRTS::instance->registerEvent(START_BATTLE, battle_information);
+			/*BattleInformation battle_information = BattleInformation();
+			battle_information.attacker_units.push_back(this);
+			battle_information.attacker_units.push_back(enemy_unit_);
+			battle_information.total_attacker_starting_strength = amount_;
+			battle_information.total_defender_starting_strength = enemy_unit_->amount_;
+			UIManager::AssignValues("ui_battle_unit", &battle_information);*/
 		}
 
 		void initiate() {

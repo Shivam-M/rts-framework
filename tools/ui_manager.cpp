@@ -14,6 +14,7 @@ static map<string, Mapping> nation_mappings;
 static map<string, Mapping> unit_mappings;
 static map<string, Mapping> war_mappings;
 static map<string, Mapping> header_mappings;
+static map<string, Mapping> battle_mappings;
 
 static string temp_str_buffer;
 static ostringstream temp_stream;
@@ -26,8 +27,10 @@ map<string, MappingFunction> UIManager::method_mappings_ = {
     {"ui_unit_tooltip",         &UIManager::MapUnit},
     {"ui_war_declaration",      &UIManager::MapWarDeclaration},
     {"ui_information_header",   &UIManager::MapHeader},
+    {"ui_battle_unit",          &UIManager::MapBattle}
 };
 
+static void set_battle_details_for_allies(map<string, Mapping>& battle_mappings, const string& side, const vector<Unit*>& allies);
 static void set_war_details_for_allies(map<string, Mapping>& war_mappings, const string& side, int strength, int provinces, const vector<Nation*>& allies);
 
 void UIManager::AssignValues(const string& panel_name, void* moveable) {
@@ -102,7 +105,11 @@ const map<string, Mapping>& UIManager::MapUnit(void* moveable) {
     Nation* nation = unit->getNation();
 
     unit_mappings["ui_unit_tooltip_name"] = Mapping(unit->getName(), unit->getColour().setW(255));
-    unit_mappings["ui_unit_tooltip_owned_by"] = Mapping("Owned by: " + nation->getName());
+
+    if (nation)
+        unit_mappings["ui_unit_tooltip_owned_by"] = Mapping("Owned by: " + nation->getName());
+    else
+        unit_mappings["ui_unit_tooltip_owned_by"] = Mapping("Independent");  // maybe mercenary's don't need a nation or use a dummy one
 
     const float& skill = unit->getSkill();
     unit_mappings["ui_unit_tooltip_value"] = Mapping(format("Skill: {:.2f}", skill));
@@ -150,6 +157,28 @@ const map<string, Mapping>& UIManager::MapHeader(void* header_details) {
     header_mappings["ui_information_header_date"] = Mapping(information->date);
 
     return header_mappings;
+}
+
+const map<string, Mapping>& UIManager::MapBattle(void* battle_details) {
+    BattleInformation* information = static_cast<BattleInformation*>(battle_details);
+
+    set_battle_details_for_allies(battle_mappings, "1", information->attacker_units);
+    set_battle_details_for_allies(battle_mappings, "2", information->defender_units);
+
+    // battle_mappings["ui_battle_unit_power_bar"] = Mapping(information->date);
+
+    return battle_mappings;
+}
+
+static void set_battle_details_for_allies(map<string, Mapping>& battle_mappings, const string& side, const vector<Unit*>& allies) {
+    int total_amount = 0;
+    
+    for (Unit* ally: allies) {
+        total_amount += ally->getAmount();
+    }
+
+    battle_mappings["ui_battle_unit_fighter_" + side] = Mapping(to_string(total_amount));
+
 }
 
 static void set_war_details_for_allies(map<string, Mapping>& war_mappings, const string& side, int strength, int provinces, const vector<Nation*>& allies) {

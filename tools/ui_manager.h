@@ -49,4 +49,5 @@ class UIManager {
 		static const map<string, Mapping>& MapUnit(void* moveable);
 		static const map<string, Mapping>& MapWarDeclaration(void* war_details);
 		static const map<string, Mapping>& MapHeader(void* header_details);
+		static const map<string, Mapping>& MapBattle(void* battle_details);  // TODO: refactor to support multiple ui instances
 };

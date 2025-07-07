@@ -1,10 +1,6 @@
 {
   "level_name": "Units",
-  "background": "222F3E",
-  "background_alpha": 0.31,
-  "alt_background": "222F3E",
-  "alt_background_alpha": 0.31,
-  "foreground": "FFFFFF",
+  "no_background": true,
   "variables": {
     "g_colour": "FF00FF"
   },

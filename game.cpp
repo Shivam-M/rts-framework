@@ -163,6 +163,8 @@ void Game::updateObjects(float modifier) {
 		delete t;
 	}
 
+	// PANEL OBJECTS NOT UPDATED OR ARE BECAUSE THEY ITERATE OVER BUNDLE?
+
 	for (Moveable* q : queue_objects) objects.push_back(q);
 	queue_objects.clear();
 }
@@ -174,9 +176,11 @@ void Game::registerObject(Moveable* m) {
 		for (Moveable* moveable : *panel->get()) {
 			moveable->addFlag(UI);
 			if (moveable->getFlags() & TEXT)
-				registerObject(reinterpret_cast<Text*>(moveable));
+				continue;
+				//registerObject(reinterpret_cast<Text*>(moveable));
 			else
-				registerObject(moveable);
+				continue;  // WE WERE ADDING OBJECTS TWICE HERE FIX THIS!!!
+				//registerObject(moveable);
 		}
 	}
 }

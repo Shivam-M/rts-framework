@@ -250,6 +250,7 @@ Unit* Loader::parseUnit() {
 Nation* Loader::parseNation() {
 	Nation* nation = new Nation(getInt("id"), getString("name"), province_map[getInt("capital")]);
 	parseCommon(nation);
+	nation->addFlag(NO_RENDER);
 
 	for (const auto& element : getArray("provinces")) {
 		Province* province = province_map[(int)element];
@@ -315,28 +316,40 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, int
 
 	log_t("Loading level... " CON_RED + f + CON_NORMAL " [" + CON_RED + (string)level_data["level_name"] + CON_NORMAL + "]");
 
-	Moveable* background = new Moveable(
-		Vector2(),
-		Vector2(1.0, 1.0),
-		Colour(level_data["background"], level_data["background_alpha"]), 
-		Colour(level_data["alt_background"], level_data["alt_background_alpha"])
-	);
-	background->addFlag(UNEDITABLE);
-	background->setName("Background " + to_string(identifier));
-
-	Blend blend = Blend(1, 1.0f, 1.0f, Vector2(0.5f, 1.0f), false);
-	background->setBlend(blend);
-
-	auto target_value = level_data.find("image");
+	bool no_background = false;
+	auto target_value = level_data.find("no_background");
 	if (target_value != level_data.end()) {
-		background->setTexture(Image::getImage(level_data["image"]));
+		if ((bool)level_data["no_background"]) {
+			no_background = true;
+		}
 	}
 
-	target_value = level_data.find("fixed_position");
-	if (target_value != level_data.end()) {
-		if ((bool)level_data["fixed_position"]) {
-			background->addFlag(FIXED_POS);
+	if (!no_background) {
+		Moveable* background = new Moveable(
+			Vector2(),
+			Vector2(1.0, 1.0),
+			Colour(level_data["background"], level_data["background_alpha"]),
+			Colour(level_data["alt_background"], level_data["alt_background_alpha"])
+		);
+		background->addFlag(UNEDITABLE);
+		background->setName("Background " + to_string(identifier));
+
+		Blend blend = Blend(1, 1.0f, 1.0f, Vector2(0.5f, 1.0f), false);
+		background->setBlend(blend);
+
+		auto target_value = level_data.find("image");
+		if (target_value != level_data.end()) {
+			background->setTexture(Image::getImage(level_data["image"]));
 		}
+
+		target_value = level_data.find("fixed_position");
+		if (target_value != level_data.end()) {
+			if ((bool)level_data["fixed_position"]) {
+				background->addFlag(FIXED_POS);
+			}
+		}
+
+		level->objects.push_back(background);
 	}
 
 	target_value = level_data.find("offset_positions");
@@ -346,7 +359,6 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, int
 		}
 	}
 
-	level->objects.push_back(background);
 	current_level_data = level_data;
 
 	for (auto& el : level_data["objects"].items()) {
@@ -366,7 +378,11 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, int
 		} else if (type == "TEXT") {
 			level->text_objects.push_back(parseText());
 		} else if (type == "BUTTON") {
-			level->objects.push_back(parseButton());
+			Moveable* button = parseButton();
+			level->objects.push_back(button);
+			if (button->text) {
+				level->text_objects.push_back(button->text);
+			}
 		} else if (type == "SLIDER") {
 			level->objects.push_back(parseSlider());
 		} else if (type == "PROVINCE") {

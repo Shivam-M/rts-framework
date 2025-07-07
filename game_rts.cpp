@@ -17,11 +17,43 @@
 using namespace std;
 namespace fs = filesystem;
 
+GameRTS* GameRTS::instance = nullptr;
+
+//struct BattleInformation {
+//	vector<Unit*> attacker_units; // 1st element always the main attacker
+//	vector<Unit*> defender_units; // 1st element always the main defender
+//	int total_attacker_starting_strength;
+//	int total_defender_starting_strength;
+//	int total_attacker_current_strength = 0;
+//	int total_defender_current_strength = 0;
+//	int defender_losses;
+//	Province* province;
+//	int get_attacker_strength() {
+//		total_attacker_current_strength = 0;
+//		for (Unit* unit : attacker_units) {
+//			total_attacker_current_strength += unit->getAmount();
+//		}
+//		return total_attacker_current_strength;
+//	}
+//	int get_defender_strength() {
+//		total_defender_current_strength = 0;
+//		for (Unit* unit : defender_units) {
+//			total_defender_current_strength += unit->getAmount();
+//		}
+//		return total_defender_current_strength;
+//	}
+//	int get_battle_swing() { return total_attacker_current_strength - total_defender_current_strength; }
+//};
+
 // TODO: Use new text alignment on unit names and console
 // ADD text input field
 
+GameRTS::GameRTS() : Game() { instance = this; }
+GameRTS::GameRTS(int a, char** b) : Game(a, b) { instance = this; }
+
 void GameRTS::extendedInitialisation() {
 	// Image::loadMap("data/world_map.bmp", "data/province_colours.txt");
+#define dbg2
 #ifdef dbg
 	loadLevels("data/levels/debug/");
 #else
@@ -40,9 +72,10 @@ void GameRTS::extendedInitialisation() {
 	UIManager::Hide("ui_event_choice");
 	UIManager::Hide("ui_war_indicator");
 	UIManager::Hide("ui_unit_hire");
+	UIManager::Hide("ui_battle_unit");
 	// UIManager::Hide("ui_information_header");
 
-	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to load the game.");
+	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to completely load the game.");
 }
 
 void GameRTS::setupRTSGame() {
@@ -199,12 +232,15 @@ Moveable* GameRTS::getObjectUnderMouse() {
 	UIManager::Hide("ui_unit_tooltip");
 
 	if (object && !object->hasFlag(DISABLED)) {
-		object->onHover();
+		if (object->hasFlag(BUTTON)) {
+			object->onHover();
+		}
 
 		if (object->hasFlag(PROVINCE)) {
 			Province* province = reinterpret_cast<Province*>(object);
 
 			if (!picking_nation) {
+				object->onHover();
 				hoverProvince(province);
 			} else {
 				object->onHoverStop();
@@ -353,12 +389,28 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 	}
 }
 
+static BattleInformation* some_battle_info = nullptr;
+void GameRTS::registerEvent(Event event, void* details) {
+	switch (event) {
+		case START_BATTLE:
+			some_battle_info = static_cast<BattleInformation*>(details);
+			
+			break;
+		default:
+			log_t("Unsupported event: " CON_RED, event);
+			break;
+	}
+}
+
 void GameRTS::updateProperties() {
 	updateCursor();
 	getObjectUnderMouse();
 
 	if (viewed_nation)
 		UIManager::AssignValues("ui_nation_tooltip", viewed_nation);
+	
+	if (some_battle_info)
+		UIManager::AssignValues("ui_battle_unit", some_battle_info);
 
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) render.offsets.x += (cursor_position.x - original_position.x) * 0.01f, render.offsets.y += (cursor_position.y - original_position.y) * 0.01f;
 

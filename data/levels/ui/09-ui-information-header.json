@@ -1,12 +1,7 @@
 {
-  "alt_background": "FFFFFF",
-  "alt_background_alpha": 0.0,
-  "background": "FFFFFF",
-  "background_alpha": 0.0,
-  "foreground": "FFFFFF",
+  "level_name": "Information Header",
+  "no_background": true,
   "offset_positions": false,
-  "image": "images/test.png",
-  "level_name": "UI Level",
   "variables": {
     "name": "ui_information_header",
     "font": "consolas",

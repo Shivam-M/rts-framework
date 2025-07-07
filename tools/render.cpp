@@ -1,8 +1,6 @@
 #include "../assets/text.h"
-
-#include "render.h"
-
 #include "../tools/text_renderer.h"
+#include "render.h"
 
 GLuint textureVAO, textureVBO, textureShader;
 GLuint colourShader;
@@ -93,7 +91,7 @@ void Render::alignCoordinates(Vector2* location, Vector2* size) {
 }
 
 void Render::drawText(Vector2 location, string& message, Font* font, Colour& colour, float font_scale, float priority) {
-    TextRenderer::render_text(font, location.x * resolution.x, (1 - location.y) * resolution.y, message, colour, font_scale, priority);
+    TextRenderer::render_text(font, location.x * resolution.x, (location.y) * resolution.y, message, colour, font_scale, priority);
 }
 
 void Render::drawQuadBatch() {
@@ -108,7 +106,8 @@ void Render::drawQuadBatch() {
     vertices[10] = 1.0f;  vertices[11] = 1.0f;
     vertices[14] = 1.0f;  vertices[15] = 0.0f;
 
-    for (const QuadData& quad : batched_quads_) {
+    for (int i = 0; i < quad_count_; i++) {
+        QuadData quad = batched_quads_[i];
         float scale = quad.fixed_position ? 1.0f : this->scale;
         Vector2 offsets = quad.fixed_position ? Vector2{ 0, 0 } : this->offsets;
 
@@ -126,11 +125,11 @@ void Render::drawQuadBatch() {
 
         glUniform1f(uniformRadiusQuad, quad.radius);
 
-        const Colour& colour = quad.colour;
-        glUniform4f(uniformColourQuad, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
+        const Colour* colour = quad.colour;
+        glUniform4f(uniformColourQuad, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
 
-        const Colour& colour_gradient = quad.gradient;
-        glUniform4f(uniformColourSecondaryQuad, colour_gradient.x_ / 255.0f, colour_gradient.y_ / 255.0f, colour_gradient.z_ / 255.0f, colour_gradient.w_ / 255.0f);
+        const Colour* colour_gradient = quad.gradient;
+        glUniform4f(uniformColourSecondaryQuad, colour_gradient->x_ / 255.0f, colour_gradient->y_ / 255.0f, colour_gradient->z_ / 255.0f, colour_gradient->w_ / 255.0f);
 
         glUniform1f(uniformPriorityQuad, quad.priority);
 
@@ -141,12 +140,12 @@ void Render::drawQuadBatch() {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
-    batched_quads_.clear();
+    quad_count_ = 0;
 }
 
 void Render::drawCustom(vector<Vector2> points, Colour colour, Colour gradient) {
     return;
-    glBegin(GL_QUADS);
+    /*glBegin(GL_QUADS);
     glColor4ub(colour.getX(), colour.getY(), colour.getZ(), colour.getW());
     for (int i = 0; i < 4; i++) {
         if (i == 2 && gradient != colour) glColor4ub(gradient.getX(), gradient.getY(), gradient.getZ(), gradient.getW());
@@ -154,7 +153,7 @@ void Render::drawCustom(vector<Vector2> points, Colour colour, Colour gradient) 
         normaliseCoordinates(&points[i]);
         glVertex2f(points[i].x, points[i].y);
     }
-    glEnd();
+    glEnd();*/
 }
 
 void Render::toggleFullscreen() {
@@ -177,7 +176,9 @@ void Render::drawTextureBatch() {
 
 	time = glfwGetTime();
 
-    for (const TextureData& tx : batched_textures_) {
+    for (int i = 0; i < texture_count_; i++) {
+		TextureData tx = batched_textures_[i];
+        if (tx.texture == nullptr || tx.colour == nullptr) continue; // temp
         float scale = tx.fixed_position ? 1.0f : this->scale;
         Vector2 offsets = tx.fixed_position ? Vector2{ 0, 0 } : this->offsets;
 
@@ -193,12 +194,12 @@ void Render::drawTextureBatch() {
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
-        Colour& colour = tx.colour;
-        glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
+        Colour* colour = tx.colour;
+        glUniform4f(uniformColour, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tx.texture->data);
-        const Colour& secondary_colour = tx.secondary_colour;
+        const Colour* secondary_colour = tx.secondary_colour;
         /*if (tx.secondary_texture) {
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, tx.secondary_texture->data);
@@ -217,41 +218,41 @@ void Render::drawTextureBatch() {
         glUniform1f(uniformTime, glfwGetTime());*/
 
 
-        Blend& blend = tx.blend;
+        Blend* blend = tx.blend;
 
-        glUniform1i(uniformType, tx.blend.type);
+        glUniform1i(uniformType, blend->type);
 
-        if (blend.type != 0) {
-            glUniform1f(uniformTime, blend.fixed ? 1.0f : time);
-            glUniform1f(uniformSpeed, blend.speed);
-            glUniform1f(uniformSize, blend.size);
-			glUniform2f(uniformDirection, blend.direction.x, blend.direction.y);
+        if (blend->type != 0) {
+            glUniform1f(uniformTime, blend->fixed ? 1.0f : time);
+            glUniform1f(uniformSpeed, blend->speed);
+            glUniform1f(uniformSize, blend->size);
+			glUniform2f(uniformDirection, blend->direction.x, blend->direction.y);
             //glUniform1f(uniformTime, 1.f);
             // dir glm::vec2
         }
 
         
-        if (tx.secondary_colour.null()) {
-            glUniform4f(uniformColourSecondary, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
+        if (!tx.secondary_colour) {
+            glUniform4f(uniformColourSecondary, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
         } else {
-            glUniform4f(uniformColourSecondary, secondary_colour.x_ / 255.0f, secondary_colour.y_ / 255.0f, secondary_colour.z_ / 255.0f, secondary_colour.w_ / 255.0f);
+            glUniform4f(uniformColourSecondary, secondary_colour->x_ / 255.0f, secondary_colour->y_ / 255.0f, secondary_colour->z_ / 255.0f, secondary_colour->w_ / 255.0f);
         }
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
-    batched_textures_.clear();
+    texture_count_ = 0;
 }
 
 void Render::renderMoveable(Moveable* moveable) {
     if (moveable->hasFlag(CUSTOM)) {
         // drawCustom(moveable->getPoints(), moveable->getColourRef(), moveable->getGradientColourRef());
     } else if (moveable->hasFlag(CURVED)) {
-        drawQuadB(moveable->getLocation(), moveable->getSize(), moveable->getColourRef(), moveable->getGradientColourRef(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
+        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getColourRef(), &moveable->getGradientColourRef(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
     } else if (moveable->hasFlag(TEXTURED)) {
-        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), moveable->getColourRef(), moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), moveable->getGradientColourRef());
+        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), &moveable->getColourRef(), &moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), &moveable->getGradientColourRef());
     } else {
-        drawQuadB(moveable->getLocation(), moveable->getSize(), moveable->getColourRef(), moveable->getGradientColourRef(), moveable->getPriority(), 0.0f, moveable->hasFlag(FIXED_POS));
+        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getColourRef(), &moveable->getGradientColourRef(), moveable->getPriority(), 0.0f, moveable->hasFlag(FIXED_POS));
     }
 }
 
@@ -273,7 +274,7 @@ void Render::renderWindow() {
     log_t("--");*/
 
     for (Moveable* moveable: *objects_) {
-        if (moveable->getFlags() & (DISABLED | PARTICLES | PANEL)) continue;
+        if (moveable->getFlags() & (DISABLED | PARTICLES | PANEL | NO_RENDER)) continue;
         if ((moveable->location.x + moveable->size.x <= 0) || (moveable->location.y + moveable->size.y <= 0) || (moveable->location.x >= 1) || (moveable->location.y >= 1)) {
         // if ((moveable->location.x + moveable->size.x <= left) || (moveable->location.x >= right)) {
         // if (not (moveable->location.x >= left && moveable->location.x <= right)) {
@@ -311,7 +312,7 @@ void Render::renderWindow() {
         text_location.y -= text_dimensions.y * (background_scale * 1.5 - 1) / (2 * background_scale * 1.5);
 
         text_background_colour.setW(min(text->getColourRef().getW(), 200.f));
-        drawQuadB(text_location, text_dimensions, text_background_colour, text_background_colour, 0.00, 0.0125);
+        drawQuadB(text_location, text_dimensions, &text_background_colour, &text_background_colour, 0.00, 0.0125);
     }
 
     drawQuadBatch();

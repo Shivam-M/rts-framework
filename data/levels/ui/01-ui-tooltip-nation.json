@@ -1,12 +1,7 @@
 {
-  "alt_background": "FFFFFF",
-  "alt_background_alpha": 0.00,
-  "background": "FFFFFF",
-  "background_alpha": 0.00,
-  "foreground": "FFFFFF",
+  "level_name": "Nation Tooltip",
+  "no_background": true,
   "offset_positions": false,
-  "image": "images/test.png",
-  "level_name": "UI 1",
   "variables": {
     "name": "ui_nation_tooltip",
     "font": "data/fonts/MedievalSharp-Book.ttf",

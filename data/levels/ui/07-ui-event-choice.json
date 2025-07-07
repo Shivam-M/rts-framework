@@ -1,12 +1,7 @@
 {
-  "alt_background": "FFFFFF",
-  "alt_background_alpha": 0.00,
-  "background": "FFFFFF",
-  "background_alpha": 0.00,
-  "foreground": "FFFFFF",
+  "level_name": "Event Choices",
+  "no_background": true,
   "offset_positions": false,
-  "image": "images/test.png",
-  "level_name": "UI EVENT CHOICE",
   "variables": {
     "name": "ui_event_choice",
     "font2": "data/fonts/MedievalSharp-Book.ttf",
@@ -22,7 +17,7 @@
       "name": "&name",
       "type": "PANEL",
       "x": 0.225,
-      "y": 0.675,
+      "y": 1.675,
       "width": 0.55,
       "height": 0.125,
       "draggable": true
@@ -53,7 +48,7 @@
       "scale": 0.5,
       "size": 22,
       "type": "BUTTON",
-      "fixed":  true,
+      "fixed": true,
       "width": 0.975,
       "x": 0.0125,
       "y": 0.1
@@ -65,7 +60,7 @@
       "alt_alpha": 0.85,
       "alt_colour": "&colour4",
       "colour": "&colour",
-      "content": "Gather the toops",
+      "content": "Gather the troops",
       "flags": 0,
       "font": "&font",
       "font_custom": 1,

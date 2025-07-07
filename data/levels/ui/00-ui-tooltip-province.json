@@ -1,12 +1,6 @@
 {
-  "alt_background": "FFFFFF",
-  "alt_background_alpha": 0.00,
-  "background": "FFFFFF",
-  "background_alpha": 0.00,
-  "foreground": "FFFFFF",
-  "offset_positions": false,
-  "image": "images/test.png",
-  "level_name": "UI 0",
+  "level_name": "Province Tooltip",
+  "no_background": true,
   "variables": {
     "name": "ui_province_tooltip",
     "font": "data/fonts/MedievalSharp-Book.ttf",

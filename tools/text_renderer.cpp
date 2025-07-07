@@ -5,12 +5,12 @@
 #include <algorithm>
 
 GLuint VAO, VBO, TextShader;
-int AtlasWidth = 2048, AtlasHeight = 1024;
+int AtlasWidth = 4096, AtlasHeight = 4096;
 GLuint uniformColour, uniformPriority;
 
 void TextRenderer::setup() {
     TextShader = CompileShader("shaders/text.vert", "shaders/text.frag");
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), 0.0f, static_cast<float>(WINDOW_HEIGHT));
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT), 0.0f);
 
     glUseProgram(TextShader);
     glUniformMatrix4fv(glGetUniformLocation(TextShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -65,7 +65,7 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
 
         if (x + face->glyph->bitmap.width > AtlasWidth) {
             x = 0;
-            y += maxHeight * 1.5;
+            y += maxHeight;
             maxHeight = 0;
         }
 
@@ -74,17 +74,17 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
         float u0 = x / (float)AtlasWidth;
-        float v0 = (y + face->glyph->bitmap.rows) / (float)AtlasHeight;
+        float v0 = y / (float)AtlasHeight;
         float u1 = (x + face->glyph->bitmap.width) / (float)AtlasWidth;
-        float v1 = y / (float)AtlasHeight;
+        float v1 = (y + face->glyph->bitmap.rows) / (float)AtlasHeight;
 
-        ft_font->characters[c] =
-            Character{ atlasTexture,
+        ft_font->characters[c] = Character {
+            atlasTexture,
             static_cast<unsigned int>(face->glyph->advance.x),
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             glm::vec4(u0, v0, u1, v1)
-            };
+        };
 
         x += face->glyph->bitmap.width * 1.5;
     }
@@ -105,17 +105,21 @@ size_t vertexIndex = 0;
 void TextRenderer::render_text(Font* ft_font, float x, const float& y, string const& text, Colour& colour, const float& scale, const float& priority) {
     glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
     glUniform1f(uniformPriority, priority);
+    
 
     if (lastBoundTexture != ft_font->texture) {
         glBindTexture(GL_TEXTURE_2D, ft_font->texture);
         lastBoundTexture = ft_font->texture;
     }
 
+    float baseline_y = floor(y + 0.5f);
+    float current_x = x;
+
     for (const char& c : text) {
         Character& ch = ft_font->characters[c];
 
-        xpos = x + ch.bearing.x * scale;
-        ypos = y - (ch.size.y - ch.bearing.y) * scale;
+        xpos = current_x + ch.bearing.x * scale;
+        ypos = baseline_y - ch.bearing.y * scale;
 
         w = ch.size.x * scale;
         h = ch.size.y * scale;
@@ -150,7 +154,7 @@ void TextRenderer::render_text(Font* ft_font, float x, const float& y, string co
         vertices[vertexIndex++] = ch.uv.z;
         vertices[vertexIndex++] = ch.uv.w;
 
-        x += (ch.advance >> 6) * scale;
+        current_x += (ch.advance >> 6) * scale;
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertexIndex * sizeof(float), vertices);
@@ -180,10 +184,10 @@ void TextRenderer::init_shader() {
 }
 
 void TextRenderer::reset_shader() {
+    glBindVertexArray(0);
     /*
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
-    glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     */
 }

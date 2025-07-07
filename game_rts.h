@@ -3,6 +3,7 @@
 #include "game.h"
 
 enum WarGoal {TAKE_KEY_PROVINCE, TAKE_MULTIPLE_PROVINCES, DEFEAT_ARMY, VASSALISE};
+enum Event {START_BATTLE };
 
 struct War {
 	Nation* attacker;
@@ -27,6 +28,20 @@ struct HeaderInformation {
 	const string& date;
 };
 
+struct BattleInformation {
+	vector<Unit*> attacker_units; // 1st element always the main attacker
+	vector<Unit*> defender_units; // 1st element always the main defender
+	int total_attacker_starting_strength;
+	int total_defender_starting_strength;
+	int total_attacker_current_strength = 0;
+	int total_defender_current_strength = 0;
+	int defender_losses;
+	Province* province;
+	/*int get_attacker_strength();
+	int get_defender_strength();*/
+	int get_battle_swing() { return total_attacker_current_strength - total_defender_current_strength; }
+};
+
 struct Date { short year, month, day; };
 const short month_days[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 const string month_names[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
@@ -36,8 +51,13 @@ static void loadProvinceAttributes(string attributes_file);
 
 using namespace std;
 
+
+
+
 class GameRTS : Game {
+	
 	public:
+		static GameRTS* instance;
 		vector<Nation*> nations;
 		Nation* player_nation = nullptr;
 		Nation* viewed_nation = nullptr;
@@ -60,6 +80,7 @@ class GameRTS : Game {
 		void hoverUnit(Unit* unit);
 		void updateCursor();
 		void executeAction(BUTTON_ACTION action, Moveable* button = nullptr);
+		void registerEvent(Event event, void* details = nullptr);
 		void incrementDay();
 		int  gameLoop() override;
 		// void evaluateNations(const std::vector<Nation*>& nations);
@@ -67,6 +88,8 @@ class GameRTS : Game {
 		string getDate();
 		Moveable* getObjectUnderMouse() override;
 
-		GameRTS() : Game() {}
-		GameRTS(int a, char** b) : Game(a, b) {}
+		GameRTS();
+		GameRTS(int a, char** b);
 };
+
+

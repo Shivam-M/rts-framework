@@ -58,6 +58,7 @@ enum {
     UI =                1 << 25,
     UNDER_PANEL =       1 << 26,
     DRAGGABLE =         1 << 27,
+    NO_RENDER =         1 << 28
 };
  
 void log_impl(ostream& os);

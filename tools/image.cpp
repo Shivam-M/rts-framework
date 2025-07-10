@@ -1,5 +1,9 @@
 #include "image.h"
 
+#ifndef _WIN32
+#define sprintf_s snprintf
+#endif
+
 #define __STDC_LIB_EXT1__
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -43,7 +47,7 @@ void Image::loadMap(string path, string data) { // add cache
     }
 
     FILE* file;
-    fopen_s(&file, data.c_str(), "r");
+    FOPEN(file, data.c_str(), "r");
 
     if (file == nullptr) {
         log_t("Error loading map data file.");
@@ -57,9 +61,13 @@ void Image::loadMap(string path, string data) { // add cache
     }
 
     int id, r, g, b;
-    while (fscanf_s(file, "%d,%d,%d,%d", &id, &r, &g, &b) == 4) {
+    while (FSCANF(file, "%d,%d,%d,%d", &id, &r, &g, &b) == 4) {
         log_t("Extracting map image for province ID... #", id);
-        unsigned char target_colour[3] = { r, g, b };
+        unsigned char target_colour[3] = {
+            static_cast<unsigned char>(r),
+            static_cast<unsigned char>(g),
+            static_cast<unsigned char>(b)
+        };
         Rectangle rect;
         cropRectangle(image, width, height, target_colour, rect);
 

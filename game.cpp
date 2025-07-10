@@ -1,5 +1,8 @@
-﻿#include <windows.h>
+﻿#ifdef _WIN32
+#include <windows.h>
 #include <Psapi.h>
+#endif
+
 #include <filesystem>
 #include <vector>
 #include <algorithm>
@@ -46,7 +49,7 @@ Game::Game(int argc, char** argv) {
 	mouse = new Mouse(this);
 	console = new Console(this);
 
-	debug_font =			Fonts::getFont(CONSOLAS_BOLD, 11);
+	debug_font =			Fonts::getFont("data/fonts/consolab.ttf", 11, true);
 	t_FPSCounter =			Text({0.925f, 0.050f}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
 	t_Information =			Text({0.030f, 0.050f}, debug_font, Colour(34, 166, 179, 255), "");
 	t_Information2 =		Text({0.030f, 0.075f}, debug_font, Colour(34, 166, 179, 255), "");
@@ -114,9 +117,13 @@ void Game::toggleDebug() {
 
 void Game::updateStatistics(int f, int u) {
 	if (console->visible()) {
+#ifdef _WIN32
 		PROCESS_MEMORY_COUNTERS memCounter;
 		BOOL result = K32GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter));
-		console->update("Objects: " + to_string(objects.size()) + " (culled: " + to_string(render.culled_count) + ")" + "  Updates: " + to_string(update_rate) + "  Memory: " + to_string(memCounter.WorkingSetSize / 1048576) + "MB");
+		console->update("Objects: " + to_string(objects.size()) + " (skip: " + to_string(render.skipped_count) + " cull: " + to_string(render.culled_count) + ")" + "  Updates: " + to_string(update_rate) + "  Memory: " + to_string(memCounter.WorkingSetSize / 1048576) + "MB");
+#else
+		console->update("Objects: " + to_string(objects.size()) + " (skip: " + to_string(render.skipped_count) + " cull: " + to_string(render.culled_count) + ")" + "  Updates: " + to_string(update_rate));  // there are linux alternatives
+#endif
 	}
 
 	string t_time = to_string(render.draw_times[1] * 1000), s_time = to_string(render.draw_times[0] * 1000), u_time = to_string(update_time_ * 1000);

@@ -55,6 +55,7 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		Vector2 offsets;
 		float scale = 1.00;
 		float draw_times[3]{};
+		int skipped_count = 0;
 		int culled_count = 0;
 
 		Render() {}

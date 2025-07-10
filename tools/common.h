@@ -5,7 +5,25 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-#include <format>
+
+#ifdef _WIN32
+    #define FSCANF fscanf_s
+    #define SSCANF sscanf_s
+    #define SPRINTF(buf, size, format, ...) sprintf_s((buf), (size), (format), __VA_ARGS__)
+    #define FOPEN(file, filename, mode) fopen_s(&(file), (filename), (mode))
+    #define LOCALTIME(resultptr, timeptr) localtime_s((resultptr), (timeptr))
+    #include <format>
+#else
+    #define FSCANF fscanf
+    #define SSCANF sscanf
+    #define SPRINTF(buf, size, format, ...) snprintf((buf), (size), (format), __VA_ARGS__)
+    #define FOPEN(file, filename, mode) ((file) = fopen((filename), (mode)))
+    #define LOCALTIME(resultptr, timeptr) localtime_r((timeptr), (resultptr))
+    #include <fmt/core.h>
+    namespace std {
+        using fmt::format;
+    }
+#endif
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -75,7 +93,7 @@ template <typename... Args>
 void log_t(Args&&... args) {
 	auto t = time(nullptr);
 	tm tm;
-	localtime_s(&tm, &t);
+    LOCALTIME(&tm, &t);
 
 	cout << put_time(&tm, "\033[1;91m[%d-%m-%Y %H:%M:%S] \033[0m- ");
 	log_impl(cout, forward<Args>(args)...);

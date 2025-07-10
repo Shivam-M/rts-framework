@@ -1,5 +1,8 @@
-﻿#include <windows.h>
+﻿#ifdef _WIN32
+#include <windows.h>
 #include <Psapi.h>
+#endif
+
 #include <filesystem>
 
 #include "game_rts.h"
@@ -124,7 +127,7 @@ void loadProvinceNeighbours(string neighbours) {
 
 void loadProvinceAttributes(string attributes) { // TODO: Change to fstream
 	FILE* dimensions_file;
-	fopen_s(&dimensions_file, attributes.c_str(), "r");
+	FOPEN(dimensions_file, attributes.c_str(), "r");
 	if (dimensions_file == nullptr) {
 		log_t("Error loading province map data file.");
 		return;
@@ -132,7 +135,7 @@ void loadProvinceAttributes(string attributes) { // TODO: Change to fstream
 
 	int id;
 	float x, y, w, h, xoffset = -0.2f, yoffset = -0.1f;
-	while (fscanf_s(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
+	while (FSCANF(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
 		Loader::getProvinceMap()[id]->setSize(w, h);
 		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
 	}

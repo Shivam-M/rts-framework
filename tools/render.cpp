@@ -260,6 +260,7 @@ void Render::renderWindow() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float time_shapes = glfwGetTime();
+    int skipped_moveables = 0;
     int culled_moveables = 0;
 
     /*float left = 0 + offsets.x * -1;
@@ -274,7 +275,10 @@ void Render::renderWindow() {
     log_t("--");*/
 
     for (Moveable* moveable: *objects_) {
-        if (moveable->getFlags() & (DISABLED | PARTICLES | PANEL | NO_RENDER)) continue;
+        if (moveable->getFlags() & (DISABLED | PARTICLES | PANEL | NO_RENDER)) {
+            skipped_moveables++;
+            continue;
+        }
         if ((moveable->location.x + moveable->size.x <= 0) || (moveable->location.y + moveable->size.y <= 0) || (moveable->location.x >= 1) || (moveable->location.y >= 1)) {
         // if ((moveable->location.x + moveable->size.x <= left) || (moveable->location.x >= right)) {
         // if (not (moveable->location.x >= left && moveable->location.x <= right)) {
@@ -282,8 +286,9 @@ void Render::renderWindow() {
         } else renderMoveable(moveable);
     }
 
-    culled_count = culled_moveables;    
-
+    skipped_count = skipped_moveables;
+    culled_count = culled_moveables;   
+    
     // glDepthMask(GL_FALSE);
     
     //glDisable(GL_DEPTH_TEST);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../tools/common.h"
+
 struct Vector2 {
 	float x, y;
 	Vector2(float x = 0.0f, float y = 0.0f) : x(x), y(y) {}
@@ -93,18 +95,18 @@ class Colour: public Vector4 {
 	public:
 		static Colour HexToRGB(string hex, float alpha = 1.0f) { 
 			int r, g, b;
-			sscanf_s(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
+			SSCANF(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
 			return Colour(r, g, b, alpha * 255); 
 		}
 
 		static string RGBToHex(Vector4 rgb) {
-			int r = static_cast<int>(rgb.getX());
-			int g = static_cast<int>(rgb.getY());
-			int b = static_cast<int>(rgb.getZ());
-			if (r < 0 || g < 0 || b < 0) return "000000";
-			char hex[7];
-			sprintf_s(hex, sizeof(hex), "%02x%02x%02x", r, g, b);
-			return string(hex);
+			int r = clamp(static_cast<int>(rgb.getX()), 0, 255);
+			int g = clamp(static_cast<int>(rgb.getY()), 0, 255);
+			int b = clamp(static_cast<int>(rgb.getZ()), 0, 255);
+
+			stringstream ss;
+			ss << hex << setfill('0') << setw(2) << r << setw(2) << g << setw(2) << b;
+			return ss.str();
 		}
 
 		Colour(const Vector4& vec) : Vector4(vec) {}

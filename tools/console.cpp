@@ -11,14 +11,15 @@ Console::Console(Game* g) {
 }
 
 void Console::build() {
-	entry_box = Moveable();
+	entry_box.setName("Console Entry Box");
 	entry_box.setColour(Colour(22, 160, 133, 250));
 	entry_box.setGradientColour(Colour(22, 160, 133, 250));
 	entry_box.setLocation(0.275, 0.4);
 	entry_box.setSize(0.45, 0.1);
 	entry_box.addFlag(CURVED | DISABLED | FIXED_POS);
 
-	entry_text = TextEntry(Vector2(0.30, 0.47), Fonts::getFont(CONSOLAS_BOLD, 30), Colour(189, 195, 199, 175), "");
+	debug_box.setName("Console Debug Box");
+	entry_text = TextEntry(Vector2(0.30, 0.47), Fonts::getFont("data/fonts/consolab.ttf", 30, true), Colour(189, 195, 199, 175), "");
 	entry_text.addFlag(DISABLED | FIXED_POS);
 
 	debug_box.setColour(Colour(20, 20, 20, 250));
@@ -27,11 +28,11 @@ void Console::build() {
 	debug_box.setSize(0.45, 0.225);
 	debug_box.addFlag(CURVED | DISABLED | FIXED_POS);
 
-	debug_text = Text(Vector2(0.5, 0.55), Fonts::getFont(CONSOLAS_BOLD, 12), Colour(22, 160, 133, 250), "");
+	debug_text = Text(Vector2(0.5, 0.55), Fonts::getFont("data/fonts/consolab.ttf", 12, true), Colour(22, 160, 133, 250), "");
 	debug_text.addFlag(DISABLED | FIXED_POS);
 	debug_text.setAlignment(CENTRE);
 
-	feedback_text = Text(Vector2(0.3, 0.595), Fonts::getFont(CONSOLAS_BOLD, 12), Colour(26, 188, 156, 250), "");
+	feedback_text = Text(Vector2(0.3, 0.595), Fonts::getFont("data/fonts/consolab.ttf", 12, true), Colour(26, 188, 156, 250), "");
 	feedback_text.addFlag(DISABLED | FIXED_POS);
 
 	rMoveable(&debug_box);

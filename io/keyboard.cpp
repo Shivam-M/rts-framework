@@ -1,4 +1,5 @@
 #include "keyboard.h"
+#include "mouse.h"
 
 Game* Keyboard::game = nullptr;
 Keyboard::Keyboard(Game* instance) { Keyboard::game = instance; }
@@ -18,7 +19,6 @@ void Keyboard::movement(int direction, int action) {
 			break;
 	}
 }
-
 void Keyboard::callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key >= GLFW_KEY_RIGHT and key <= GLFW_KEY_UP)			movement(key, action);
 
@@ -29,7 +29,12 @@ void Keyboard::callback(GLFWwindow* window, int key, int scancode, int action, i
 		else if (key == GLFW_KEY_ENTER)							game->console->execute();
 		else if (key == GLFW_KEY_Z)								game->toggleDebug();
 	} else {
-		if (game->console->visible())
-			game->console->entry(key);
+		if (game->console->visible()) {
+			if ((key == GLFW_KEY_MINUS) && (mods & GLFW_MOD_SHIFT)) game->console->entry('_');
+			else game->console->entry(key);
+		}
+		else if (game->mouse->debug_control_scheme) {
+			// game->debug_callback(key, action);
+		}
 	}
 }

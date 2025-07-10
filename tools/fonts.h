@@ -3,7 +3,9 @@
 #include <map>
 #include <string>
 
-#define DIRECTORY	 "C:/Windows/Fonts/"
+// linux alt?
+#define DIRECTORY		"C:/Windows/Fonts/"
+#define FALLBACK_FONT	"data/fonts/consolab.ttf"
 
 using namespace std;
 

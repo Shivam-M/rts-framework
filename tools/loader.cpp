@@ -212,7 +212,7 @@ map<int, Unit*>& Loader::getUnitMap() { return unit_map; }
 
 Province* Loader::parseProvince() {
 	Province* province = new Province(getInt("id"));
-	Font* font = Fonts::getFont(CONSOLAS_BOLD, 8);
+	Font* font = Fonts::getFont("data/fonts/consolab.ttf", 8, true);
 
 	parseCommon(province);
 	province->setTexture(Image::getImage("data/generated/" + to_string(province->getID()) + "_province.png"));

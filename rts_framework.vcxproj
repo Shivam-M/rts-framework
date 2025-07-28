@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="io\audio.cpp" />
     <ClCompile Include="tools\ui_manager.cpp" />
     <ClCompile Include="assets\moveable.cpp" />
     <ClCompile Include="assets\player.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="tools\render.cpp" />
     <ClCompile Include="tools\text_renderer.cpp" />
     <ClInclude Include="assets\text_entry.h" />
+    <ClInclude Include="io\audio.h" />
     <ClInclude Include="tools\ui_manager.h" />
   </ItemGroup>
   <ItemGroup>

@@ -62,7 +62,7 @@ class Game {
 		bool show_console = false;
 		bool god_mode = true;
 		int fps_limit = 0;
-		int update_rate = 60;
+		int update_rate = 144;
 		
 		virtual void extendedInitialisation() { console->build(); }
 		virtual void updateObjects(float modifier = 1.0f);

@@ -11,6 +11,8 @@
 #include "game.h"
 #include "io/mouse.h"
 #include "io/keyboard.h"
+#include "io/audio.h"
+
 #include "assets/panel.h"
 
 // #define DEBUG_PROFILING
@@ -72,6 +74,8 @@ Game::Game(int argc, char** argv) {
 	glfwSetMouseButtonCallback(window, mouse->callback);
 	glfwSetScrollCallback(window, mouse->scroll_callback);
 	// glfwSetWindowSizeCallback(window, NULL);
+
+	Audio::init();
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_,  " seconds " CON_NORMAL "to load the game.");
 }

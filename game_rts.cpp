@@ -11,6 +11,7 @@
 #include "assets/nation.h"
 #include "io/mouse.h"
 #include "io/keyboard.h"
+#include "io/audio.h"
 #include "tools/text_renderer.h"
 
 
@@ -130,6 +131,8 @@ void GameRTS::pauseGame() {
 	game_paused = !game_paused;
 	simulation_paused = !simulation_paused;
 	UIManager::Toggle("ui_menu_pause", true);
+	Sound* sound = new Sound("data/click.wav");
+	sound->play(0.025f);
 }
 
 void GameRTS::incrementDay() {

@@ -37,7 +37,7 @@ void cropRectangle(const unsigned char* image, int width, int height, unsigned c
     }
 }
 
-void Image::loadMap(string path, string data) { // add cache
+void Image::loadMap(const string& path, const string& data) { // add cache
     int width, height, channels;
     unsigned char* image = stbi_load(path.c_str(), &width, &height, &channels, 3);
 

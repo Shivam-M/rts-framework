@@ -1,11 +1,9 @@
 #pragma once
 
-using namespace std;
-
-#include <fstream>
-
 #include "../tools/image.h"
 #include "../assets/colour.h"
+
+using namespace std;
 
 class Text;
 

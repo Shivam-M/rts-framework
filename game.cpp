@@ -120,7 +120,7 @@ void Game::updateStatistics(int f, int u) {
 #ifdef _WIN32
 		PROCESS_MEMORY_COUNTERS memCounter;
 		BOOL result = K32GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter));
-		console->update("Objects: " + to_string(objects.size()) + " (skip: " + to_string(render.skipped_count) + " cull: " + to_string(render.culled_count) + ")" + "  Updates: " + to_string(update_rate) + "  Memory: " + to_string(memCounter.WorkingSetSize / 1048576) + "MB");
+		console->update("OBJ: " + to_string(objects.size()) + " (skip: " + to_string(render.skipped_count) + " cull: " + to_string(render.culled_count) + " text: +" + to_string(text_objects.size())  + ")" + "  UPD: " + to_string(update_rate) + "  MEM: " + to_string(memCounter.WorkingSetSize / 1048576) + "MB");
 #else
 		console->update("Objects: " + to_string(objects.size()) + " (skip: " + to_string(render.skipped_count) + " cull: " + to_string(render.culled_count) + ")" + "  Updates: " + to_string(update_rate));  // there are linux alternatives
 #endif

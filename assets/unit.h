@@ -106,12 +106,6 @@ class Unit: public Moveable {
 			enemy_unit_ = unit;
 			enemy_unit_->receiveBattle(this, battle_info_);
 			GameRTS::instance->registerEvent(START_BATTLE, battle_information);
-			/*BattleInformation battle_information = BattleInformation();
-			battle_information.attacker_units.push_back(this);
-			battle_information.attacker_units.push_back(enemy_unit_);
-			battle_information.total_attacker_starting_strength = amount_;
-			battle_information.total_defender_starting_strength = enemy_unit_->amount_;
-			UIManager::AssignValues("ui_battle_unit", &battle_information);*/
 		}
 
 		void initiate() {
@@ -195,14 +189,8 @@ class Unit: public Moveable {
 
 			if (text) {
 				Vector2 text_location = getCentre();
-				Vector2 text_size = text->getTextSize();
-
-				text_size.x /= WINDOW_WIDTH;
-				text_size.y /= WINDOW_HEIGHT;
 				text_location.y -= 0.0275f;
-				text_location.x -= text_size.x / 2;
 
-				// text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
 				text->setContent(format("{} - {}", name, amount_));
 				text->setLocation(text_location.x, text_location.y);
 			}

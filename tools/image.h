@@ -13,5 +13,5 @@ class Image {
 
 		static Texture* getImage(const string&);
 		static void loadImage(const string&);
-		static void loadMap(string, string);
+		static void loadMap(const string&, const string&);
 };

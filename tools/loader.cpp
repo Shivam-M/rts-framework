@@ -237,6 +237,7 @@ Unit* Loader::parseUnit() {
 
 	Font* font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
 	Text* unit_text = new Text(unit->getLocation(), font, Colour(220, 221, 225, 200), unit->getName(), 0.5f);
+	unit_text->setAlignment(CENTRE);
 	unit_text->addFlag(TEXT_BACKGROUND | UNSAVEABLE);
 	unit_text->removeFlag(FIXED_POS);
 	unit->setText(unit_text);

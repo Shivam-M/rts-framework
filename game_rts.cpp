@@ -22,31 +22,6 @@ namespace fs = filesystem;
 
 GameRTS* GameRTS::instance = nullptr;
 
-//struct BattleInformation {
-//	vector<Unit*> attacker_units; // 1st element always the main attacker
-//	vector<Unit*> defender_units; // 1st element always the main defender
-//	int total_attacker_starting_strength;
-//	int total_defender_starting_strength;
-//	int total_attacker_current_strength = 0;
-//	int total_defender_current_strength = 0;
-//	int defender_losses;
-//	Province* province;
-//	int get_attacker_strength() {
-//		total_attacker_current_strength = 0;
-//		for (Unit* unit : attacker_units) {
-//			total_attacker_current_strength += unit->getAmount();
-//		}
-//		return total_attacker_current_strength;
-//	}
-//	int get_defender_strength() {
-//		total_defender_current_strength = 0;
-//		for (Unit* unit : defender_units) {
-//			total_defender_current_strength += unit->getAmount();
-//		}
-//		return total_defender_current_strength;
-//	}
-//	int get_battle_swing() { return total_attacker_current_strength - total_defender_current_strength; }
-//};
 
 // TODO: Use new text alignment on unit names and console
 // ADD text input field
@@ -77,6 +52,14 @@ void GameRTS::extendedInitialisation() {
 	UIManager::Hide("ui_unit_hire");
 	UIManager::Hide("ui_battle_unit");
 	// UIManager::Hide("ui_information_header");
+
+	cursor = new Moveable();
+	cursor->setTexture(Image::getImage("data/images/cursor.png"));
+	cursor->setSize(0.04 * (9 / 16.0), 0.04);
+
+	registerObject(cursor);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_, " seconds " CON_NORMAL "to completely load the game.");
 }
@@ -268,10 +251,14 @@ void GameRTS::hoverUnit(Unit* unit) {
 	UIManager::Show("ui_unit_tooltip");
 }
 
-void GameRTS::updateCursor() {
+void GameRTS::updateCursor() {  // tied to update rate
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	cursor_position.set(static_cast<float>(x / render.resolution.x), static_cast<float>(y / render.resolution.y));
+	float relx = x / render.resolution.x;
+	float rely = y / render.resolution.y;
+	cursor_position.set(relx, rely);
+	cursor->location.x = relx;
+	cursor->location.y = rely;
 }
 
 void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep option for action-only
@@ -377,12 +364,6 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			war.defender = viewed_nation;
 			war.war_goal = TAKE_KEY_PROVINCE;
 			war.war_goal_target.target_province = viewed_nation->getCapital();
-			/*war.attacker_allies.push_back(nations[1]);
-			war.attacker_allies.push_back(nations[3]);
-			war.defender_allies.push_back(nations[4]);
-			war.defender_allies.push_back(nations[5]);
-			war.defender_allies.push_back(nations[6]);
-			war.defender_allies.push_back(nations[9]);*/
 			UIManager::AssignValues("ui_war_declaration", &war);
 			UIManager::Hide("ui_nation_tooltip");
 			UIManager::Show("ui_war_declaration");
@@ -474,8 +455,8 @@ void GameRTS::updateProperties() {
 
 
 void GameRTS::updateObjects(float modifier) {
-	// sort(objects.begin(), objects.end(), [](Moveable* a, Moveable* b) {
-	//	 return a->getPriority() < b->getPriority();
+    // sort(objects.begin(), objects.end(), [](Moveable* a, Moveable* b) {
+	//		  return a->getPriority() < b->getPriority();
 	// }); // Temp, use z values for priorities instead in a Vector3
 
 	vector<Moveable*> inactive_objects;

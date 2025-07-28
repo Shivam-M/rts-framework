@@ -51,10 +51,9 @@ static void loadProvinceAttributes(string attributes_file);
 
 using namespace std;
 
-
-
-
 class GameRTS : Game {
+	private:
+		Moveable* cursor;
 	
 	public:
 		static GameRTS* instance;
@@ -91,5 +90,3 @@ class GameRTS : Game {
 		GameRTS();
 		GameRTS(int a, char** b);
 };
-
-

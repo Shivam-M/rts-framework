@@ -22,7 +22,7 @@ class TextEntry : public Text {
 			}
 		}
 
-		void input(int character) {
+		void input(const int& character) {
 			if (character >= 255 and character != 259) return;
 
 			if (character == 259) {

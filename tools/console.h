@@ -1,35 +1,29 @@
 #pragma once
-#include "../assets/text_entry.h"
-
-using namespace std;
 
 class Game;
+class TextEntry;
 
 class Console {
 	private:
-		const string ALPHABET{ "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
-		static Game* game;
-
+		Game* game = nullptr;
+		Moveable* entry_box = nullptr;
+		Moveable* debug_box = nullptr;
+		Text* debug_text = nullptr;
+		Text* feedback_text = nullptr;
+		TextEntry* entry_text = nullptr;
+		vector<Moveable*> console_moveables;
 		bool visible_ = false;
 
-		Moveable entry_box, debug_box;
-		Text debug_text, feedback_text;
-		TextEntry entry_text;
-		vector<Moveable*> cMoveable;
-		vector<Text*> cText;
-
 	public:
-		Console(Game*);
+		Console(Game* g) : game(g) {}
 
 		void build();
 		void toggle();
 		void execute();
-		bool visible();
+		bool visible() const;
 
-		void entry(int);
-		void feedback(string);
-		void update(string);
-
-		void rText(Text*);
-		void rMoveable(Moveable*);
+		void entry(const int& character);
+		void feedback(const string& text);
+		void update(const string& text);
+		void reg(Moveable* moveable);
 };

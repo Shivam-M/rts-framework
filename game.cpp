@@ -82,22 +82,30 @@ Game::Game(int argc, char** argv) {
 
 void Game::loadLevels(string level_directory) {
 	int level_counter = 0;
+	vector<fs::directory_entry> entries;
+
 	for (const auto& entry : fs::directory_iterator(level_directory)) {
 		if (entry.is_regular_file() && entry.path().extension() == ".json") {
-			if (!isdigit(entry.path().filename().string()[0])) continue;
-
-			Level* level = loader.load_level(entry.path().string(), &queue_objects, &text_objects, level_counter);
-
-			for (Moveable* m : level->objects) {
-				if (level->offset_positions) m->location.x += level_counter;
-				registerObject(m);
+			if (isdigit(entry.path().filename().string()[0])) {
+				entries.push_back(entry);
 			}
-
-			for (Text* t : level->text_objects) registerObject(t);
-			levels.push_back(*level);
-			level_counter++;
-			delete level;
 		}
+	}
+
+	sort(entries.begin(), entries.end());
+
+	for (const fs::directory_entry& entry : entries) {
+		Level* level = loader.load_level(entry.path().string(), &queue_objects, &text_objects, level_counter);
+
+		for (Moveable* m : level->objects) {
+			if (level->offset_positions) m->location.x += level_counter;
+			registerObject(m);
+		}
+
+		for (Text* t : level->text_objects) registerObject(t);
+		levels.push_back(*level);
+		level_counter++;
+		delete level;
 	}
 }
 

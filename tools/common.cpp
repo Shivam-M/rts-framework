@@ -25,6 +25,8 @@ GLuint CompileShader(const char* vertex_shader_path, const char* fragment_shader
     int success;
     char info[512];
 
+	log_t("Compiling shaders... ", CON_RED, vertex_shader_path, CON_NORMAL, " / ", CON_RED, fragment_shader_path);
+
     unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     string vertex_shader_source = read_file(vertex_shader_path);
     const char* vertex_source_cstr = vertex_shader_source.c_str();
@@ -35,7 +37,7 @@ GLuint CompileShader(const char* vertex_shader_path, const char* fragment_shader
 
     if (!success) {
         glGetShaderInfoLog(vertex_shader, 512, NULL, info);
-        log_t("Failed to compile vertex shader - %s\n", info);
+        log_t(CON_RED "ERROR! Failed to compile vertex shader - %s\n", info);
     }
 
     unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -48,7 +50,7 @@ GLuint CompileShader(const char* vertex_shader_path, const char* fragment_shader
 
     if (!success) {
         glGetShaderInfoLog(fragment_shader, 512, NULL, info);
-        log_t("Failed to compile fragment shader - %s\n", info);
+        log_t(CON_RED "ERROR! Failed to compile fragment shader - %s\n", info);
     }
 
     unsigned int program = glCreateProgram();

@@ -77,7 +77,7 @@ Game::Game(int argc, char** argv) {
 
 	Audio::init();
 
-	log_t("Took " CON_RED, glfwGetTime() - launch_time_,  " seconds " CON_NORMAL "to load the game.");
+	log_t("Took " CON_RED, glfwGetTime() - launch_time_,  " seconds " CON_NORMAL "to load the base game.");
 }
 
 void Game::loadLevels(string level_directory) {
@@ -144,7 +144,7 @@ void Game::updateStatistics(int f, int u) {
 	t_Alt2.setContent("S: " + s_time.substr(0, s_time.size() - 2) + "ms");
 	t_Alt3.setContent("U: " + u_time.substr(0, u_time.size() - 2) + "ms");
 
-	log_t("FPS: ", f, " \tUpdates: ", u, " \tGame time: ", update_time_, "s \t[", (int)(1 / update_time_), "]");
+	log_t("FPS: " CON_RED, f, CON_NORMAL " \tUpdates: " CON_RED, u, CON_NORMAL " \tGame time: " CON_RED, update_time_,  "s" CON_NORMAL "\t[", CON_RED, (int)(1 / update_time_), CON_NORMAL "]");
 }
 
 void Game::updateCursor() {

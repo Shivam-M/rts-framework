@@ -57,6 +57,7 @@ void GameRTS::extendedInitialisation() {
 	cursor = new Moveable();
 	cursor->setTexture(Image::getImage("data/images/cursor.png"));
 	cursor->setSize(0.04 * (9 / 16.0), 0.04);
+	cursor->addFlag(FIXED_POS);
 
 	registerObject(cursor);
 

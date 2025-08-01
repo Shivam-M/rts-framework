@@ -102,7 +102,7 @@ GLuint lastBoundTexture = 0;
 float vertices[1024 * 6 * 4 * 2];
 float xpos, ypos, w, h;
 size_t vertexIndex = 0;
-void TextRenderer::render_text(Font* ft_font, float x, const float& y, string const& text, Colour& colour, const float& scale, const float& priority) {
+void TextRenderer::render_text(Font* ft_font, const float& x, const float& y, string const& text, const Colour& colour, const float& scale, const float& priority) {
     glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
     glUniform1f(uniformPriority, priority);
     

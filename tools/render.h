@@ -44,11 +44,8 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		
 		int quad_count_ = 0;
 		int texture_count_ = 0;
-
-		float time = glfwGetTime();
-
-		bool fullscreen_ = false;
 		float render_level_ = 0;
+		bool fullscreen_ = false;
 
 	public:
 		Vector2 resolution = { WINDOW_WIDTH, WINDOW_HEIGHT };
@@ -73,12 +70,10 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 
 		void drawCustom(vector<Vector2> points, Colour colour, Colour gradient);
 
-		void drawText(Vector2 location, string& message, Font* font, Colour& colour, float scale = 1.0f, float priority = 0.0f);
+		void drawText(Vector2 location, string& message, Font* font, Colour& colour, const float& scale = 1.0f, const float& priority = 0.0f);
 
 		void renderMoveable(Moveable* moveable);
 		void renderWindow();
 		void toggleFullscreen();
-		void normaliseCoordinates(Vector2* location);
-		void alignCoordinates(Vector2* location, Vector2* size);
 		void setRenderLevel(float level) { render_level_ = level; }
 };

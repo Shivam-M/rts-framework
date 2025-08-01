@@ -49,15 +49,12 @@ class Vector4 {
 
 		bool operator==(const Vector4& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_ && w_ == other.w_; }
 		bool operator!=(const Vector4& other) const { return x_ != other.x_ || y_ != other.y_ || z_ != other.z_ || w_ != other.w_; }
-
 		
 		bool operator<(const Vector4& other) const { return sum() < other.sum(); }
 		bool operator<=(const Vector4& other) const { return sum() <= other.sum(); }
 
 		bool operator>(const Vector4& other) const { return sum() > other.sum(); }
 		bool operator>=(const Vector4& other) const { return sum() >= other.sum(); }
-		
-
 		
 		/*bool operator<(const Vector4& other) const { return x_ < other.x_ && y_ < other.y_ && z_ < other.z_ && w_ < other.w_; }
 		bool operator<=(const Vector4& other) const { return x_ <= other.x_ && y_ <= other.y_ && z_ <= other.z_ && w_ <= other.w_; }

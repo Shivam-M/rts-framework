@@ -4,7 +4,6 @@
 
 using namespace std;
 
-
 class TextEntry : public Text {
 	private:
 		char ASCII[256];  // TODO: only run once

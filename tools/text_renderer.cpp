@@ -1,4 +1,5 @@
 #include "text_renderer.h"
+#include "../assets/moveable.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

@@ -5,9 +5,6 @@
 using namespace nlohmann;
 using namespace std;
 
-#include "../assets/colour.h"
-#include "../tools/fonts.h"
-
 class Province;
 class Nation;
 class Unit;
@@ -17,9 +14,11 @@ class Text;
 class Collidable;
 class ParticleGroup;
 class Panel;
+class Colour;
+class Vector4;
+struct Vector2;
 
 struct Level {
-	Vector2 player_position;
 	vector<Moveable*> objects;
 	vector<Text*> text_objects;
 	bool offset_positions = true;

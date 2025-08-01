@@ -1,5 +1,7 @@
 #pragma once
-#include "../game.h"
+
+class Game;
+struct GLFWwindow;
 
 class Keyboard {
 	private:
@@ -9,5 +11,5 @@ class Keyboard {
 		Keyboard(Game*);
 
 		static void movement(int direction, int action = -1);
-		static void callback(GLFWwindow*, int, int, int, int);
+		static void callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

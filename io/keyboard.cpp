@@ -1,5 +1,6 @@
 #include "keyboard.h"
 #include "mouse.h"
+#include "../game.h"
 
 Game* Keyboard::game = nullptr;
 Keyboard::Keyboard(Game* instance) { Keyboard::game = instance; }

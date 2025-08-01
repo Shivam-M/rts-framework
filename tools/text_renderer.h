@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../assets/moveable.h"
-
+#include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace std;
+
+class Colour;
+struct Vector2;
 
 struct Character {
     unsigned int texture_id;
@@ -17,7 +19,7 @@ struct Character {
 
 struct Font {
     float h;
-    GLuint texture;
+    unsigned int texture;
     Character characters[128];
 };
 

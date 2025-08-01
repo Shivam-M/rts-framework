@@ -4,10 +4,6 @@
 Game* Mouse::game = nullptr;
 Mouse::Mouse(Game* instance) { Mouse::game = instance; }
 
-static bool within(const Vector2& location, const Vector2& size, const Vector2& point) {
-	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
-}
-
 void Mouse::scroll_callback(GLFWwindow* window, double x, double y) {
 	Render* render = &game->render;
 	Vector2 offsets = render->offsets;

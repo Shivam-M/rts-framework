@@ -1,5 +1,7 @@
 #pragma once
-#include "../game.h"
+
+class Game;
+struct GLFWwindow;
 
 class Mouse {
 	private:
@@ -10,6 +12,6 @@ class Mouse {
 
 		static inline bool debug_control_scheme = false;
 
-		static void scroll_callback(GLFWwindow*, double, double);
-		static void callback(GLFWwindow*, int, int, int);
+		static void scroll_callback(GLFWwindow* window, double x, double y);
+		static void callback(GLFWwindow* window, int button, int action, int mods);
 };

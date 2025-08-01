@@ -217,8 +217,15 @@ Moveable* Game::getObjectUnderMouse() {
 	Moveable* object = nullptr;
 	float min_distance = 100;
 	for (Moveable* moveable : game->objects) {
-		if (!(moveable->getFlags() & (UNEDITABLE | FIXED_POS | DISABLED))) {
-			Vector2 location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
+		if (!(moveable->getFlags() & (UNEDITABLE | DISABLED))) {
+			Vector2 location, size;
+
+			if (moveable->hasFlag(FIXED_POS)) {
+				location = moveable->getLocation(), size = moveable->getSize();
+			} else {
+				location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
+			}
+
 			if (within(location, size, cursor_position)) {
 				Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
 				float distance = pow(centre.x - cursor_position.x, 2) + pow(centre.y - cursor_position.y, 2);

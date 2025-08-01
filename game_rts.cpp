@@ -198,8 +198,15 @@ Moveable* GameRTS::getObjectUnderMouse() {
 		if (moveable->getFlags() & (UNEDITABLE | DISABLED)) continue;
 		if (!game_paused) moveable->onHoverStop();
 
-		Vector2 location = moveable->getLocation() * render.scale + render.offsets;
-		Vector2 size = moveable->getSize() * render.scale;
+		Vector2 location, size;
+
+		if (moveable->hasFlag(FIXED_POS)) {
+			location = moveable->getLocation();
+			size = moveable->getSize();
+		} else {
+			location = moveable->getLocation() * render.scale + render.offsets;
+			size = moveable->getSize() * render.scale;
+		}
 
 		if (!within(location, size, cursor_position)) continue;
 

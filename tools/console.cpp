@@ -33,7 +33,6 @@ void Console::build() {
 }
 
 void Console::reg(Moveable* moveable) {
-	moveable->addFlag(DEBUG);
 	console_moveables.emplace_back(moveable);
 	if (moveable->hasFlag(TEXT))
 		game->registerObject(static_cast<Text*>(moveable));

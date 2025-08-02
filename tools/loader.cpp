@@ -415,7 +415,6 @@ void Loader::writeObjects(vector<Moveable*> objects, vector<Text*> text_objects)
 	json delayed_additions = json::array();
 	json objects_array = json::array();
 	for (Moveable* m : objects) {
-		if (m->hasFlag(DEBUG)) continue;
 		if (m->hasFlag(PANEL)) continue; // temp
 		if (m->hasFlag(UNSAVEABLE)) continue;
 		if (m->hasFlag(UI)) continue;
@@ -478,7 +477,6 @@ void Loader::writeObjects(vector<Moveable*> objects, vector<Text*> text_objects)
 	objects_array.insert(objects_array.end(), delayed_additions.begin(), delayed_additions.end());
 
 	for (Text* t : text_objects) {
-		if (t->hasFlag(DEBUG)) continue;
 		if (t->hasFlag(UI)) continue;
 		if (t->hasFlag(UNSAVEABLE)) continue;
 		json moveable_data = {

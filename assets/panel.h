@@ -27,6 +27,7 @@ class Panel: public Moveable {
 		void add(Moveable* moveable) {
 			moveable->setPriority(getPriority());
 			moveable->addFlag(UNDER_PANEL);
+			moveable->addFlag(UI);
 			moveable->size = moveable->size * getSize();
 			moveable->location = getLocation() + (moveable->location * getSize());
 			moveable->parent = this;

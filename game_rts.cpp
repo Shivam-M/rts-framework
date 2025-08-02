@@ -398,7 +398,6 @@ void GameRTS::registerEvent(Event event, void* details) {
 }
 
 void GameRTS::updateProperties() {
-	updateCursor();
 	getObjectUnderMouse();
 
 	if (viewed_nation)
@@ -407,7 +406,10 @@ void GameRTS::updateProperties() {
 	if (some_battle_info)
 		UIManager::AssignValues("ui_battle_unit", some_battle_info);
 
-	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) render.offsets.x += (cursor_position.x - original_position.x) * 0.01f, render.offsets.y += (cursor_position.y - original_position.y) * 0.01f;
+	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
+		render.offsets.x += (cursor_position.x - original_position.x) * 0.01f;
+		render.offsets.y += (cursor_position.y - original_position.y) * 0.01f;
+	}
 
 	if (!selected_object) return;
 
@@ -469,23 +471,12 @@ void GameRTS::updateObjects(float modifier) {
     // sort(objects.begin(), objects.end(), [](Moveable* a, Moveable* b) {
 	//		  return a->getPriority() < b->getPriority();
 	// }); // Temp, use z values for priorities instead in a Vector3
-
-	vector<Moveable*> inactive_objects;
-	for (Moveable* m : objects) !m->is_active ? inactive_objects.push_back(m) : m->update(modifier);
-	for (Moveable* to : text_objects) !to->is_active ? inactive_objects.push_back(to) : to->update(modifier);
-
-	for (Moveable* t : inactive_objects) {
-		objects.erase(remove(objects.begin(), objects.end(), t), objects.end());
-		delete t;
-	}
+	Game::updateObjects(modifier);
 
 	HeaderInformation header_information = { player_nation->getMoney(), getDate()};
 
 	if (!UIManager::GetPanel("ui_information_header")->hasFlag(DISABLED))
 		UIManager::AssignValues("ui_information_header", &header_information);
-
-	for (Moveable* q : queue_objects) objects.push_back(q);
-	queue_objects.clear();
 }
 
 int GameRTS::gameLoop() {
@@ -529,6 +520,7 @@ int GameRTS::gameLoop() {
 		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0f / fps_limit)) {
 			last_frame_time = static_cast<float>(glfwGetTime());
 			render.renderWindow();
+			updateCursor();
 			frames++;
 		}
 

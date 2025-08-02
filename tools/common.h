@@ -71,7 +71,7 @@ enum {
     PARTICLES =         1 << 20,
     TEXT_BACKGROUND =   1 << 21,
     THEMED =            1 << 22,
-    DEBUG =             1 << 23,
+//    DEBUG =             1 << 23,
     UNSAVEABLE =        1 << 24,
     UI =                1 << 25,
     UNDER_PANEL =       1 << 26,

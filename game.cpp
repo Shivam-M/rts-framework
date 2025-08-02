@@ -20,9 +20,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-Game* Game::game = nullptr; // Switch to using smart pointers
-
-Font* debug_font = nullptr;
+Game* Game::game = nullptr; // Switch to using smart pointers;
 
 Game::Game(int argc, char** argv) {
 	launch_time_ = glfwGetTime();
@@ -51,7 +49,7 @@ Game::Game(int argc, char** argv) {
 	mouse = new Mouse(this);
 	console = new Console(this);
 
-	debug_font =			Fonts::getFont("data/fonts/consolab.ttf", 11, true);
+	Font* debug_font =		Fonts::getFont("data/fonts/consolab.ttf", 11, true);
 	t_FPSCounter =			Text({0.925f, 0.050f}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
 	t_Information =			Text({0.030f, 0.050f}, debug_font, Colour(34, 166, 179, 255), "");
 	t_Information2 =		Text({0.030f, 0.075f}, debug_font, Colour(34, 166, 179, 255), "");
@@ -120,7 +118,9 @@ static ColourShift fadeShift(Colour first_colour, Colour second_colour, bool swa
 	return colourshift;
 }
 
-void Game::debugMode() { UIManager::Toggle("ui_menu_pause"); }
+void Game::debugMode() {
+	UIManager::Toggle("ui_menu_pause");
+}
 
 void Game::toggleDebug() {
 	mouse->debug_control_scheme ^= true;
@@ -157,7 +157,8 @@ void Game::updateProperties() {
 	updateCursor();
 
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
-		render.offsets.x += (cursor_position.x - original_position.x) * 0.01, render.offsets.y += (cursor_position.y - original_position.y) * 0.01;
+		render.offsets.x += (cursor_position.x - original_position.x) * 0.01;
+		render.offsets.y += (cursor_position.y - original_position.y) * 0.01;
 	}
 
 	if (!selected_object) return;
@@ -172,41 +173,34 @@ void Game::updateProperties() {
 }
 
 void Game::updateObjects(float modifier) {
-	vector<Moveable*> inactive_objects;
-	// #pragma omp parralel for num_threads(12)
-	for (Moveable* m : objects) !m->is_active ? inactive_objects.push_back(m) : m->update(modifier);
-	for (Moveable* to : text_objects) !to->is_active ? inactive_objects.push_back(to) : to->update(modifier);
+	erase_if(objects, [modifier](Moveable* moveable) {
+		if (!moveable->is_active) {
+			delete moveable;
+			return true;
+		}
+		moveable->update(modifier);
+		return false;
+	});
 
-	for (Moveable* t : inactive_objects) {
-		objects.erase(remove(objects.begin(), objects.end(), t), objects.end());
-		delete t;
-	}
+	erase_if(text_objects, [modifier](Text* text) {
+		if (!text->is_active) {
+			delete text;
+			return true;
+		}
+		text->update(modifier);
+		return false;
+	});
 
-	// PANEL OBJECTS NOT UPDATED OR ARE BECAUSE THEY ITERATE OVER BUNDLE?
-
-	for (Moveable* q : queue_objects) objects.push_back(q);
+	objects.insert(objects.end(), queue_objects.begin(), queue_objects.end());
 	queue_objects.clear();
 }
 
-void Game::registerObject(Moveable* m) { 
-	objects.push_back(m);
-	if (m->getFlags() & PANEL) {
-		Panel* panel = reinterpret_cast<Panel*>(m);
-		for (Moveable* moveable : *panel->get()) {
-			moveable->addFlag(UI);
-			if (moveable->getFlags() & TEXT)
-				continue;
-				//registerObject(reinterpret_cast<Text*>(moveable));
-			else
-				continue;  // WE WERE ADDING OBJECTS TWICE HERE FIX THIS!!!
-				//registerObject(moveable);
-		}
-	}
+void Game::registerObject(Moveable* object) { 
+	objects.push_back(object);
 }
 
 void Game::registerObject(Text* t) { 
 	text_objects.push_back(t); 
-	if (t->getFont() == debug_font) t->addFlag(DEBUG); // temp
 }
 
 static bool within(const Vector2& location, const Vector2& size, const Vector2& point) {
@@ -215,24 +209,29 @@ static bool within(const Vector2& location, const Vector2& size, const Vector2& 
 
 Moveable* Game::getObjectUnderMouse() {
 	Moveable* object = nullptr;
-	float min_distance = 100;
+	float min_distance = 100.0f;
+
 	for (Moveable* moveable : game->objects) {
-		if (!(moveable->getFlags() & (UNEDITABLE | DISABLED))) {
-			Vector2 location, size;
+		if (moveable->getFlags() & (UNEDITABLE | DISABLED)) continue;
 
-			if (moveable->hasFlag(FIXED_POS)) {
-				location = moveable->getLocation(), size = moveable->getSize();
-			} else {
-				location = moveable->getLocation() * render.scale + render.offsets, size = moveable->getSize() * render.scale;
-			}
+		Vector2 location, size;
+		if (moveable->hasFlag(FIXED_POS)) {
+			location = moveable->getLocation();
+			size = moveable->getSize();
+		} else {
+			location = moveable->getLocation() * render.scale + render.offsets;
+			size = moveable->getSize() * render.scale;
+		}
 
-			if (within(location, size, cursor_position)) {
-				Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
-				float distance = pow(centre.x - cursor_position.x, 2) + pow(centre.y - cursor_position.y, 2);
-				if (distance < min_distance) {
-					min_distance = distance;
-					object = moveable;
-				}
+		if (within(location, size, cursor_position)) {
+			Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
+			float dx = centre.x - cursor_position.x;
+			float dy = centre.y - cursor_position.y;
+			float distance = dx * dx + dy * dy;
+
+			if (distance < min_distance) {
+				min_distance = distance;
+				object = moveable;
 			}
 		}
 	}

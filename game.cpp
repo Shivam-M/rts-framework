@@ -127,7 +127,7 @@ void Game::toggleDebug() {
 	t_Notification.setContent("Updated control scheme to: " + to_string(mouse->debug_control_scheme));
 }
 
-void Game::updateStatistics(int f, int u) {
+void Game::updateStatistics(const int& f, const int& u) {
 	if (console->visible()) {
 #ifdef _WIN32
 		PROCESS_MEMORY_COUNTERS memCounter;
@@ -172,7 +172,7 @@ void Game::updateProperties() {
 	}
 }
 
-void Game::updateObjects(float modifier) {
+void Game::updateObjects(const float& modifier) {
 	erase_if(objects, [modifier](Moveable* moveable) {
 		if (!moveable->is_active) {
 			delete moveable;

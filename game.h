@@ -9,7 +9,6 @@
 #include "tools/fonts.h"
 #include "tools/ui_manager.h"
 
-
 class Keyboard;
 class Mouse;
 
@@ -59,14 +58,13 @@ class Game {
 		// public:
 		static Game* game;
 
-		bool show_console = false;
 		bool god_mode = true;
 		int fps_limit = 0;
 		int update_rate = 144;
 		
 		virtual void extendedInitialisation() { console->build(); }
-		virtual void updateObjects(float modifier = 1.0f);
-		virtual void updateStatistics(int frames, int updates);
+		virtual void updateObjects(const float& modifier = 1.0f);
+		virtual void updateStatistics(const int& frames, const int& updates);
 		virtual void updateProperties();
 		void loadLevels(string level_directory);
 		void registerObject(Moveable* object);
@@ -75,7 +73,7 @@ class Game {
 		void toggleDebug();
 		void updateCursor();
 		void setButton(int button, int state) { button_map[button] = state; }
-		const int&  getButton(const int& button) { return button_map[button]; }
+		const int& getButton(const int& button) { return button_map[button]; }
 		virtual int gameLoop();
 		virtual Moveable* getObjectUnderMouse();
 

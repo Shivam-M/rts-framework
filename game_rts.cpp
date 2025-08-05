@@ -23,10 +23,6 @@ namespace fs = filesystem;
 
 GameRTS* GameRTS::instance = nullptr;
 
-
-// TODO: Use new text alignment on unit names and console
-// ADD text input field
-
 GameRTS::GameRTS() : Game() { instance = this; }
 GameRTS::GameRTS(int a, char** b) : Game(a, b) { instance = this; }
 
@@ -98,7 +94,7 @@ void loadProvinceNeighbours(string neighbours) {
 		char comma;
 
 		if (iss >> id >> comma >> other_id) {
-			auto province_map = Loader::getProvinceMap();
+			auto& province_map = Loader::getProvinceMap();
 			Province* province = province_map[id];
 			Province* other_province = province_map[other_id];
 
@@ -110,22 +106,25 @@ void loadProvinceNeighbours(string neighbours) {
 	}
 }
 
-void loadProvinceAttributes(string attributes) { // TODO: Change to fstream
-	FILE* dimensions_file;
-	FOPEN(dimensions_file, attributes.c_str(), "r");
-	if (dimensions_file == nullptr) {
-		log_t("Error loading province map data file.");
+void loadProvinceAttributes(string attributes) {
+	ifstream dimensions_file(attributes);
+	if (!dimensions_file.is_open()) {
+		log_t(CON_RED "ERROR! Failed to load province map data file.");
 		return;
 	}
 
 	int id;
+	char comma;
 	float x, y, w, h, xoffset = -0.2f, yoffset = -0.1f;
-	while (FSCANF(dimensions_file, "%d,%f,%f,%f,%f", &id, &x, &y, &w, &h) == 5) {
-		Loader::getProvinceMap()[id]->setSize(w, h);
-		Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
+	string line;
+	while (getline(dimensions_file, line)) {
+		istringstream iss(line);
+		if (iss >> id >> comma >> x >> comma >> y >> comma >> w >> comma >> h) {
+			Loader::getProvinceMap()[id]->setSize(w, h);
+			Loader::getProvinceMap()[id]->setLocation(x + xoffset, y + yoffset);
+		}
 	}
-	log_t("Loaded map position data for all provinces");
-	fclose(dimensions_file);
+	log_t("Loaded map position data for all provinces.");
 }
 
 void GameRTS::pauseGame() {
@@ -136,29 +135,8 @@ void GameRTS::pauseGame() {
 	sound->play(0.025f);
 }
 
-void GameRTS::incrementDay() {
-	if (++date.day > month_days[date.month]) {
-		date.day = 1;
-
-		if (++date.month > 12) {
-			date.month = 1;
-			date.year++;
-		}
-	}
-}
-
-string GameRTS::getDate() {
-	string day_suffix;
-	switch (date.day % 10) {
-		case 1: day_suffix = "st"; break;
-		case 2: day_suffix = "nd"; break;
-		case 3: day_suffix = "rd"; break;
-		default: day_suffix = "th"; break;
-	} return to_string(date.day) + day_suffix + " " + month_names[date.month - 1] + " " + to_string(date.year) + " AD";
-}
-
-void GameRTS::updateStatistics(int f, int u) {
-	Game::updateStatistics(f, u);
+void GameRTS::updateStatistics(const int& frames, const int& updates) {
+	Game::updateStatistics(frames, updates);
 
 	string nation_string = "-- [X]";
 	ostringstream nation_treasury;
@@ -170,7 +148,7 @@ void GameRTS::updateStatistics(int f, int u) {
 		t_Information3.setColour(player_nation->getColourRef());
 	}
 
-	t_Information.setContent(getDate());
+	t_Information.setContent(date.format());
 	t_Information3.setContent("Playing as: " + nation_string);
 }
 
@@ -273,17 +251,12 @@ void GameRTS::updateCursor() {  // tied to update rate
 }
 
 void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep option for action-only
-	log_t("Executing button action: " CON_RED, action);
-	static int index;
-	static string files[3] = { "data/images/map.png", "data/images/map_white.png", "data/images/map_blue.png" };
-
 	static int index_font;
 	static vector<string> files_font;
 	Unit* hired_unit;
 	War war;
 
-	// Panel* panel = UIManager::GetPanel("ui_information_header");
-
+	log_t("Executing button action: " CON_RED, action);
 	switch (action) {
 		case CHANGE_CONTROLS:
 			game->mouse->debug_control_scheme ^= true;
@@ -312,9 +285,6 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			break;
 		case SAVE_GAME:
 			Loader::writeObjects(objects, text_objects);
-			if (index > 2) index = 0;
-			objects[0]->setTexture(Image::getImage(files[index]));
-			index += 1;
 			break;
 		case HIRE_UNIT:
 			player_nation->setMoney(999999999.f);
@@ -322,6 +292,7 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			if (hired_unit) {
 				Font* font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
 				Text* unit_text = new Text(hired_unit->getLocation(), font, Colour(220, 221, 225, 200), hired_unit->getName(), 0.5f);
+				unit_text->setAlignment(CENTRE);
 				unit_text->addFlag(TEXT_BACKGROUND | UNSAVEABLE);
 				unit_text->removeFlag(FIXED_POS);
 				hired_unit->setName(player_nation->getName() + " Hired Unit");
@@ -346,17 +317,6 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 				unit->getText()->setFont(Fonts::getFont(files_font[index_font], 16, true));
 			}
 			
-			/*for (Moveable* panel_item : *panel->get()) {
-				if (panel_item->getName() == "ui_information_header_date") {
-					Text* panel_text = reinterpret_cast<Text*>(panel_item);
-					panel_text->setFont(Fonts::getFont(files_font[index_font], panel_text->getFont()->h, true));
-				}
-				if (panel_item->getName() == "ui_information_header_gold") {
-					Text* panel_text = reinterpret_cast<Text*>(panel_item);
-					panel_text->setFont(Fonts::getFont(files_font[index_font], panel_text->getFont()->h, true));
-				}
-			}*/
-
 			t_Notification.setContent("Set game font to " + files_font[index_font]);
 			index_font++;
 			break;
@@ -389,7 +349,6 @@ void GameRTS::registerEvent(Event event, void* details) {
 	switch (event) {
 		case START_BATTLE:
 			some_battle_info = static_cast<BattleInformation*>(details);
-			
 			break;
 		default:
 			log_t("Unsupported event: " CON_RED, event);
@@ -467,13 +426,13 @@ void GameRTS::updateProperties() {
 }
 
 
-void GameRTS::updateObjects(float modifier) {
+void GameRTS::updateObjects(const float& modifier) {
     // sort(objects.begin(), objects.end(), [](Moveable* a, Moveable* b) {
 	//		  return a->getPriority() < b->getPriority();
 	// }); // Temp, use z values for priorities instead in a Vector3
 	Game::updateObjects(modifier);
 
-	HeaderInformation header_information = { player_nation->getMoney(), getDate()};
+	HeaderInformation header_information = { player_nation->getMoney(), date.format()};
 
 	if (!UIManager::GetPanel("ui_information_header")->hasFlag(DISABLED))
 		UIManager::AssignValues("ui_information_header", &header_information);
@@ -506,9 +465,9 @@ int GameRTS::gameLoop() {
 		while (delta_time >= 1.0f) {
 			update_time = glfwGetTime();
 			if (!game_paused && !simulation_paused) {
-				//#pragma omp parallel for num_threads(12)
-				for (Nation* nation : nations) nation->evaluate();
-				incrementDay();
+				for (Nation* nation : nations)
+					nation->evaluate();
+				date.increment();
 			}
 			updateObjects(60.0f / update_rate);
 			updateProperties();

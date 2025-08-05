@@ -64,7 +64,7 @@ void GameSidescroller::checkCollision() {
 	player.setVelocity(player.getVelocity().x, GRAVITY);
 }
 
-void GameSidescroller::updateObjects(float modifier) {
+void GameSidescroller::updateObjects(const float& modifier) {
 	double x_location = player.getLocation().x, movement = 0;
 	if ((traversed && x_location <= 0.3f) || x_location >= 0.65f)
 		if (x_location >= 0.65f) {

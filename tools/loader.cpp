@@ -3,12 +3,13 @@
 #include "../assets/province.h"
 #include "../assets/unit.h"
 #include "../assets/nation.h"
-
 #include "../assets/particle_group.h"
 #include "../assets/text.h"
 #include "../assets/collidable.h"
-
 #include "../tools/ui_manager.h"
+#include "../tools/text_renderer.h"
+#include "../tools/fonts.h"
+#include "../tools/image.h"
 
 json Loader::current_level_data;
 

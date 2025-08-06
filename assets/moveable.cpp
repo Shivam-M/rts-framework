@@ -1,6 +1,14 @@
 #include "moveable.h"
-#include "text.h"
+
+#include "../assets/text.h"
+#include "../tools/image.h"
+#include "../tools/common.h"
+
 #include <cmath>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
 
 void Moveable::setTextOffset(float x, float y) {
 	text_offset.set(x, y); 

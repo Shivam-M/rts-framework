@@ -1,6 +1,21 @@
 #pragma once
 
+#include "../assets/colour.h"
+
+#include <vector>
+#include <string>
+
 using namespace std;
+
+class Moveable;
+class Text;
+struct GLFWwindow;
+struct Texture;
+struct Blend;
+struct Font;
+
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
 
 struct QuadData {
 	Vector2 location;

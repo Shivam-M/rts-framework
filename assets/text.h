@@ -1,9 +1,15 @@
 #pragma once
 
-#include "../tools/text_renderer.h"
 #include "moveable.h"
 
+#include <string>
+
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
+
 using namespace std;
+
+struct Font;
 
 enum ALIGNMENT { LEFT, CENTRE, RIGHT };
 
@@ -45,10 +51,9 @@ class Text: public Moveable {
 			return Moveable::location;
 		}
 
-		void updateCommon() { text_size = TextRenderer::calculate_text_dimensions(font, content, scale); }
+		void updateCommon();
 		void setFont(Font* f) { font = f; updateCommon(); }
 		void setContent(const string& c) { content = c; updateCommon(); }
 		void setScale(float s) { scale = s; updateCommon(); }
 		void setAlignment(ALIGNMENT a) { alignment = a; updateCommon(); }
-
 };

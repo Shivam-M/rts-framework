@@ -3,17 +3,27 @@
 #include <Psapi.h>
 #endif
 
-#include <filesystem>
-
 #include "game_rts.h"
+
 #include "assets/province.h"
 #include "assets/unit.h"
 #include "assets/nation.h"
+#include "assets/text.h"
+
 #include "io/mouse.h"
 #include "io/keyboard.h"
 #include "io/audio.h"
-#include "tools/text_renderer.h"
 
+#include "tools/text_renderer.h"
+#include "tools/loader.h"
+#include "tools/image.h"
+#include "tools/fonts.h"
+#include "tools/ui_manager.h"
+#include "tools/common.h"
+#include "tools/render.h"
+#include "tools/console.h"
+
+#include <filesystem>
 
 #define MAX_RESTRICTED_GAME_SPEED 2000
 // #define DEBUG_PROFILING
@@ -144,12 +154,12 @@ void GameRTS::updateStatistics(const int& frames, const int& updates) {
 		nation_string = player_nation->getName() + " [" + to_string(player_nation->getID()) + "]";
 
 		const float& money = player_nation->getMoney();
-		t_Information2.setContent(format("Money: {:.2f}", money));
-		t_Information3.setColour(player_nation->getColourRef());
+		t_Information2->setContent(format("Money: {:.2f}", money));
+		t_Information3->setColour(player_nation->getColourRef());
 	}
 
-	t_Information.setContent(date.format());
-	t_Information3.setContent("Playing as: " + nation_string);
+	t_Information->setContent(date.format());
+	t_Information3->setContent("Playing as: " + nation_string);
 }
 
 static bool within(const Vector2& location, const Vector2& size, const Vector2& point) {
@@ -182,8 +192,8 @@ Moveable* GameRTS::getObjectUnderMouse() {
 			location = moveable->getLocation();
 			size = moveable->getSize();
 		} else {
-			location = moveable->getLocation() * render.scale + render.offsets;
-			size = moveable->getSize() * render.scale;
+			location = moveable->getLocation() * render->scale + render->offsets;
+			size = moveable->getSize() * render->scale;
 		}
 
 		if (!within(location, size, cursor_position)) continue;
@@ -194,7 +204,7 @@ Moveable* GameRTS::getObjectUnderMouse() {
 			continue;
 		}
 
-		Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
+		Vector2 centre = moveable->getCentre() * render->scale + render->offsets;
 		
 		float distance = (centre.x - cursor_position.x) * (centre.x - cursor_position.x) + (centre.y - cursor_position.y) * (centre.y - cursor_position.y);
 		if (distance < min_distance) {
@@ -243,14 +253,14 @@ void GameRTS::hoverUnit(Unit* unit) {
 void GameRTS::updateCursor() {  // tied to update rate
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	float relx = x / render.resolution.x;
-	float rely = y / render.resolution.y;
+	float relx = x / render->resolution.x;
+	float rely = y / render->resolution.y;
 	cursor_position.set(relx, rely);
 	cursor->location.x = relx;
 	cursor->location.y = rely;
 }
 
-void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep option for action-only
+void GameRTS::executeAction(int action, Moveable* button) {  // keep option for action-only
 	static int index_font;
 	static vector<string> files_font;
 	Unit* hired_unit;
@@ -260,7 +270,7 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 	switch (action) {
 		case CHANGE_CONTROLS:
 			game->mouse->debug_control_scheme ^= true;
-			t_Notification.setContent(format("Set debug control mode to: {}", game->mouse->debug_control_scheme));
+			t_Notification->setContent(format("Set debug control mode to: {}", game->mouse->debug_control_scheme));
 			break;
 		case PAUSE_GAME:
 			pauseGame();
@@ -270,7 +280,7 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			break;
 		case SWITCH_NATION:
 			picking_nation ^= true;
-			t_Notification.setContent("Select a nation to control it");
+			t_Notification->setContent("Select a nation to control it");
 			break;
 		case CHANGE_MAP_VIEW: // Change to a mask
 			value_view ^= true;
@@ -317,7 +327,7 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 				unit->getText()->setFont(Fonts::getFont(files_font[index_font], 16, true));
 			}
 			
-			t_Notification.setContent("Set game font to " + files_font[index_font]);
+			t_Notification->setContent("Set game font to " + files_font[index_font]);
 			index_font++;
 			break;
 		case TOGGLE_TOOLTIP:
@@ -340,7 +350,7 @@ void GameRTS::executeAction(BUTTON_ACTION action, Moveable* button) {  // keep o
 			UIManager::Show("ui_war_declaration");
 			break;
 		default:
-			t_Notification.setContent(format("Unsupported button action: {}", (int)action));
+			t_Notification->setContent(format("Unsupported button action: {}", (int)action));
 	}
 }
 
@@ -366,8 +376,8 @@ void GameRTS::updateProperties() {
 		UIManager::AssignValues("ui_battle_unit", some_battle_info);
 
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
-		render.offsets.x += (cursor_position.x - original_position.x) * 0.01f;
-		render.offsets.y += (cursor_position.y - original_position.y) * 0.01f;
+		render->offsets.x += (cursor_position.x - original_position.x) * 0.01f;
+		render->offsets.y += (cursor_position.y - original_position.y) * 0.01f;
 	}
 
 	if (!selected_object) return;
@@ -415,7 +425,7 @@ void GameRTS::updateProperties() {
 		if (getButton(GLFW_MOUSE_BUTTON_RIGHT)) {
 			Vector2 new_size = Vector2(abs(game->mouse_position.x - cursor_position.x), abs(game->mouse_position.y - cursor_position.y));
 			selected_object->setSize(new_size.x, new_size.y);
-			t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
+			t_Notification->setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
 	}
 
@@ -478,7 +488,7 @@ int GameRTS::gameLoop() {
 
 		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0f / fps_limit)) {
 			last_frame_time = static_cast<float>(glfwGetTime());
-			render.renderWindow();
+			render->renderWindow();
 			updateCursor();
 			frames++;
 		}
@@ -491,8 +501,8 @@ int GameRTS::gameLoop() {
 			updates = 0, frames = 0;
 #ifdef DEBUG_PROFILING
 			temp_profiling_u.push_back(update_time_);
-			temp_profiling_s.push_back(render.draw_times[0]);
-			temp_profiling_t.push_back(render.draw_times[1]);
+			temp_profiling_s.push_back(render->draw_times[0]);
+			temp_profiling_t.push_back(render->draw_times[1]);
 			if (frame_count == 10) break;
 #endif
 		}

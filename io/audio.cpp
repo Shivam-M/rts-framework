@@ -1,8 +1,11 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
+
 #include "audio.h"
+
 #include "../tools/common.h"
 
+using namespace std;
 
 ////////////////////////////// Audio
 

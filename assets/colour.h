@@ -1,11 +1,15 @@
 #pragma once
 
-#include "../tools/common.h"
+#include <string>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
 
 struct Vector2 {
 	float x, y;
-	Vector2(float x = 0.0f, float y = 0.0f) : x(x), y(y) {}
-	void set(float x_value, float y_value) { x = x_value, y = y_value; }
+	Vector2(const float& x = 0.0f, const float& y = 0.0f) : x(x), y(y) {}
+	void set(const float& x_value, const float& y_value) { x = x_value, y = y_value; }
 	Vector2 operator*(const float& number) { return Vector2(x * number, y * number); }
 	Vector2 operator*(const Vector2& other) { return Vector2(x * other.x, y * other.y); }
 	Vector2 operator+(const float& number) { return Vector2(x + number, y + number); }
@@ -61,7 +65,6 @@ class Vector4 {
 
 		bool operator>(const Vector4& other) const { return x_ > other.x_ && y_ > other.y_ && z_ > other.z_ && w_ > other.w_; }
 		bool operator>=(const Vector4& other) const { return x_ >= other.x_ && y_ >= other.y_ && z_ >= other.z_ && w_ >= other.w_; }*/
-		
 
 		float magnitude() const { return sqrt(x_ * x_ + y_ * y_ + z_ * z_ + w_ * w_); } // rm sqrt
 		float magnitude2() const {
@@ -90,46 +93,33 @@ class Vector4 {
 
 class Colour: public Vector4 { 
 	public:
-		static Colour HexToRGB(string hex, float alpha = 1.0f) { 
-			int r, g, b;
-			SSCANF(hex.c_str(), "%02x%02x%02x", &r, &g, &b);
-			return Colour(r, g, b, alpha * 255); 
-		}
-
-		static string RGBToHex(Vector4 rgb) {
-			int r = clamp(static_cast<int>(rgb.getX()), 0, 255);
-			int g = clamp(static_cast<int>(rgb.getY()), 0, 255);
-			int b = clamp(static_cast<int>(rgb.getZ()), 0, 255);
-
-			stringstream ss;
-			ss << hex << setfill('0') << setw(2) << r << setw(2) << g << setw(2) << b;
-			return ss.str();
-		}
+		static Colour HexToRGB(const string& hex, const float& alpha = 1.0f);
+		static string RGBToHex(Vector4 rgb);
 
 		Colour(const Vector4& vec) : Vector4(vec) {}
 
 		Colour() {}
 
-		Colour(string hex, float alpha = 1.0f) { *this = HexToRGB(hex, alpha); }
+		Colour(const string& hex, const float& alpha = 1.0f) { *this = HexToRGB(hex, alpha); }
 
-		Colour(float r, float g, float b, float a = 255.0f) { setX(r).setY(g).setZ(b).setW(a); }
+		Colour(const float& r, const float& g, const float& b, const float& a = 255.0f) { setX(r).setY(g).setZ(b).setW(a); }
 
-		Colour& setX(float x) {
+		Colour& setX(const float& x) {
 			x_ = x;
 			return *this;
 		}
 
-		Colour& setY(float y) {
+		Colour& setY(const float& y) {
 			y_ = y;
 			return *this;
 		}
 
-		Colour& setZ(float z) {
+		Colour& setZ(const float& z) {
 			z_ = z;
 			return *this;
 		}
 
-		Colour& setW(float w) {
+		Colour& setW(const float& w) {
 			w_ = w;
 			return *this;
 		}

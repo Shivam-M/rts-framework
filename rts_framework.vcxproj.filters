@@ -69,6 +69,15 @@
     <ClCompile Include="io\audio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="assets\nation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\unit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="assets\colour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\colour.h">
@@ -196,6 +205,7 @@
     <None Include="data\level_designer.py" />
     <None Include="data\tutorial\designing_ui_files.md" />
     <None Include="data\levels\ui\09-ui-information-header.json" />
+    <None Include="data\levels\ui\10-ui-battle-unit.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\images\coin.png">
@@ -363,6 +373,9 @@
     <Image Include="data\images\pause.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="data\images\cursor.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\scripts\bounce.txt" />
@@ -374,5 +387,10 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="data\levels\ui\test-06-alternate-formatting.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="data\click.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

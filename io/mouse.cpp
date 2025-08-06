@@ -1,11 +1,15 @@
 #include "mouse.h"
+
+#include "../tools/common.h"
+#include "../tools/render.h"
+#include "../assets/text.h"
 #include "../game_rts.h" // Change to game.h to make this agnostic
 
 Game* Mouse::game = nullptr;
 Mouse::Mouse(Game* instance) { Mouse::game = instance; }
 
 void Mouse::scroll_callback(GLFWwindow* window, double x, double y) {
-	Render* render = &game->render;
+	Render* render = game->render;
 	Vector2 offsets = render->offsets;
 	Vector2 cursor = game->cursor_position;
 	float scale = render->scale;
@@ -29,16 +33,16 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 			if (game->selected_object) {
 				game->selected_object->setLocation(game->cursor_position.x, game->cursor_position.y);
-				game->t_Notification.setContent("Set location of " + game->selected_object->getName() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
+				game->t_Notification->setContent("Set location of " + game->selected_object->getName() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
 				log_t("Set location of " + game->selected_object->getName() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 			game->original_position = game->cursor_position;
 			game->selected_object = game->getObjectUnderMouse(); // hovered_object;
-			game->t_Notification.setContent("");
+			game->t_Notification->setContent("");
 
 			if (game->selected_object) {
-				game->t_Notification.setContent("Selected " + game->selected_object->getName());
+				game->t_Notification->setContent("Selected " + game->selected_object->getName());
 				log_t("Selected " CON_RED + game->selected_object->getName());
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
@@ -50,11 +54,11 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 				game->holding_left_mouse_button = true;
 				game->original_position = game->cursor_position;
 				game->selected_object = nullptr;
-				game->t_Notification.setContent("");
+				game->t_Notification->setContent("");
 				game->selected_object = game->hovered_object;
 
 				if (game->selected_object) {
-					game->t_Notification.setContent("Selected " + game->selected_object->getName());
+					game->t_Notification->setContent("Selected " + game->selected_object->getName());
 					log_t("Selected " CON_RED + game->selected_object->getName());
 				}
 			}
@@ -65,18 +69,18 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 			Moveable* moveable = game->getObjectUnderMouse();
 			if (moveable == nullptr) return;
 			if (game->selected_object) {
-				if (game->selected_object->getFlags() & UNIT) {
-					if (moveable->getFlags() & PROVINCE) {
+				if (game->selected_object->hasFlag(UNIT)) {
+					if (moveable->hasFlag(PROVINCE)) {
 						reinterpret_cast<GameRTS*>(game)->moveUnit(reinterpret_cast<Province*>(moveable));
 					}
 				} else {
-					if (moveable->getFlags() & PROVINCE) {
+					if (moveable->hasFlag(PROVINCE)) {
 						reinterpret_cast<GameRTS*>(game)->expandNation(reinterpret_cast<Province*>(moveable));
 					}
 				}
 			}
 			else {
-				if (moveable->getFlags() & PROVINCE) {
+				if (moveable->hasFlag(PROVINCE)) {
 					reinterpret_cast<GameRTS*>(game)->expandNation(reinterpret_cast<Province*>(moveable));
 				}
 			}

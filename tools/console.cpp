@@ -1,7 +1,12 @@
+#include "console.h"
+
 #include "../game.h"
 #include "../assets/text_entry.h"
-#include "console.h"
-#include "fonts.h"
+#include "../tools/common.h"
+#include "../tools/render.h"
+#include "../tools/ui_manager.h"
+#include "../tools/fonts.h"
+
 #include <set>
 
 using namespace std;
@@ -78,7 +83,7 @@ void Console::execute() {
 			feedback("Changed FPS limit to " + args[1]);
 		}
 		else if (cmd == "RENDER" && args.size() > 1) {
-			game->render.setRenderLevel(stoi(args[1]));
+			game->render->setRenderLevel(stoi(args[1]));
 			feedback("Updated rendering level to " + args[1]);
 		}
 		else if (cmd == "GODMODE" && args.size() > 1) {
@@ -90,7 +95,7 @@ void Console::execute() {
 			feedback("Set update rate to " + args[1]);
 		}
 		else if (cmd == "RESET") {
-			game->render.offsets = { 0, 0 };
+			game->render->offsets = { 0, 0 };
 			feedback("Reset view offsets");
 		}
 		else if (cmd == "SHOW" && args.size() > 1) {

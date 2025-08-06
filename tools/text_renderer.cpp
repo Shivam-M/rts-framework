@@ -1,9 +1,13 @@
 #include "text_renderer.h"
-#include "../assets/moveable.h"
 
+#include "../assets/moveable.h"
+#include "../tools/common.h"
+
+#include <algorithm>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <algorithm>
+
+using namespace std;
 
 GLuint VAO, VBO, TextShader;
 int AtlasWidth = 4096, AtlasHeight = 4096;

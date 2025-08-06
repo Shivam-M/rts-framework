@@ -1,6 +1,11 @@
 #include "keyboard.h"
-#include "mouse.h"
+
 #include "../game.h"
+#include "../assets/player.h"
+#include "../tools/common.h"
+#include "../tools/render.h"
+#include "../tools/console.h"
+#include "../io/mouse.h"
 
 Game* Keyboard::game = nullptr;
 Keyboard::Keyboard(Game* instance) { Keyboard::game = instance; }
@@ -8,15 +13,15 @@ Keyboard::Keyboard(Game* instance) { Keyboard::game = instance; }
 void Keyboard::movement(int direction, int action) {
 	switch (direction) {
 		case GLFW_KEY_LEFT:
-			if (action == GLFW_PRESS) game->player.setAcceleration(-0.0001, game->player.acceleration.y);
-			if (action == GLFW_RELEASE) game->player.stop();
+			if (action == GLFW_PRESS) game->player->setAcceleration(-0.0001, game->player->acceleration.y);
+			if (action == GLFW_RELEASE) game->player->stop();
 			break;
 		case GLFW_KEY_RIGHT:
-			if (action == GLFW_PRESS) game->player.setAcceleration(0.0001, game->player.acceleration.y);
-			if (action == GLFW_RELEASE) game->player.stop();
+			if (action == GLFW_PRESS) game->player->setAcceleration(0.0001, game->player->acceleration.y);
+			if (action == GLFW_RELEASE) game->player->stop();
 			break;
 		case GLFW_KEY_UP:
-			if (action == GLFW_PRESS) game->player.executeJump();
+			if (action == GLFW_PRESS) game->player->executeJump();
 			break;
 	}
 }
@@ -24,7 +29,7 @@ void Keyboard::callback(GLFWwindow* window, int key, int scancode, int action, i
 	if (key >= GLFW_KEY_RIGHT and key <= GLFW_KEY_UP)			movement(key, action);
 
 	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_F && !game->console->visible())		game->render.toggleFullscreen();
+		if (key == GLFW_KEY_F && !game->console->visible())		game->render->toggleFullscreen();
 		else if (key == GLFW_KEY_TAB)							game->debugMode();
 		else if (key == GLFW_KEY_GRAVE_ACCENT)					game->console->toggle();
 		else if (key == GLFW_KEY_ENTER)							game->console->execute();

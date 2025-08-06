@@ -2,6 +2,9 @@
 
 #include "moveable.h"
 
+#include <vector>
+
+using namespace std;
 
 class Panel: public Moveable {
 	private:

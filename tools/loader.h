@@ -1,6 +1,9 @@
 #pragma once
 
 #include <json.hpp>
+#include <string>
+#include <map>
+#include <vector>
 
 using namespace nlohmann;
 using namespace std;
@@ -14,9 +17,6 @@ class Text;
 class Collidable;
 class ParticleGroup;
 class Panel;
-class Colour;
-class Vector4;
-struct Vector2;
 
 struct Level {
 	vector<Moveable*> objects;

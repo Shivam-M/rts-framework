@@ -2,6 +2,16 @@
 
 #include "game.h"
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Moveable;
+class Nation;
+class Province;
+class Unit;
+
 enum WarGoal {TAKE_KEY_PROVINCE, TAKE_MULTIPLE_PROVINCES, DEFEAT_ARMY, VASSALISE};
 enum Event {START_BATTLE};
 
@@ -101,7 +111,7 @@ class GameRTS : Game {
 		void hoverProvince(Province* province);
 		void hoverUnit(Unit* unit);
 		void updateCursor();
-		void executeAction(BUTTON_ACTION action, Moveable* button = nullptr);
+		void executeAction(int action, Moveable* button = nullptr);
 		void registerEvent(Event event, void* details = nullptr);
 		int  gameLoop() override;
 

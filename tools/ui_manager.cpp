@@ -1,11 +1,17 @@
 #include "ui_manager.h"
 
+#include "../game_rts.h"
 #include "../assets/province.h"
 #include "../assets/unit.h"
 #include "../assets/nation.h"
-#include "../game_rts.h"
+#include "../assets/text.h"
+#include "../tools/common.h"
 
 #include <sstream>
+#include <map>
+#include <string>
+
+using namespace std;
 
 // TODO: Expose moveables for direct access instead of using Mapping struct
 

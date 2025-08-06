@@ -2,6 +2,9 @@
 
 #include "moveable.h"
 
+#include "../tools/common.h"
+
+#include <vector>
 
 class ParticleGroup : public Moveable {
 	private:

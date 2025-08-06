@@ -1,14 +1,24 @@
 #pragma once
 
+#include "moveable.h"
+
 #include <unordered_set>
+#include <unordered_map>
 #include <queue>
-#include "../assets/text.h"
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Text;
+class Nation;
+class Unit;
 
 enum PROV_STATE { NORMAL, BESIEGING, UNDER_CONTROL };
 
 static int SiegeID = 0;
 
-class Province : public Moveable {
+class Province : public Moveable {  // TODO: Move definitions to a .cpp file
 	enum TERRAIN { FLAT, MOUNTAIN, FOREST, NUM_TERRAINS };
 	string TERRAIN_NAMES[NUM_TERRAINS] = {"Plains", "Mountains", "Forest"};
 

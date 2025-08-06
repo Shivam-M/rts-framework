@@ -3,17 +3,23 @@
 #include <Psapi.h>
 #endif
 
-#include <filesystem>
-#include <vector>
-#include <algorithm>
-#include <fstream>
-
 #include "game.h"
+
+#include "assets/text.h"
+#include "assets/panel.h"
+#include "tools/console.h"
+#include "tools/common.h"
+#include "tools/image.h"
+#include "tools/render.h"
+#include "tools/fonts.h"
+#include "tools/ui_manager.h"
+#include "tools/loader.h"
 #include "io/mouse.h"
 #include "io/keyboard.h"
 #include "io/audio.h"
 
-#include "assets/panel.h"
+#include <filesystem>
+#include <fstream>
 
 // #define DEBUG_PROFILING
 
@@ -44,29 +50,29 @@ Game::Game(int argc, char** argv) {
 
 	log_t("\033[1;31mOpenGL Version: ", glGetString(GL_VERSION));
 
-	render = Render(window, &objects, &text_objects);
+	render = new Render(window, &objects, &text_objects);
 	keyboard = new Keyboard(this);
 	mouse = new Mouse(this);
 	console = new Console(this);
 
 	Font* debug_font =		Fonts::getFont("data/fonts/consolab.ttf", 11, true);
-	t_FPSCounter =			Text({0.925f, 0.050f}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
-	t_Information =			Text({0.030f, 0.050f}, debug_font, Colour(34, 166, 179, 255), "");
-	t_Information2 =		Text({0.030f, 0.075f}, debug_font, Colour(34, 166, 179, 255), "");
-	t_Information3 =		Text({0.030f, 0.100f}, debug_font, Colour(34, 166, 179, 255), "");
-	t_Alt =					Text({0.675f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
-	t_Alt2 =				Text({0.800f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
-	t_Alt3 =				Text({0.550f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
-	t_Notification =		Text({0.175f, 0.050f}, debug_font, Colour(189, 195, 199, 255), "");
+	t_FPSCounter =			new Text({0.925f, 0.050f}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
+	t_Information =			new Text({0.030f, 0.050f}, debug_font, Colour(34, 166, 179, 255), "");
+	t_Information2 =		new Text({0.030f, 0.075f}, debug_font, Colour(34, 166, 179, 255), "");
+	t_Information3 =		new Text({0.030f, 0.100f}, debug_font, Colour(34, 166, 179, 255), "");
+	t_Alt =					new Text({0.675f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Alt2 =				new Text({0.800f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Alt3 =				new Text({0.550f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
+	t_Notification =		new Text({0.175f, 0.050f}, debug_font, Colour(189, 195, 199, 255), "");
 
-	registerObject(&t_FPSCounter);
-	registerObject(&t_Alt);
-	registerObject(&t_Alt2);
-	registerObject(&t_Alt3);
-	registerObject(&t_Notification);
-	registerObject(&t_Information2);
-	registerObject(&t_Information3);
-	registerObject(&t_Information);
+	registerObject(t_FPSCounter);
+	registerObject(t_Alt);
+	registerObject(t_Alt2);
+	registerObject(t_Alt3);
+	registerObject(t_Notification);
+	registerObject(t_Information2);
+	registerObject(t_Information3);
+	registerObject(t_Information);
 
 	glfwSetKeyCallback(window, keyboard->callback);
 	glfwSetMouseButtonCallback(window, mouse->callback);
@@ -93,7 +99,7 @@ void Game::loadLevels(string level_directory) {
 	sort(entries.begin(), entries.end());
 
 	for (const fs::directory_entry& entry : entries) {
-		Level* level = loader.load_level(entry.path().string(), &queue_objects, &text_objects, level_counter);
+		Level* level = loader->load_level(entry.path().string(), &queue_objects, &text_objects, level_counter);
 
 		for (Moveable* m : level->objects) {
 			if (level->offset_positions) m->location.x += level_counter;
@@ -101,7 +107,7 @@ void Game::loadLevels(string level_directory) {
 		}
 
 		for (Text* t : level->text_objects) registerObject(t);
-		levels.push_back(*level);
+		levels.push_back(level);
 		level_counter++;
 		delete level;
 	}
@@ -118,13 +124,17 @@ static ColourShift fadeShift(Colour first_colour, Colour second_colour, bool swa
 	return colourshift;
 }
 
+void Game::extendedInitialisation() {
+	console->build();
+}
+
 void Game::debugMode() {
 	UIManager::Toggle("ui_menu_pause");
 }
 
 void Game::toggleDebug() {
 	mouse->debug_control_scheme ^= true;
-	t_Notification.setContent("Updated control scheme to: " + to_string(mouse->debug_control_scheme));
+	t_Notification->setContent("Updated control scheme to: " + to_string(mouse->debug_control_scheme));
 }
 
 void Game::updateStatistics(const int& f, const int& u) {
@@ -132,17 +142,17 @@ void Game::updateStatistics(const int& f, const int& u) {
 #ifdef _WIN32
 		PROCESS_MEMORY_COUNTERS memCounter;
 		BOOL result = K32GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter));
-		console->update("OBJ: " + to_string(objects.size()) + " (skip: " + to_string(render.skipped_count) + " cull: " + to_string(render.culled_count) + " text: +" + to_string(text_objects.size())  + ")" + "  UPD: " + to_string(update_rate) + "  MEM: " + to_string(memCounter.WorkingSetSize / 1048576) + "MB");
+		console->update("OBJ: " + to_string(objects.size()) + " (skip: " + to_string(render->skipped_count) + " cull: " + to_string(render->culled_count) + " text: +" + to_string(text_objects.size())  + ")" + "  UPD: " + to_string(update_rate) + "  MEM: " + to_string(memCounter.WorkingSetSize / 1048576) + "MB");
 #else
-		console->update("Objects: " + to_string(objects.size()) + " (skip: " + to_string(render.skipped_count) + " cull: " + to_string(render.culled_count) + ")" + "  Updates: " + to_string(update_rate));  // there are linux alternatives
+		console->update("Objects: " + to_string(objects.size()) + " (skip: " + to_string(render->skipped_count) + " cull: " + to_string(render->culled_count) + ")" + "  Updates: " + to_string(update_rate));  // there are linux alternatives
 #endif
 	}
 
-	string t_time = to_string(render.draw_times[1] * 1000), s_time = to_string(render.draw_times[0] * 1000), u_time = to_string(update_time_ * 1000);
-	t_FPSCounter.setContent("FPS: " + to_string(f));
-	t_Alt.setContent("T: " + t_time.substr(0, t_time.size() - 2) + "ms");
-	t_Alt2.setContent("S: " + s_time.substr(0, s_time.size() - 2) + "ms");
-	t_Alt3.setContent("U: " + u_time.substr(0, u_time.size() - 2) + "ms");
+	string t_time = to_string(render->draw_times[1] * 1000), s_time = to_string(render->draw_times[0] * 1000), u_time = to_string(update_time_ * 1000);
+	t_FPSCounter->setContent("FPS: " + to_string(f));
+	t_Alt->setContent("T: " + t_time.substr(0, t_time.size() - 2) + "ms");
+	t_Alt2->setContent("S: " + s_time.substr(0, s_time.size() - 2) + "ms");
+	t_Alt3->setContent("U: " + u_time.substr(0, u_time.size() - 2) + "ms");
 
 	log_t("FPS: " CON_RED, f, CON_NORMAL " \tUpdates: " CON_RED, u, CON_NORMAL " \tGame time: " CON_RED, update_time_,  "s" CON_NORMAL "\t[", CON_RED, (int)(1 / update_time_), CON_NORMAL "]");
 }
@@ -150,15 +160,15 @@ void Game::updateStatistics(const int& f, const int& u) {
 void Game::updateCursor() {
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	cursor_position.set(x / render.resolution.x, y / render.resolution.y);
+	cursor_position.set(x / render->resolution.x, y / render->resolution.y);
 }
 
 void Game::updateProperties() {
 	updateCursor();
 
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
-		render.offsets.x += (cursor_position.x - original_position.x) * 0.01;
-		render.offsets.y += (cursor_position.y - original_position.y) * 0.01;
+		render->offsets.x += (cursor_position.x - original_position.x) * 0.01;
+		render->offsets.y += (cursor_position.y - original_position.y) * 0.01;
 	}
 
 	if (!selected_object) return;
@@ -167,7 +177,7 @@ void Game::updateProperties() {
 		if (getButton(GLFW_MOUSE_BUTTON_RIGHT)) {
 			Vector2 new_size = Vector2(abs(game->mouse_position.x - cursor_position.x), abs(game->mouse_position.y - cursor_position.y));
 			selected_object->setSize(new_size.x, new_size.y);
-			t_Notification.setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
+			t_Notification->setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
 	}
 }
@@ -219,12 +229,12 @@ Moveable* Game::getObjectUnderMouse() {
 			location = moveable->getLocation();
 			size = moveable->getSize();
 		} else {
-			location = moveable->getLocation() * render.scale + render.offsets;
-			size = moveable->getSize() * render.scale;
+			location = moveable->getLocation() * render->scale + render->offsets;
+			size = moveable->getSize() * render->scale;
 		}
 
 		if (within(location, size, cursor_position)) {
-			Vector2 centre = moveable->getCentre() * render.scale + render.offsets;
+			Vector2 centre = moveable->getCentre() * render->scale + render->offsets;
 			float dx = centre.x - cursor_position.x;
 			float dy = centre.y - cursor_position.y;
 			float distance = dx * dx + dy * dy;
@@ -273,7 +283,7 @@ int Game::gameLoop() {
 
 		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0 / fps_limit)) {
 			last_frame_time = glfwGetTime();
-			render.renderWindow();
+			render->renderWindow();
 			frames++;
 		}
 
@@ -285,8 +295,8 @@ int Game::gameLoop() {
 			updates = 0, frames = 0;
 #ifdef DEBUG_PROFILING
 			temp_profiling_u.push_back(update_time_);
-			temp_profiling_s.push_back(render.draw_times[0]);
-			temp_profiling_t.push_back(render.draw_times[1]);
+			temp_profiling_s.push_back(render->draw_times[0]);
+			temp_profiling_t.push_back(render->draw_times[1]);
 			if (frame_count == 10) break;
 #endif
 		}

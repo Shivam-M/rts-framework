@@ -1,5 +1,6 @@
-#include "common.h"
 #include "image.h"
+
+#include "../tools/common.h"
 
 #ifndef _WIN32
 #define sprintf_s snprintf
@@ -14,6 +15,8 @@
 #include <stb_image_write.h>
 
 #include <fstream>
+
+using namespace std;
 
 map<string, Texture*> Image::images = {};
 

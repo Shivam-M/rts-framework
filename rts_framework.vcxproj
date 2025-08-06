@@ -137,6 +137,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="assets\colour.cpp" />
+    <ClCompile Include="assets\nation.cpp" />
+    <ClCompile Include="assets\unit.cpp" />
     <ClCompile Include="io\audio.cpp" />
     <ClCompile Include="tools\ui_manager.cpp" />
     <ClCompile Include="assets\moveable.cpp" />
@@ -190,6 +193,7 @@
     <None Include=".gitignore" />
     <None Include="data\levels\ui\08-ui-hire-unit.json" />
     <None Include="data\levels\ui\09-ui-information-header.json" />
+    <None Include="data\levels\ui\10-ui-battle-unit.json" />
     <None Include="data\level_designer.py" />
     <None Include="data\tutorial\adding_new_provinces.md" />
     <None Include="data\tutorial\controls.md" />
@@ -271,6 +275,7 @@
     <Image Include="data\generated\8_province.png" />
     <Image Include="data\generated\9_province.png" />
     <Image Include="data\images\coin.png" />
+    <Image Include="data\images\cursor.png" />
     <Image Include="data\images\diplomacy.png" />
     <Image Include="data\images\map.png" />
     <Image Include="data\images\map_blue.png" />
@@ -294,6 +299,9 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="data\levels\ui\test-06-alternate-formatting.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="data\click.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

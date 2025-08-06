@@ -1,7 +1,14 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
 class Game;
 class TextEntry;
+class Moveable;
+class Text;
 
 class Console {
 	private:

@@ -1,18 +1,23 @@
 #pragma once
 
-#include "assets/player.h"
-#include "assets/text.h"
+#include "assets/colour.h"
 
-#include "tools/render.h"
-#include "tools/loader.h"
-#include "tools/console.h"
-#include "tools/fonts.h"
-#include "tools/ui_manager.h"
-
-class Keyboard;
-class Mouse;
+#include <map>
+#include <vector>
+#include <string>
 
 using namespace std;
+
+class Moveable;
+class Keyboard;
+class Mouse;
+class Render;
+class Player;
+class Console;
+class Text;
+class Loader;
+struct Level;
+struct GLFWwindow;
 
 class Game {
 	public:
@@ -24,9 +29,9 @@ class Game {
 		Vector2 cursor_position;
 		Vector2 drag_offset;
 
-		Render render;
-		Loader loader;
-		vector<Level> levels;
+		Render* render = nullptr;
+		Loader* loader;
+		vector<Level*> levels;
 
 		vector<Text*> text_objects;
 		vector<Moveable*> queue_objects;
@@ -44,16 +49,16 @@ class Game {
 		Keyboard* keyboard = nullptr;
 		Console* console = nullptr;
 
-		Text t_FPSCounter,
-			t_Information,
-			t_Information2,
-			t_Information3,
-			t_Alt,
-			t_Alt2,
-			t_Alt3,
-			t_Notification;
+		Text *t_FPSCounter,
+			 *t_Information,
+			 *t_Information2,
+			 *t_Information3,
+			 *t_Alt,
+			 *t_Alt2,
+			 *t_Alt3,
+			 *t_Notification;
 
-		Player player;
+		Player* player = nullptr;
 
 		// public:
 		static Game* game;
@@ -62,7 +67,7 @@ class Game {
 		int fps_limit = 0;
 		int update_rate = 144;
 		
-		virtual void extendedInitialisation() { console->build(); }
+		virtual void extendedInitialisation();
 		virtual void updateObjects(const float& modifier = 1.0f);
 		virtual void updateStatistics(const int& frames, const int& updates);
 		virtual void updateProperties();
@@ -77,7 +82,7 @@ class Game {
 		virtual int gameLoop();
 		virtual Moveable* getObjectUnderMouse();
 
-		Player* getPlayer() { return &player; }
+		Player* getPlayer() { return player; }
 
 		Game() {};
 		Game(int, char**);

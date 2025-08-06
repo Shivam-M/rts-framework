@@ -1,23 +1,30 @@
 ﻿#include "game_sidescroller.h"
+
 #include "io/mouse.h"
 #include "io/keyboard.h"
 #include "assets/particle_group.h"
+#include "assets/player.h"
+#include "assets/text.h"
 #include "tools/text_renderer.h"
+#include "tools/image.h"
+#include "tools/console.h"
+#include "tools/render.h"
 
 // #define DEBUG_PROFILING
 
 using namespace std;
 
 void GameSidescroller::extendedInitialisation() {
-	player.setColour(Colour(236, 240, 241, 175));
-	player.setLocation(0.075f, 0.6f);
-	player.size = { 80.0f / WINDOW_WIDTH, 80.0f / WINDOW_HEIGHT };
-	player.addFlag(TEXTURED);
-	player.setTexture(Image::getImage("img.png"));
-	player.loadScript("data/scripts/switcher.txt");
+	player = new Player();
+	player->setColour(Colour(236, 240, 241, 175));
+	player->setLocation(0.075f, 0.6f);
+	player->size = { 80.0f / WINDOW_WIDTH, 80.0f / WINDOW_HEIGHT };
+	player->addFlag(TEXTURED);
+	player->setTexture(Image::getImage("img.png"));
+	player->loadScript("data/scripts/switcher.txt");
 	mouse->debug_control_scheme = true;
 
-	registerObject(&player);
+	registerObject(player);
 	loadLevels("data/levels/sidescroller/");
 
 	console->build();
@@ -26,8 +33,8 @@ void GameSidescroller::extendedInitialisation() {
 }
 
 void GameSidescroller::checkCollision() {
-	Vector2 location = player.getLocation();
-	Vector2 size = player.getSize();
+	Vector2 location = player->getLocation();
+	Vector2 size = player->getSize();
 	// float x, y;
 
 	for (Moveable* m : objects) {
@@ -52,20 +59,20 @@ void GameSidescroller::checkCollision() {
 		else */if (m->getFlags() & COLLIDABLE) {
 			if (m_location.x - size.x / 2 < location.x && location.x < m_location.x + m_size.x - size.x / 2)
 				if (location.y + size.y >= m_location.y && location.y + size.y <= m_location.y + 0.005f) {
-					player.setLocation(location.x + m->getVelocity().x, m_location.y - size.y);
-					player.setVelocity(player.getVelocity().x, 0);
+					player->setLocation(location.x + m->getVelocity().x, m_location.y - size.y);
+					player->setVelocity(player->getVelocity().x, 0);
 					return;
 				}
 		}
 	}
-	if (player.getLocation().y >= 1.0f && !god_mode) {
-		player.setLocation(0.05f, 0.3f);
+	if (player->getLocation().y >= 1.0f && !god_mode) {
+		player->setLocation(0.05f, 0.3f);
 	}
-	player.setVelocity(player.getVelocity().x, GRAVITY);
+	player->setVelocity(player->getVelocity().x, GRAVITY);
 }
 
 void GameSidescroller::updateObjects(const float& modifier) {
-	double x_location = player.getLocation().x, movement = 0;
+	double x_location = player->getLocation().x, movement = 0;
 	if ((traversed && x_location <= 0.3f) || x_location >= 0.65f)
 		if (x_location >= 0.65f) {
 			if (!traversed) traversed = true;
@@ -75,7 +82,7 @@ void GameSidescroller::updateObjects(const float& modifier) {
 	for (Moveable* m : objects) {
 		if (m->getFlags() & FIXED_POS) continue;
 		m->location.x -= movement;
-		// render.uoffsets[0] = location[0] - movement;
+		// render->uoffsets[0] = location[0] - movement;
 
 		/*
 		if (m->getFlags() & QUAD) {
@@ -138,7 +145,7 @@ int GameSidescroller::gameLoop() {
 
 		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0f / fps_limit)) {
 			last_frame_time = glfwGetTime();
-			render.renderWindow();
+			render->renderWindow();
 			frames++;
 		}
 
@@ -150,8 +157,8 @@ int GameSidescroller::gameLoop() {
 			updates = 0, frames = 0;
 #ifdef DEBUG_PROFILING
 			temp_profiling_u.push_back(update_time_);
-			temp_profiling_s.push_back(render.draw_times[0]);
-			temp_profiling_t.push_back(render.draw_times[1]);
+			temp_profiling_s.push_back(render->draw_times[0]);
+			temp_profiling_t.push_back(render->draw_times[1]);
 			if (frame_count == 10) break;
 #endif
 		}

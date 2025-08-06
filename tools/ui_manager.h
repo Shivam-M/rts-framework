@@ -1,5 +1,12 @@
 #pragma once
+
 #include "../assets/panel.h"
+#include "../assets/colour.h"
+
+#include <map>
+#include <string>
+
+using namespace std;
 
 class Province;
 class Nation;

@@ -1,5 +1,16 @@
 #pragma once
 
+#include "moveable.h"
+
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+class Province;
+class Unit;
+
 static float UNIT_COST = 0.02f;
 static int UnitCount = 1000;
 
@@ -38,29 +49,12 @@ class Nation : public Moveable {
 		vector<Province*>& getOwnedProvinces() { return owned_provinces_; }
 		int getNumberProvinces() { return owned_provinces_.size(); }
 		bool ownsProvince(Province* province) { return find(owned_provinces_.begin(), owned_provinces_.end(), province) != owned_provinces_.end(); }
-		void addProvince(Province* province) { owned_provinces_.push_back(province); province->setNation(this); }
-		void removeProvince(Province* province) {
-			if (ownsProvince(province)) {
-				if (getCapital() != province) {
-					owned_provinces_.erase(remove(owned_provinces_.begin(), owned_provinces_.end(), province), owned_provinces_.end());
-				} else if (getNumberProvinces() > 1) { // Can relocate capital if the nation owns multiple provinces
-					owned_provinces_.erase(remove(owned_provinces_.begin(), owned_provinces_.end(), province), owned_provinces_.end());
-					setCapital(getOwnedProvinces()[0]);
-				} else {
-					log_t("** NATION TO LOSE CAPITAL **");  // TODO: this
-				}
-			}
-		}
+		void addProvince(Province* province);
+		void removeProvince(Province* province);
 
-		int getArmySize() { 
-			int army_size = 0;
-			for (Unit* unit : owned_army_units_) {
-				army_size += unit->getAmount();
-			}
-			return army_size;
-		}
+		int getArmySize();
 		vector<Unit*>& getOwnedUnits() { return owned_army_units_; }
-		void addUnit(Unit* unit) { owned_army_units_.push_back(unit); unit->setNation(this); unit->setColour(getColour()); }
+		void addUnit(Unit* unit);
 
 		float getMoney() { return money_; }
 		void setMoney(float money) { money_ = money; }
@@ -76,33 +70,9 @@ class Nation : public Moveable {
 
 		bool isInDebt() { return in_debt_; }
 
-		void evaluate() {
-			float final_income = income_; // Final income is base income plus value from all owned provinces
+		void evaluate();
 
-			for (Province* province : getOwnedProvinces()) {
-				province->evaluate();
-				final_income += province->getValue();
-			}
+		Unit* hireUnit(int size, float skill = 1.00f);
 
-			for (Unit* unit : getOwnedUnits()) {
-				unit->evaluate();
-			}
-
-			money_ += final_income - getOutgoings();
-			in_debt_ = money_ < 0.00f;
-		}
-
-		Unit* hireUnit(int size, float skill = 1.00f) {
-			float cost = size * UNIT_COST * skill;
-			if (money_ <= cost) return nullptr;
-			Unit* unit = new Unit(UnitCount++, this, size, skill, getCapital());
-			addMoney(-cost);
-			addUnit(unit);
-			return unit;
-		}
-
-		void dismissUnit(Unit* unit) {
-			owned_army_units_.erase(remove(owned_army_units_.begin(), owned_army_units_.end(), unit), owned_army_units_.end());
-			delete unit;
-		}
+		void dismissUnit(Unit* unit);
 };

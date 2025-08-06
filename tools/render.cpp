@@ -1,6 +1,10 @@
+#include "render.h"
+
 #include "../assets/text.h"
 #include "../tools/text_renderer.h"
-#include "render.h"
+#include "../tools/common.h"
+
+using namespace std;
 
 GLuint textureVAO, textureVBO, textureShader;
 GLuint colourShader;

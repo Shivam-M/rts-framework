@@ -1,6 +1,7 @@
 #include "fonts.h"
-#include "common.h"
-#include "text_renderer.h"
+
+#include "../tools/common.h"
+#include "../tools/text_renderer.h"
 
 map<pair<string, int>, Font*> Fonts::fonts = {};
 map<pair<string, int>, bool> Fonts::fonts_is_custom_temp = {};

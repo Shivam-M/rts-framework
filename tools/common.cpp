@@ -1,5 +1,7 @@
 #include "common.h"
 
+using namespace std;
+
 void log_impl(ostream& os) {
 	os << endl;
 }

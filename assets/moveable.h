@@ -1,11 +1,46 @@
 #pragma once
 
-#include "../tools/image.h"
-#include "../assets/colour.h"
+#include "colour.h"
+
+#include <vector>
+#include <string>
 
 using namespace std;
 
 class Text;
+struct Texture;
+
+// Flag definitions
+enum {
+    BACKGROUND =        1 << 0,
+    COLLIDABLE =        1 << 1,
+    UNEDITABLE =        1 << 2,
+    TEXT =              1 << 3,
+    ENABLED =           1 << 4,
+    PLAYER =            1 << 5,
+    MOVING =            1 << 6,
+    BUTTON =            1 << 7,
+    SELECTED =          1 << 8,
+    QUAD =              1 << 9,
+    TEXTURED =          1 << 10,
+    CURVED =            1 << 11,
+    DISABLED =          1 << 12,
+    FIXED_POS =         1 << 13,
+    BOUND =             1 << 14,
+    PROVINCE =          1 << 15,
+    UNIT =              1 << 16,
+    NATION =            1 << 17,
+    CUSTOM =            1 << 18,
+    PANEL =             1 << 19,
+    PARTICLES =         1 << 20,
+    TEXT_BACKGROUND =   1 << 21,
+    THEMED =            1 << 22,
+    UNSAVEABLE =        1 << 24,
+    UI =                1 << 25,
+    UNDER_PANEL =       1 << 26,
+    DRAGGABLE =         1 << 27,
+    NO_RENDER =         1 << 28
+};
 
 // TODO: Replace with new Blend value
 struct ColourShift {

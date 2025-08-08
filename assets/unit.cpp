@@ -22,14 +22,14 @@ void Unit::setPath(vector<Province*> path) {
 	travel_path_ = path;
 	setTarget(travel_path_.at(0));
 	setState(TRAVELLING);
-	log_t("Set path for unit ", getName(), " (", getID(), "):");
+	log_t("Set path for unit " CON_RED, getName(), CON_NORMAL " (" CON_RED, getID(), CON_NORMAL "):");
 
 	for (Province* province : path) {
 		ColourShift colourshift = ColourShift(province->getColour(), province->getColour().setW(150));
 		colourshift.speed = 0.02f;
 		colourshift.setCondition(&PathCount);
 		province->setColourShift(colourshift);
-		log_t("* ", province->getName(), " (", province->getID(), ")");
+		log_t("* " CON_RED, province->getName(), CON_NORMAL " (" CON_RED, province->getID(), CON_NORMAL ")");
 	}
 }
 
@@ -112,7 +112,7 @@ void Unit::evaluate() {
 				target_province_->registerUnit(this);
 				target_province_ = nullptr;
 
-				log_t("Unit ", getName(), " (", getID(), ") arrived at province ", province_->getName(), " (", province_->getID(), ")");
+				log_t("Unit " CON_RED, getName(), CON_NORMAL " (" CON_RED, getID(), CON_NORMAL ") arrived at province " CON_RED, province_->getName(), CON_NORMAL " (" CON_RED, province_->getID(), CON_NORMAL ")");
 
 				if (!travel_path_.empty()) {
 					advancePath();

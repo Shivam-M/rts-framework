@@ -28,7 +28,7 @@ class Text: public Moveable {
 		Text(Vector2 location, Font* font, Colour colour, string content = "", float scale = 1.f);
 
 		Font* getFont() { return font; }
-		string& getContent() { return content; }
+		virtual string& getContent() { return content; }
 		const float& getScale() { return scale; }
 		Vector2 getTextSize() { return text_size; }
 		ALIGNMENT getAlignment() { return alignment; }

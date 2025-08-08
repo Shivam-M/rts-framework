@@ -22,7 +22,7 @@
 ### Mapping UI elements with game data
 1. In `ui_manager.h` declare a new static method 
     ```cpp
-    static map<string, Mapping> MapExample(void* moveable);
+    static void MapExample(Panel* panel, void* moveable);
     ```
     - **Note:** UI Panel mappings are not exclusive to moveables, they can be mapped to any object/data type
 2. In `ui_manager.cpp` add a new entry to `UIManager::method_mappings_` with the panel name and newly declared method
@@ -31,16 +31,14 @@
          {"ui_example", &UIManager::MapExample}
     };
     ```
-3. Define the method, recast to the expected data type, set text object contents and colours using `Mapping(string content, Colour colour)` objects
+3. Define the method, cast to the expected data type, and set text object properties directly using `Text* text_object = panel->getTextByName(const string& name)` 
     ```cpp
-    map<string, Mapping> UIManager::MapExample(void* moveable) {
-        Moveable* example = (Moveable*)moveable;
-        map<string, Mapping> example_mappings = {};
-    
-        example_mappings["ui_example_title"] = Mapping(example->getName(), example->getColour());
-        example_mappings["ui_example_subtitle"] = Mapping("ID: " + to_string(example->getID()));
-
-        return example_mappings;
+    void UIManager::MapExample(Panel* panel, void* moveable) {
+        Moveable* example = static_cast<Moveable*>(moveable);
+        
+        panel->getTextByName("ui_example_title")->setContent(example->getName());
+        panel->getTextByName("ui_example_title")->setColour(example->getColour());
+        panel->getTextByName("ui_example_subtitle")->setContent("ID: " + to_string(example->getID()));
     }
     ```
 4. Map an object to the UI panel from anywhere in the game

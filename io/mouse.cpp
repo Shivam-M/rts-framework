@@ -49,21 +49,15 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 			game->mouse_position = GLFW_PRESS ? game->cursor_position : 0;
 		}
 	} else { // RTS
-		if (button == GLFW_MOUSE_BUTTON_LEFT) {
-			if (action == GLFW_PRESS) {
-				game->holding_left_mouse_button = true;
-				game->original_position = game->cursor_position;
-				game->selected_object = nullptr;
-				game->t_Notification->setContent("");
-				game->selected_object = game->hovered_object;
+		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+			game->original_position = game->cursor_position;
+			game->selected_object = nullptr;
+			game->t_Notification->setContent("");
+			game->selected_object = game->hovered_object;
 
-				if (game->selected_object) {
-					game->t_Notification->setContent("Selected " + game->selected_object->getName());
-					log_t("Selected " CON_RED + game->selected_object->getName());
-				}
-			}
-			else if (action == GLFW_RELEASE) {
-				game->holding_left_mouse_button = false;
+			if (game->selected_object) {
+				game->t_Notification->setContent("Selected " + game->selected_object->getName());
+				log_t("Selected " CON_RED + game->selected_object->getName());
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 			Moveable* moveable = game->getObjectUnderMouse();

@@ -67,6 +67,19 @@ class Panel: public Moveable {
 
 		vector<Moveable*>* get() { return &bundle_; }
 
+        Moveable* getByName(const string& name) {
+				for (Moveable* moveable : bundle_) {
+					if (moveable->getName() == name) {
+						return moveable;
+					}
+				}
+				return nullptr;
+        }
+
+		Text* getTextByName(const string& name) {
+			return reinterpret_cast<Text*>(getByName(name));  // todo: would be safer/cleaner with a dynamic_cast, move to .cpp
+		}
+
 		void setLocation(float x, float y) override {
 			for (Moveable* moveable : bundle_) {
 				Vector2 new_location = moveable->getLocation();

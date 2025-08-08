@@ -13,14 +13,7 @@ class Nation;
 class Unit;
 class Text;
 
-struct Mapping {
-	Mapping() { content = "", colour = COLOUR_INVIS; };
-	Mapping(const string& _content, const Colour& _colour = COLOUR_INVIS) { content = _content, colour = _colour; }
-	string content = "";
-	Colour colour = COLOUR_INVIS;
-};
-
-typedef const map<string, Mapping>& (*MappingFunction)(void*);
+typedef void (*MappingFunction)(Panel*, void*);
 
 class UIManager {
 	private:
@@ -45,12 +38,11 @@ class UIManager {
 		static void Toggle(Panel* panel, bool with_fade = false) { if (panel->hasFlag(DISABLED)) Show(panel, with_fade); else Hide(panel, with_fade); }
 
 		static void AssignValues(const string& panel_name, void* moveable);
-		static void UpdateValues(Panel* panel, const map<string, Mapping>& mappings);
 		
-		static const map<string, Mapping>& MapProvince(void* moveable);
-		static const map<string, Mapping>& MapNation(void* moveable);
-		static const map<string, Mapping>& MapUnit(void* moveable);
-		static const map<string, Mapping>& MapWarDeclaration(void* war_details);
-		static const map<string, Mapping>& MapHeader(void* header_details);
-		static const map<string, Mapping>& MapBattle(void* battle_details);  // TODO: refactor to support multiple ui instances
+		static void MapProvince(Panel* panel, void* moveable);
+		static void MapNation(Panel* panel, void* moveable);
+		static void MapUnit(Panel* panel, void* moveable);
+		static void MapWarDeclaration(Panel* panel, void* war_details);
+		static void MapHeader(Panel* panel, void* header_details);
+		static void MapBattle(Panel* panel, void* battle_details);
 };

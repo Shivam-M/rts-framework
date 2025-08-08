@@ -13,18 +13,6 @@
 
 using namespace std;
 
-// TODO: Expose moveables for direct access instead of using Mapping struct
-
-static map<string, Mapping> province_mappings;
-static map<string, Mapping> nation_mappings;
-static map<string, Mapping> unit_mappings;
-static map<string, Mapping> war_mappings;
-static map<string, Mapping> header_mappings;
-static map<string, Mapping> battle_mappings;
-
-static string temp_str_buffer;
-static ostringstream temp_stream;
-
 map<string, Panel*> UIManager::ui_mappings_ = {};
 
 map<string, MappingFunction> UIManager::method_mappings_ = {
@@ -36,175 +24,122 @@ map<string, MappingFunction> UIManager::method_mappings_ = {
     {"ui_battle_unit",          &UIManager::MapBattle}
 };
 
-static void set_battle_details_for_allies(map<string, Mapping>& battle_mappings, const string& side, const vector<Unit*>& allies);
-static void set_war_details_for_allies(map<string, Mapping>& war_mappings, const string& side, int strength, int provinces, const vector<Nation*>& allies);
+static void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies);
+static void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies);
 
 void UIManager::AssignValues(const string& panel_name, void* moveable) {
-    const auto& mappings = method_mappings_[panel_name](moveable);
-    UpdateValues(UIManager::GetPanel(panel_name), mappings);
+    method_mappings_[panel_name](UIManager::GetPanel(panel_name), moveable);
 }
 
-void UIManager::UpdateValues(Panel* panel, const map<string, Mapping>& mappings) {
-    if (!panel) return;
-
-    const auto& panel_items = *panel->get();
-    for (Moveable* panel_item : panel_items) {
-        const string& item_name = panel_item->getName();
-        auto it = mappings.find(item_name);
-
-        if (it != mappings.end()) {
-            const Mapping& mapping = it->second;
-
-            if (panel_item->hasFlag(TEXT)) {
-                if (Text* text_item = static_cast<Text*>(panel_item)) {
-                    text_item->setContent(mapping.content);
-                }
-            }
-            if (mapping.colour != COLOUR_INVIS) {
-                panel_item->setColour(mapping.colour);
-            }
-        }
-    }
-}
-
-const map<string, Mapping>& UIManager::MapProvince(void* moveable) {
+void UIManager::MapProvince(Panel* panel, void* moveable) { // TODO: check if converting non-ref to float& actually helps
     Province* province = static_cast<Province*>(moveable);
     Nation* nation = province->getNation();
 
-    province_mappings["ui_province_tooltip_name"] = Mapping(province->getName(), province->getColour().setW(255));
-    province_mappings["ui_province_tooltip_owned_by"] = Mapping("Owned by: " + nation->getName());
-
-    const float& value = province->getValue();
-    province_mappings["ui_province_tooltip_value"] = Mapping(format("Value: {:.2f}", value));
-
-    province_mappings["ui_province_tooltip_terrain"] = Mapping("Terrain: " + province->getTerrainName());
+	panel->getTextByName("ui_province_tooltip_name")->setContent(province->getName());
+	panel->getTextByName("ui_province_tooltip_name")->setColour(province->getColour().setW(255));
+    panel->getTextByName("ui_province_tooltip_owned_by")->setContent("Owned by: " + nation->getName());
+    panel->getTextByName("ui_province_tooltip_value")->setContent(format("Value: {:.2f}", province->getValue()));
+    panel->getTextByName("ui_province_tooltip_terrain")->setContent("Terrain: " + province->getTerrainName());
 
     const float& siege_progress = province->getSiegeProgress();
     if (siege_progress <= 0) {
-        province_mappings["ui_province_tooltip_siege"] = Mapping("");
+		panel->getTextByName("ui_province_tooltip_siege")->setContent("");
     } else if (siege_progress < 100) {
-        province_mappings["ui_province_tooltip_siege"] = Mapping(format("Siege progress: {}%", static_cast<int>(siege_progress)));
+        panel->getTextByName("ui_province_tooltip_siege")->setContent(format("Siege progress: {}%", static_cast<int>(siege_progress)));
     } else if (province->getController()) {
-        province_mappings["ui_province_tooltip_siege"] = Mapping(format("Sieged by: {}", province->getController()->getNation()->getName()));
+        panel->getTextByName("ui_province_tooltip_siege")->setContent(format("Sieged by: {}", province->getController()->getNation()->getName()));
     }
-
-    return province_mappings;
 }
 
-const map<string, Mapping>& UIManager::MapNation(void* moveable) {
+void UIManager::MapNation(Panel* panel, void* moveable) {
     Nation* nation = static_cast<Nation*>(moveable);
 
-    nation_mappings["ui_nation_tooltip_name"] = Mapping(nation->getName(), nation->getColour().setW(150));
-    nation_mappings["ui_nation_tooltip_capital"] = Mapping("Capital: " + nation->getCapital()->getName());
-
-    const float& money = nation->getMoney();
-    nation_mappings["ui_nation_tooltip_treasury"] = Mapping(format("Treasury: {:.2f}", money));
-
-    const int& army_size = nation->getArmySize();
-    nation_mappings["ui_nation_tooltip_army_size"] = Mapping(format("Army Size: {}", army_size));
-
-    return nation_mappings;
+    panel->getTextByName("ui_nation_tooltip_name")->setContent(nation->getName());
+    panel->getTextByName("ui_nation_tooltip_name")->setColour(nation->getColour().setW(150));
+    panel->getTextByName("ui_nation_tooltip_capital")->setContent("Capital: " + nation->getCapital()->getName());
+    panel->getTextByName("ui_nation_tooltip_treasury")->setContent(format("Treasury: {:.2f}", nation->getMoney()));
+    panel->getTextByName("ui_nation_tooltip_army_size")->setContent(format("Army Size: {}", static_cast<int>(nation->getOwnedUnits().size())));
 }
 
-const map<string, Mapping>& UIManager::MapUnit(void* moveable) {
+void UIManager::MapUnit(Panel* panel, void* moveable) {
     Unit* unit = static_cast<Unit*>(moveable);
     Nation* nation = unit->getNation();
 
-    unit_mappings["ui_unit_tooltip_name"] = Mapping(unit->getName(), unit->getColour().setW(255));
-
-    if (nation)
-        unit_mappings["ui_unit_tooltip_owned_by"] = Mapping("Owned by: " + nation->getName());
-    else
-        unit_mappings["ui_unit_tooltip_owned_by"] = Mapping("Independent");  // maybe mercenary's don't need a nation or use a dummy one
-
-    const float& skill = unit->getSkill();
-    unit_mappings["ui_unit_tooltip_value"] = Mapping(format("Skill: {:.2f}", skill));
-
-	const int& unit_size = unit->getAmount();
-    unit_mappings["ui_unit_tooltip_terrain"] = Mapping(format("Size: {} ", unit_size));
-
-    return unit_mappings;
+	panel->getTextByName("ui_unit_tooltip_name")->setContent(unit->getName());
+	panel->getTextByName("ui_unit_tooltip_name")->setColour(unit->getColour().setW(255));
+	panel->getTextByName("ui_unit_tooltip_owned_by")->setContent("Owned by: " + (nation ? nation->getName() : "Independent"));  
+	panel->getTextByName("ui_unit_tooltip_value")->setContent(format("Skill: {:.2f}", unit->getSkill()));
+	panel->getTextByName("ui_unit_tooltip_terrain")->setContent(format("Size: {}", unit->getAmount()));
 }
 
-const map<string, Mapping>& UIManager::MapWarDeclaration(void* war_details) {
+void UIManager::MapWarDeclaration(Panel* panel, void* war_details) {
     War* war = static_cast<War*>(war_details);
     Nation* attacker_nation = war->attacker;
     Nation* defender_nation = war->defender;
 
-    war_mappings["ui_war_declaration_attackers_text"] = Mapping(attacker_nation->getName());
-    war_mappings["ui_war_declaration_attackers_allies"] = Mapping("None");
-    war_mappings["ui_war_declaration_defenders_text"] = Mapping(defender_nation->getName());
-    war_mappings["ui_war_declaration_defenders_allies"] = Mapping("None");
+	panel->getTextByName("ui_war_declaration_attackers_text")->setContent(attacker_nation->getName());
+    panel->getTextByName("ui_war_declaration_attackers_allies")->setContent("None");
+	panel->getTextByName("ui_war_declaration_defenders_text")->setContent(defender_nation->getName());
+    panel->getTextByName("ui_war_declaration_defenders_allies")->setContent("None");
+	panel->getTextByName("ui_war_declaration_text_war_goal_details")->setContent("War Goal: " + war->war_goal_target.target_province->getName());
 
-    set_war_details_for_allies(war_mappings, "attackers", attacker_nation->getArmySize(), attacker_nation->getOwnedProvinces().size(), war->attacker_allies);
-    set_war_details_for_allies(war_mappings, "defenders", defender_nation->getArmySize(), defender_nation->getOwnedProvinces().size(), war->defender_allies);
+    set_war_details_for_allies(panel, "attackers", attacker_nation->getArmySize(), attacker_nation->getOwnedProvinces().size(), war->attacker_allies);
+    set_war_details_for_allies(panel, "defenders", defender_nation->getArmySize(), defender_nation->getOwnedProvinces().size(), war->defender_allies);
 
     switch (war->war_goal) {
         case TAKE_KEY_PROVINCE:
-            war_mappings["ui_war_declaration_text_war_goal_details"] = Mapping(format("Control Province '{}'", war->war_goal_target.target_province->getName()));
+            panel->getTextByName("ui_war_declaration_text_war_goal_details")->setContent(format("Control Province '{}'", war->war_goal_target.target_province->getName()));
             break;
         case TAKE_MULTIPLE_PROVINCES:
-            war_mappings["ui_war_declaration_text_war_goal_details"] = Mapping(format("Control At Least {} Provinces", war->war_goal_target.target_number));
+            panel->getTextByName("ui_war_declaration_text_war_goal_details")->setContent(format("Control At Least {} Provinces", war->war_goal_target.target_number));
             break;
         case VASSALISE:
-            war_mappings["ui_war_declaration_text_war_goal_details"] = Mapping(format("Hold Full Control Of ''", defender_nation->getName()));
+            panel->getTextByName("ui_war_declaration_text_war_goal_details")->setContent(format("Hold Full Control Of ''", defender_nation->getName()));
             break;
         default:
-            war_mappings["ui_war_declaration_text_war_goal_details"] = Mapping("Special Objective");
+            panel->getTextByName("ui_war_declaration_text_war_goal_details")->setContent("Special Objective");
     }
-
-    return war_mappings;
 }
 
-const map<string, Mapping>& UIManager::MapHeader(void* header_details) {
+void UIManager::MapHeader(Panel* panel, void* header_details) {
     HeaderInformation* information = static_cast<HeaderInformation*>(header_details);
 
-    header_mappings["ui_information_header_gold"] = Mapping(format("${}", information->money));
-    header_mappings["ui_information_header_date"] = Mapping(information->date);
-
-    return header_mappings;
+	panel->getTextByName("ui_information_header_gold")->setContent(format("${:.2f}", information->money));
+	panel->getTextByName("ui_information_header_date")->setContent(information->date);
 }
 
-const map<string, Mapping>& UIManager::MapBattle(void* battle_details) {
+void UIManager::MapBattle(Panel* panel, void* battle_details) {
     BattleInformation* information = static_cast<BattleInformation*>(battle_details);
 
-    set_battle_details_for_allies(battle_mappings, "1", information->attacker_units);
-    set_battle_details_for_allies(battle_mappings, "2", information->defender_units);
+    set_battle_details_for_allies(panel, "1", information->attacker_units);
+    set_battle_details_for_allies(panel, "2", information->defender_units);
 
-    // battle_mappings["ui_battle_unit_power_bar"] = Mapping(information->date);
-
-    return battle_mappings;
+    // battle_mappings["ui_battle_unit_power_bar"] = Mapping("?");
 }
 
-static void set_battle_details_for_allies(map<string, Mapping>& battle_mappings, const string& side, const vector<Unit*>& allies) {
+static void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies) {
     int total_amount = 0;
     
     for (Unit* ally: allies) {
         total_amount += ally->getAmount();
     }
 
-    battle_mappings["ui_battle_unit_fighter_" + side] = Mapping(to_string(total_amount));
-
+    panel->getTextByName("ui_battle_unit_fighter_" + side)->setContent(to_string(total_amount));
 }
 
-static void set_war_details_for_allies(map<string, Mapping>& war_mappings, const string& side, int strength, int provinces, const vector<Nation*>& allies) {
-    temp_stream.str("");
-    temp_stream.clear();
-
-    for (size_t i = 0; i < allies.size(); i++) {
+static void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies) {
+    ostringstream allies_stream;
+    for (size_t i = 0; i < allies.size(); ++i) {
         strength += allies[i]->getArmySize();
         provinces += allies[i]->getOwnedProvinces().size();
-        temp_stream << allies[i]->getName();
-        if (i < allies.size() - 1) temp_stream << ", ";
+        allies_stream << allies[i]->getName();
+        if (i + 1 < allies.size()) allies_stream << ", ";
     }
 
     if (!allies.empty()) {
-        war_mappings["ui_war_declaration_" + side + "_allies"] = Mapping(temp_stream.str());
+        panel->getTextByName("ui_war_declaration_" + side + "_allies")->setContent(allies_stream.str());
     }
 
-    temp_str_buffer = to_string(strength);
-    war_mappings["ui_war_declaration_" + side + "_strength"] = Mapping(temp_str_buffer);
-
-    temp_str_buffer = to_string(provinces);
-    war_mappings["ui_war_declaration_" + side + "_provinces"] = Mapping(temp_str_buffer);
+    panel->getTextByName("ui_war_declaration_" + side + "_strength")->setContent(to_string(strength));
+    panel->getTextByName("ui_war_declaration_" + side + "_provinces")->setContent(to_string(provinces));
 }

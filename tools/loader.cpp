@@ -278,14 +278,14 @@ Nation* Loader::parseNation() {
 	return nation;
 }
 
-string Loader::getVariable(string var) {
+string Loader::getVariable(const string& var) {
 	auto target_value = current_level_data.find("variables");
 	if (target_value == current_level_data.end()) return "";
 	json vars = current_level_data["variables"];
 	return vars[var];
 }
 
-string Loader::getString(string key, string def) {
+string Loader::getString(const string& key, const string& def) {
 	if (properties.find(key) != properties.end()) {
 		string value = properties[key];
 		if (value[0] == 38) return getVariable(value.erase(0, 1)); // '&'
@@ -294,11 +294,11 @@ string Loader::getString(string key, string def) {
 }
 
 template <typename T>
-T Loader::getValue(string key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
+T Loader::getValue(const string& key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
 
-bool Loader::getBool(string key) { return getValue<bool>(key); }
-int Loader::getInt(string key) { return getValue<int>(key); }
-float Loader::getFloat(string key) { return getValue<float>(key); }
+bool Loader::getBool(const string& key) { return getValue<bool>(key); }
+int Loader::getInt(const string& key) { return getValue<int>(key); }
+float Loader::getFloat(const string& key) { return getValue<float>(key); }
 
 //template <typename T>
 //T Loader::getJsonValue(string key, string inner_key) {
@@ -306,12 +306,12 @@ float Loader::getFloat(string key) { return getValue<float>(key); }
 //	return main.find(inner_key) != main.end() ? main[inner_key] : DEFAULTS[key][inner_key];
 //}
 
-json::array_t Loader::getArray(string key) {
+json::array_t Loader::getArray(const string& key) {
 	auto target_value = properties.find(key);
 	return target_value != properties.end() && target_value.value().is_array() ? properties[key] : DEFAULTS[key];
 }
 
-Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, int identifier) {
+Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, const int& identifier) {
 	Level* level = new Level();
 	ifstream level_file(f);
 	json level_data = json::parse(level_file);

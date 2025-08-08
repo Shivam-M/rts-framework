@@ -1,5 +1,9 @@
 #include "colour.h"
 
+#include <string>
+#include <sstream>
+#include <iomanip>
+
 using namespace std;
 
 #ifdef _WIN32

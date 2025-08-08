@@ -31,7 +31,7 @@ class Loader {
 		static Collidable* parseCollidable();
 		static Collidable* parseCustom();
 		static Moveable* parseMoveable();;
-		static string getVariable(string);
+		static string getVariable(const string&);
 		static Text* parseText();
 		static Moveable* parseButton();
 		static Collidable* parseSlider();
@@ -41,12 +41,12 @@ class Loader {
 		static Panel* parsePanel();
 
 		template <typename T>
-		static T getValue(string key);
-		static bool getBool(string);
-		static float getFloat(string);
-		static int getInt(string);
-		static string getString(string, string = "");
-		static json::array_t getArray(string);
+		static T getValue(const string& key);
+		static bool getBool(const string&);
+		static float getFloat(const string&);
+		static int getInt(const string&);
+		static string getString(const string&, const string& = "");
+		static json::array_t getArray(const string&);
 		
 		// TODO: Come back to this - will need support in level_designer.py too
 		/*
@@ -61,7 +61,7 @@ class Loader {
 		static json current_level_data;
 
 	public:
-		static Level* load_level(string, vector<Moveable*>*, vector<Text*>*, int);
+		static Level* load_level(string, vector<Moveable*>*, vector<Text*>*, const int&);
 		static map<int, Province*>& getProvinceMap();
 		static map<int, Nation*>& getNationMap();
 		static map<int, Unit*>& getUnitMap();

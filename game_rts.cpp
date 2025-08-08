@@ -382,7 +382,7 @@ void GameRTS::updateProperties() {
 
 	if (!selected_object) return;
 
-	if (holding_left_mouse_button) {
+	if (getButton(GLFW_MOUSE_BUTTON_LEFT)) {
 		Moveable* draggable_panel = selected_object;
 
 		while (draggable_panel && draggable_panel->parent && !(draggable_panel->getFlags() & DRAGGABLE)) {

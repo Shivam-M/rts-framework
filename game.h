@@ -39,7 +39,6 @@ class Game {
 		Moveable* selected_object = nullptr;
 		Moveable* hovered_object = nullptr;
 		Moveable* dragged_object = nullptr;
-		bool holding_left_mouse_button = false; // TODO: move to button_map
 
 		map<int, int> button_map;
 
@@ -77,13 +76,13 @@ class Game {
 		void debugMode();
 		void toggleDebug();
 		void updateCursor();
-		void setButton(int button, int state) { button_map[button] = state; }
+		void setButton(const int& button, const int& state) { button_map[button] = state; }
 		const int& getButton(const int& button) { return button_map[button]; }
 		virtual int gameLoop();
 		virtual Moveable* getObjectUnderMouse();
 
 		Player* getPlayer() { return player; }
 
-		Game() {};
+		Game() : Game(0, nullptr) {}
 		Game(int, char**);
 };

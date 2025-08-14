@@ -13,7 +13,9 @@ class Province;
 class Unit;
 
 enum WarGoal {TAKE_KEY_PROVINCE, TAKE_MULTIPLE_PROVINCES, DEFEAT_ARMY, VASSALISE};
-enum Event {START_BATTLE};
+enum Event {BATTLE_START, BATTLE_END};
+
+static int BattleID = 0;
 
 struct War {
 	Nation* attacker;
@@ -48,6 +50,7 @@ struct BattleInformation {
 	int defender_losses;
 	Province* province;
 	int get_battle_swing() { return total_attacker_current_strength - total_defender_current_strength; }
+	int battle_id = BattleID++;
 };
 
 const short MONTH_DAYS[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -91,6 +94,7 @@ class GameRTS : Game {
 	public:
 		static GameRTS* instance;
 		vector<Nation*> nations;
+		vector<BattleInformation*> battles;
 		Nation* player_nation = nullptr;
 		Nation* viewed_nation = nullptr;
 		Date date = { 800, 1, 1 };

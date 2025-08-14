@@ -42,7 +42,8 @@ class TextEntry : public Text {
             cursor_flash();
         }
 
-        string& getContent() override {
+        string& getContent(bool raw = false) override {
+			if (raw) return content;
             display_content = content;
             if (cursor_visible) 
                 display_content += CURSOR_CHAR;

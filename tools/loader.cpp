@@ -6,6 +6,7 @@
 #include "../assets/particle_group.h"
 #include "../assets/text.h"
 #include "../assets/collidable.h"
+#include "../assets/panel.h"
 #include "../tools/ui_manager.h"
 #include "../tools/text_renderer.h"
 #include "../tools/fonts.h"
@@ -51,6 +52,8 @@ const json DEFAULTS = {
 	{"metadata",		""},
 	{"draggable",		false},
 	{"action",			0},
+	{"unfixed",         false},
+	{"uneditable",      false},
 	{"blend_type",		0},
 	{"blend_time",		1.0f},
 	{"blend_speed",		1.0f},
@@ -74,6 +77,7 @@ static map<int, Unit*> unit_map;
 static map<string, Panel*> panel_map;
 
 static json properties;
+static string instance_suffix = "";
 
 void Loader::parseCommon(Moveable* moveable) {
 	string script = getString("script");
@@ -91,7 +95,7 @@ void Loader::parseCommon(Moveable* moveable) {
 		moveable->setTexture(Image::getImage(getString("texture")));
 	}
 	if (getString("parent", "NULL") != "NULL") {
-		Panel* parent_panel = panel_map[getString("parent")];
+		Panel* parent_panel = panel_map[getString("parent") + instance_suffix];
 		parent_panel->add(moveable);
 	}
 	if (getInt("fixed")) {
@@ -100,6 +104,9 @@ void Loader::parseCommon(Moveable* moveable) {
 	if (getInt("blend_type")) {
 		Blend blend = Blend(getInt("blend_type"), getFloat("blend_speed"), getFloat("blend_size"), Vector2(0.5f, 0.5f), getBool("blend_fixed"));
 		moveable->setBlend(blend);
+	}
+	if (getBool("uneditable")) {
+		moveable->addFlag(UNEDITABLE);
 	}
 }
 
@@ -182,6 +189,9 @@ Text* Loader::parseText() {
 	text->setFont(Fonts::getFont(getString("font"), getInt("size"), getInt("font_custom")));
 	text->setContent(getString("content"));
 	text->setAlignment((ALIGNMENT)getInt("alignment"));
+	if (getBool("unfixed")) {  // use existing fixed var
+		text->removeFlag(FIXED_POS); // TODO: temp, no flag should be default in text constructor
+	}
 	return text;
 }
 
@@ -193,12 +203,16 @@ Collidable* Loader::parseSlider() {
 }
 
 Panel* Loader::parsePanel() {
-	Panel* panel = new Panel();
+	Panel* panel = new Panel();  // maybe store as a prefab?
 	panel->setPriority(getFloat("priority"));
 	panel->addFlag(PANEL);
 	parseCommon(panel);
-	panel_map[getString("name")] = panel;
-	UIManager::Register(getString("name"), panel);
+	string name = getString("name");
+	if (instance_suffix != "") {
+		name += instance_suffix;
+	}
+	panel_map[name] = panel;
+	UIManager::Register(name, panel);
 	if (getBool("draggable")) {
 		panel->addFlag(DRAGGABLE);
 	}
@@ -311,10 +325,16 @@ json::array_t Loader::getArray(const string& key) {
 	return target_value != properties.end() && target_value.value().is_array() ? properties[key] : DEFAULTS[key];
 }
 
-Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, const int& identifier) {
+Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, const int& identifier, const string& instance_name) {  // todo: refactor weird mix of static and non-static
 	Level* level = new Level();
 	ifstream level_file(f);
+	if (!level_file.is_open()) {
+		log_t(CON_RED "ERROR! Level file does not exist: ", f);
+		return nullptr;
+	}
 	json level_data = json::parse(level_file);
+
+	instance_suffix = instance_name != "" ? "-" + instance_name : "";
 
 	log_t("Loading level... " CON_RED + f + CON_NORMAL " [" + CON_RED + (string)level_data["level_name"] + CON_NORMAL + "]");
 

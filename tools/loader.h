@@ -61,7 +61,7 @@ class Loader {
 		static json current_level_data;
 
 	public:
-		static Level* load_level(string, vector<Moveable*>*, vector<Text*>*, const int&);
+		static Level* load_level(string file_path, vector<Moveable*>* queue_objects, vector<Text*>* text_objects, const int& identifier, const string& instance_suffix = "");
 		static map<int, Province*>& getProvinceMap();
 		static map<int, Nation*>& getNationMap();
 		static map<int, Unit*>& getUnitMap();

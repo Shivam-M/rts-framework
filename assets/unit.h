@@ -65,6 +65,8 @@ class Unit: public Moveable {
 
 		void receiveBattle(Unit* unit, BattleInformation* battle_info);
 
+		void endBattle();
+
 		void initiateBattle(Unit* unit);
 
 		void initiate();

@@ -50,24 +50,33 @@ void Unit::takeFatalities(int amount) {
 	}
 }
 
+void Unit::endBattle() {
+	if (battle_info_) {
+		GameRTS::instance->registerEvent(BATTLE_END, battle_info_);
+		battle_info_ = nullptr;
+		text->removeFlag(DISABLED);
+	}
+}
+
 void Unit::receiveBattle(Unit* unit, BattleInformation* battle_info) {
+	text->addFlag(DISABLED);
 	setState(FIGHTING);
 	enemy_unit_ = unit;
 	battle_info_ = battle_info;
 }
 
 void Unit::initiateBattle(Unit* unit) {
+	text->addFlag(DISABLED);
 	setState(FIGHTING);
-	BattleInformation* battle_information = new BattleInformation();
-	battle_information->attacker_units.push_back(this);
-	battle_information->defender_units.push_back(unit);
-	battle_information->total_attacker_starting_strength = amount_;
-	battle_information->total_defender_starting_strength = unit->amount_;
-	battle_info_ = battle_information;
-	
+	battle_info_ = new BattleInformation();
+	battle_info_->attacker_units.push_back(this);
+	battle_info_->defender_units.push_back(unit);
+	battle_info_->total_attacker_starting_strength = amount_;
+	battle_info_->total_defender_starting_strength = unit->amount_;
+	battle_info_->province = province_;
 	enemy_unit_ = unit;
 	enemy_unit_->receiveBattle(this, battle_info_);
-	GameRTS::instance->registerEvent(START_BATTLE, battle_information);
+	GameRTS::instance->registerEvent(BATTLE_START, battle_info_);
 }
 
 void Unit::initiate() {
@@ -89,6 +98,7 @@ void Unit::evaluate() {
 			if (enemy_unit_->getState() == DEAD) {
 				enemy_unit_ = nullptr;
 				setState(target_province_ ? TRAVELLING : NORMAL);
+				endBattle();
 			}
 			break;
 		case SIEGING:

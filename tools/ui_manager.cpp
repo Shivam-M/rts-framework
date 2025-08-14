@@ -5,6 +5,7 @@
 #include "../assets/unit.h"
 #include "../assets/nation.h"
 #include "../assets/text.h"
+#include "../assets/panel.h"
 #include "../tools/common.h"
 
 #include <sstream>
@@ -24,11 +25,66 @@ map<string, MappingFunction> UIManager::method_mappings_ = {
     {"ui_battle_unit",          &UIManager::MapBattle}
 };
 
-static void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies);
-static void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies);
+void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies, const float& starting_strength);
+void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies);
 
-void UIManager::AssignValues(const string& panel_name, void* moveable) {
-    method_mappings_[panel_name](UIManager::GetPanel(panel_name), moveable);
+void UIManager::Register(const string& ui_name, Panel* ui_panel) {
+    ui_mappings_[ui_name] = ui_panel;
+}
+
+void UIManager::Unregister(const string& ui_name) {
+    ui_mappings_.erase(ui_name);
+}
+
+void UIManager::Unregister(Panel* ui_panel) {
+    Unregister(GetName(ui_panel));
+}
+
+void UIManager::Show(const string& ui_name, const bool& with_fade) {
+    Show(GetPanel(ui_name), with_fade);
+}
+
+void UIManager::Show(Panel* panel, const bool& with_fade) {
+    if (panel) {
+        panel->show(with_fade);
+    } else {
+        log_t(CON_RED "ERROR! Tried to show a panel that does not exist");
+    }
+}
+
+void UIManager::Hide(const string& ui_name, const bool& with_fade) {
+    Hide(GetPanel(ui_name), with_fade);
+}
+
+void UIManager::Hide(Panel* panel, const bool& with_fade) {
+    if (panel) {
+        panel->hide(with_fade);
+    } else {
+        log_t(CON_RED "ERROR! Tried to hide a panel that does not exist");
+    }
+}
+
+void UIManager::Toggle(const string& ui_name, const bool& with_fade) {
+    Toggle(GetPanel(ui_name), with_fade);
+}
+
+void UIManager::Toggle(Panel* panel, const bool& with_fade) {
+    if (!panel) {
+        log_t(CON_RED "ERROR! Tried to toggle a panel that does not exist");
+        return;
+    }
+    if (panel->hasFlag(DISABLED)) {
+        Show(panel, with_fade);
+    } else {
+        Hide(panel, with_fade);
+    }
+}
+
+void UIManager::AssignValues(const string& panel_name, void* moveable, MappingFunction mapping_function) {  // temp workaround
+    if (!mapping_function) {
+		mapping_function = method_mappings_[panel_name];
+    }
+    mapping_function(UIManager::GetPanel(panel_name), moveable);
 }
 
 void UIManager::MapProvince(Panel* panel, void* moveable) { // TODO: check if converting non-ref to float& actually helps
@@ -111,23 +167,31 @@ void UIManager::MapHeader(Panel* panel, void* header_details) {
 void UIManager::MapBattle(Panel* panel, void* battle_details) {
     BattleInformation* information = static_cast<BattleInformation*>(battle_details);
 
-    set_battle_details_for_allies(panel, "1", information->attacker_units);
-    set_battle_details_for_allies(panel, "2", information->defender_units);
-
-    // battle_mappings["ui_battle_unit_power_bar"] = Mapping("?");
+    set_battle_details_for_allies(panel, "1", information->attacker_units, information->total_attacker_starting_strength);
+    set_battle_details_for_allies(panel, "2", information->defender_units, information->total_defender_starting_strength);
 }
 
-static void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies) {
+void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies, const float& starting_strength) {
     int total_amount = 0;
     
     for (Unit* ally: allies) {
         total_amount += ally->getAmount();
     }
 
+    float const MAX_BAR_WIDTH = 0.1f;
+    float const BAR_HEIGHT = 0.012f;
+    float ratio = total_amount / starting_strength;
+    float width = MAX_BAR_WIDTH * ratio;
+    float x_position_offset = side == "1" ? -width : 0;
+    
     panel->getTextByName("ui_battle_unit_fighter_" + side)->setContent(to_string(total_amount));
+    panel->getByName("ui_battle_unit_power_bar_" + side)->location.x = panel->getCentre().x + x_position_offset;
+    panel->getByName("ui_battle_unit_power_bar_" + side)->setSize(width, BAR_HEIGHT);
+    panel->getByName("ui_battle_unit_power_bar_" + side)->setColour(allies[0]->getColour());
+    panel->getByName("ui_battle_unit_power_bar_" + side)->setGradientColour(allies[0]->getColour());
 }
 
-static void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies) {
+void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies) {
     ostringstream allies_stream;
     for (size_t i = 0; i < allies.size(); ++i) {
         strength += allies[i]->getArmySize();

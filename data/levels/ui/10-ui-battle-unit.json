@@ -1,12 +1,7 @@
 {
-	"alt_background": "FFFFFF",
-	"alt_background_alpha": 0.00,
-	"background": "FFFFFF",
-	"background_alpha": 0.00,
-	"foreground": "FFFFFF",
-	"offset_positions": false,
-	"image": "images/test.png",
 	"level_name": "Battle Indicator",
+	"no_background": true,
+	"offset_positions": false,
 	"variables": {
 		"name": "ui_battle_unit",
 		"font": "data/fonts/MedievalSharp-Book.ttf",
@@ -19,17 +14,19 @@
 			"x": 0.0,
 			"y": 0.2,
 			"width": 0.20,
-			"height": 0.03
+			"height": 0.03,
+			"uneditable": true
 		},
 		{
 			"name": "ui_battle_unit_background",
 			"parent": "&name",
 			"type": "MOVEABLE",
-			"colour": "000000",
-			"alpha": 0.20,
-			"alt_colour": "000000",
-			"alt_alpha": 0.2,
-			"fixed": true
+			"colour": "282828",
+			"alpha": 0.8,
+			"alt_colour": "282828",
+			"alt_alpha": 0.8,
+			"fixed": false,
+			"uneditable": true
 		},
 		{
 			"name": "ui_battle_unit_fighter_1",
@@ -40,11 +37,13 @@
 			"scale": 0.5,
 			"type": "TEXT",
 			"colour": "&colour",
-			"alpha": 0.75,
+			"alpha": 1.00,
 			"x": 0.05,
 			"y": 0.7,
 			"content": "2,332",
-			"alignment": 0
+			"unfixed": true,
+			"alignment": 0,
+			"uneditable": true
 		},
 		{
 			"name": "ui_battle_unit_fighter_2",
@@ -55,25 +54,43 @@
 			"scale": 0.5,
 			"type": "TEXT",
 			"colour": "&colour",
-			"alpha": 0.75,
+			"alpha": 1.00,
 			"x": 0.95,
 			"y": 0.7,
 			"content": "4,332",
-			"alignment": 2
+			"unfixed": true,
+			"alignment": 2,
+			"uneditable": true
 		},
 		{
-			"name": "ui_battle_unit_power_bar",
+			"name": "ui_battle_unit_power_bar_1",
 			"parent": "&name",
 			"type": "MOVEABLE",
 			"colour": "e74c3c",
-			"alpha": 0.20,
+			"alpha": 1.00,
 			"alt_colour": "e74c3c",
-			"alt_alpha": 0.2,
-			"fixed": true,
+			"alt_alpha": 1.00,
+			"fixed": false,
 			"x": 0.25,
 			"width": 0.5,
 			"y": 0.3,
-			"height":  0.4
+			"height": 0.4,
+			"uneditable": true
+		},
+		{
+			"name": "ui_battle_unit_power_bar_2",
+			"parent": "&name",
+			"type": "MOVEABLE",
+			"colour": "e74c3c",
+			"alpha": 1.00,
+			"alt_colour": "e74c3c",
+			"alt_alpha": 1.00,
+			"fixed": false,
+			"x": 0.55,
+			"width": 0.5,
+			"y": 0.3,
+			"height": 0.4,
+			"uneditable": true
 		}
 	]
 }

@@ -30,7 +30,7 @@ class Game {
 		Vector2 drag_offset;
 
 		Render* render = nullptr;
-		Loader* loader;
+		Loader* loader = nullptr;
 		vector<Level*> levels;
 
 		vector<Text*> text_objects;
@@ -71,6 +71,7 @@ class Game {
 		virtual void updateStatistics(const int& frames, const int& updates);
 		virtual void updateProperties();
 		void loadLevels(string level_directory);
+		void dynamicLoadLevel(const string& level_path, const string& instance_name = "");
 		void registerObject(Moveable* object);
 		void registerObject(Text* text_object);
 		void debugMode();

@@ -9,6 +9,7 @@
 #include "assets/unit.h"
 #include "assets/nation.h"
 #include "assets/text.h"
+#include "assets/panel.h"
 
 #include "io/mouse.h"
 #include "io/keyboard.h"
@@ -265,6 +266,7 @@ void GameRTS::executeAction(int action, Moveable* button) {  // keep option for 
 	static vector<string> files_font;
 	Unit* hired_unit;
 	War war;
+	Level* level = nullptr;
 
 	log_t("Executing button action: " CON_RED, action);
 	switch (action) {
@@ -349,16 +351,31 @@ void GameRTS::executeAction(int action, Moveable* button) {  // keep option for 
 			UIManager::Hide("ui_nation_tooltip");
 			UIManager::Show("ui_war_declaration");
 			break;
+		case DEBUG:
+			dynamicLoadLevel("data/levels/ui/10-ui-battle-unit.json", "D38UG");
+			UIManager::Show("ui_battle_unit-D38UG");
+			break;
 		default:
 			t_Notification->setContent(format("Unsupported button action: {}", (int)action));
 	}
 }
 
-static BattleInformation* some_battle_info = nullptr;
 void GameRTS::registerEvent(Event event, void* details) {
+	BattleInformation* battle;
 	switch (event) {
-		case START_BATTLE:
-			some_battle_info = static_cast<BattleInformation*>(details);
+		case BATTLE_START:
+			battle = static_cast<BattleInformation*>(details);
+			dynamicLoadLevel("data/levels/ui/10-ui-battle-unit.json", to_string(battle->battle_id));
+			UIManager::GetPanel("ui_battle_unit-" + to_string(battle->battle_id))->setLocation(battle->province->getLocation().x - (battle->province->getSize().x), battle->province->getLocation().y);
+			battles.push_back(battle);
+			log_t("Started battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->getName(), CON_NORMAL " and " CON_RED, battle->defender_units[0]->getName(), CON_NORMAL);
+			break;
+		case BATTLE_END:
+			battle = static_cast<BattleInformation*>(details);
+			UIManager::Hide("ui_battle_unit-" + to_string(battle->battle_id));
+			battles.erase(remove(battles.begin(), battles.end(), battle), battles.end());
+			log_t("Ending battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->getName(), CON_NORMAL " and " CON_RED, battle->defender_units[0]->getName(), CON_NORMAL);
+			delete battle;
 			break;
 		default:
 			log_t("Unsupported event: " CON_RED, event);
@@ -372,8 +389,9 @@ void GameRTS::updateProperties() {
 	if (viewed_nation)
 		UIManager::AssignValues("ui_nation_tooltip", viewed_nation);
 	
-	if (some_battle_info)
-		UIManager::AssignValues("ui_battle_unit", some_battle_info);
+	for (BattleInformation* battle: battles) {
+		UIManager::AssignValues("ui_battle_unit-" + to_string(battle->battle_id), battle, &UIManager::MapBattle);
+	}
 
 	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
 		render->offsets.x += (cursor_position.x - original_position.x) * 0.01f;

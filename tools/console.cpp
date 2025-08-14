@@ -68,8 +68,16 @@ void Console::update(const string& message) {
 	debug_text->setContent(message);
 }
 
+void lower(string& text) {
+	for (char& c : text) {
+		if (c >= 'A' && c <= 'Z') {
+			c += 32;
+		}
+	}
+}
+
 void Console::execute() {
-	string command = entry_text->getContent(), temp;
+	string command = entry_text->getContent(true), temp;
 	stringstream ss(command);
 	vector<string> args;
 
@@ -99,12 +107,15 @@ void Console::execute() {
 			feedback("Reset view offsets");
 		}
 		else if (cmd == "SHOW" && args.size() > 1) {
+			lower(args[1]);
 			UIManager::Show(args[1]);
 		}
 		else if (cmd == "HIDE" && args.size() > 1) {
+			lower(args[1]);
 			UIManager::Hide(args[1]);
 		}
 		else if (cmd == "TOGGLE" && args.size() > 1) {
+			lower(args[1]);
 			UIManager::Toggle(args[1]);
 		}
 		else if (cmd == "SCRIPT" && args.size() > 1 && game->selected_object) {  // todo: make path safer 

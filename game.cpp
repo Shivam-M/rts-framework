@@ -113,6 +113,18 @@ void Game::loadLevels(string level_directory) {
 	}
 }
 
+void Game::dynamicLoadLevel(const string& level_path, const string& instance_name) {
+	Level* level = loader->load_level(level_path, &queue_objects, &text_objects, 0, instance_name);
+	if (!level) return;
+	for (Moveable* m : level->objects) {
+		if (level->offset_positions) m->location.x += levels.size();
+		registerObject(m);
+	}
+	for (Text* t : level->text_objects) registerObject(t);
+	levels.push_back(level);
+	delete level;
+}
+
 static int paused = 0;
 static ColourShift fadeShift(Colour first_colour, Colour second_colour, bool swap, ColourShift::DIRECTION = ColourShift::DIRECTION::UP) {
 	ColourShift colourshift = ColourShift(first_colour, second_colour);

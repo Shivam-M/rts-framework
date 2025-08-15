@@ -55,7 +55,7 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     glBindVertexArray(textureVAO);
     glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 1000 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
@@ -85,42 +85,69 @@ void Render::drawText(Vector2 location, string& message, Font* font, Colour& col
     TextRenderer::render_text(font, location.x * resolution.x, (location.y) * resolution.y, message, colour, font_scale, priority);
 }
 
+GLfloat quad_vertex_buffer[1000 * 16];
 void Render::drawQuadBatch() {
     glBindVertexArray(textureVAO);
     glUseProgram(colourShader);
     glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
 
-    GLfloat x, y, w, h, vertices[16];
-
-    vertices[2] = 0.0f;   vertices[3] = 0.0f;
-    vertices[6] = 0.0f;   vertices[7] = 1.0f;
-    vertices[10] = 1.0f;  vertices[11] = 1.0f;
-    vertices[14] = 1.0f;  vertices[15] = 0.0f;
+    int vertex_count = 0;
 
     for (int i = 0; i < quad_count_; i++) {
         const QuadData& quad_data = batched_quads_[i];
-        const Vector2& offsets = quad_data.fixed_position ? Vector2{ 0, 0 } : this->offsets;
+        GLfloat x, y, w, h;
+
+        if (quad_data.fixed_position) {
+            x = quad_data.location.x * WINDOW_WIDTH;
+            y = (1.0f - (quad_data.location.y) - quad_data.size.y) * WINDOW_HEIGHT;
+            w = quad_data.size.x * WINDOW_WIDTH;
+            h = quad_data.size.y * WINDOW_HEIGHT;
+        } else {
+            x = (quad_data.location.x * this->scale + this->offsets.x) * WINDOW_WIDTH;
+            y = (1.0f - (quad_data.location.y * this->scale + this->offsets.y) - quad_data.size.y * this->scale) * WINDOW_HEIGHT;
+            w = quad_data.size.x * this->scale * WINDOW_WIDTH;
+            h = quad_data.size.y * this->scale * WINDOW_HEIGHT;
+        }
+
+        quad_vertex_buffer[vertex_count++] = x;
+        quad_vertex_buffer[vertex_count++] = y + h;
+        quad_vertex_buffer[vertex_count++] = 0.0f;
+        quad_vertex_buffer[vertex_count++] = 0.0f;
+
+        quad_vertex_buffer[vertex_count++] = x;
+        quad_vertex_buffer[vertex_count++] = y;
+        quad_vertex_buffer[vertex_count++] = 0.0f;
+        quad_vertex_buffer[vertex_count++] = 1.0f;
+
+        quad_vertex_buffer[vertex_count++] = x + w;
+        quad_vertex_buffer[vertex_count++] = y;
+        quad_vertex_buffer[vertex_count++] = 1.0f;
+        quad_vertex_buffer[vertex_count++] = 1.0f;
+
+        quad_vertex_buffer[vertex_count++] = x + w;
+        quad_vertex_buffer[vertex_count++] = y + h;
+        quad_vertex_buffer[vertex_count++] = 1.0f;
+        quad_vertex_buffer[vertex_count++] = 0.0f;
+    }
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_count * sizeof(GLfloat), quad_vertex_buffer);
+
+    for (int i = 0; i < quad_count_; i++) {
+        const QuadData& quad_data = batched_quads_[i];
         const Colour* colour = quad_data.colour;
         const Colour* colour_gradient = quad_data.gradient;
-        float scale = quad_data.fixed_position ? 1.0f : this->scale;
 
-        x = (quad_data.location.x * scale + offsets.x) * WINDOW_WIDTH;
-        y = (1.0f - (quad_data.location.y * scale + offsets.y) - quad_data.size.y * scale) * WINDOW_HEIGHT;
-        w = quad_data.size.x * scale * WINDOW_WIDTH;
-        h = quad_data.size.y * scale * WINDOW_HEIGHT;
-
-        vertices[0] = x;      vertices[1] = y + h;
-        vertices[4] = x;      vertices[5] = y;
-        vertices[8] = x + w;  vertices[9] = y;
-        vertices[12] = x + w; vertices[13] = y + h;
-
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        // glUniform1f(uniformPriorityQuad, quad_data.priority);
         glUniform1f(uniformRadiusQuad, quad_data.radius);
         glUniform4f(uniformColourQuad, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
-        glUniform4f(uniformColourSecondaryQuad, colour_gradient->x_ / 255.0f, colour_gradient->y_ / 255.0f, colour_gradient->z_ / 255.0f, colour_gradient->w_ / 255.0f);
-        // glUniform1f(uniformPriorityQuad, quad_data.priority);
+        
+        if (colour_gradient) {
+            glUniform4f(uniformColourSecondaryQuad, colour_gradient->x_ / 255.0f, colour_gradient->y_ / 255.0f, colour_gradient->z_ / 255.0f, colour_gradient->w_ / 255.0f);
+        } else {
+            glUniform4f(uniformColourSecondaryQuad, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
+        }
 
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
     }
 
     quad_count_ = 0;
@@ -136,57 +163,77 @@ void Render::toggleFullscreen() {
     renderWindow();
 }
 
+GLfloat vertex_buffer[1000 * 16];
 void Render::drawTextureBatch() {
     glBindVertexArray(textureVAO);
     glUseProgram(textureShader);
     glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
 
-    GLfloat x, y, w, h, vertices[16];
-
-    vertices[2] = 0.0f;   vertices[3] = 0.0f;
-    vertices[6] = 0.0f;   vertices[7] = 1.0f;
-    vertices[10] = 1.0f;  vertices[11] = 1.0f;
-    vertices[14] = 1.0f;  vertices[15] = 0.0f;
-
-	const float& time = glfwGetTime();
+    int vertex_count = 0;
 
     for (int i = 0; i < texture_count_; i++) {
-        if (batched_textures_[i].texture == nullptr) continue; // temp
         const TextureData& texture_data = batched_textures_[i];
-        const Vector2& offsets = texture_data.fixed_position ? Vector2{ 0, 0 } : this->offsets;
-		const Colour* colour = texture_data.colour;
+        GLfloat x, y, w, h;
+
+        if (texture_data.fixed_position) {
+            x = texture_data.location.x * WINDOW_WIDTH;
+            y = (1.0f - (texture_data.location.y) - texture_data.size.y) * WINDOW_HEIGHT;
+            w = texture_data.size.x * WINDOW_WIDTH;
+            h = texture_data.size.y * WINDOW_HEIGHT;
+        } else {
+            x = (texture_data.location.x * this->scale + this->offsets.x) * WINDOW_WIDTH;
+            y = (1.0f - (texture_data.location.y * this->scale + this->offsets.y) - texture_data.size.y * this->scale) * WINDOW_HEIGHT;
+            w = texture_data.size.x * this->scale * WINDOW_WIDTH;
+            h = texture_data.size.y * this->scale * WINDOW_HEIGHT;
+        }
+
+        vertex_buffer[vertex_count++] = x;
+        vertex_buffer[vertex_count++] = y + h;
+        vertex_buffer[vertex_count++] = 0.0f;
+        vertex_buffer[vertex_count++] = 0.0f;
+
+        vertex_buffer[vertex_count++] = x;
+        vertex_buffer[vertex_count++] = y;
+        vertex_buffer[vertex_count++] = 0.0f;
+        vertex_buffer[vertex_count++] = 1.0f;
+
+        vertex_buffer[vertex_count++] = x + w;
+        vertex_buffer[vertex_count++] = y;
+        vertex_buffer[vertex_count++] = 1.0f;
+        vertex_buffer[vertex_count++] = 1.0f;
+
+        vertex_buffer[vertex_count++] = x + w;
+        vertex_buffer[vertex_count++] = y + h;
+        vertex_buffer[vertex_count++] = 1.0f;
+        vertex_buffer[vertex_count++] = 0.0f;
+    }
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_count * sizeof(GLfloat), vertex_buffer);
+
+    const float time = glfwGetTime();
+
+    for (int i = 0; i < texture_count_; i++) {
+        const TextureData& texture_data = batched_textures_[i];
+        const Colour* colour = texture_data.colour;
         const Colour* secondary_colour = texture_data.secondary_colour;
         const Blend* blend = texture_data.blend;
-        float scale = texture_data.fixed_position ? 1.0f : this->scale;
 
-        x = (texture_data.location.x * scale + offsets.x) * WINDOW_WIDTH;
-        y = (1.0f - (texture_data.location.y * scale + offsets.y) - texture_data.size.y * scale) * WINDOW_HEIGHT;
-        w = texture_data.size.x * scale * WINDOW_WIDTH;
-        h = texture_data.size.y * scale * WINDOW_HEIGHT;
-
-        vertices[0] = x;      vertices[1] = y + h;
-        vertices[4] = x;      vertices[5] = y;
-        vertices[8] = x + w;  vertices[9] = y;
-        vertices[12] = x + w; vertices[13] = y + h;
-
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glUniform4f(uniformColour, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
-
         glUniform1i(uniformType, blend->type);
 
         if (blend->type != 0) {
             glUniform1f(uniformTime, blend->fixed ? 1.0f : time);
             glUniform1f(uniformSpeed, blend->speed);
             glUniform1f(uniformSize, blend->size);
-			glUniform2f(uniformDirection, blend->direction.x, blend->direction.y);
+            glUniform2f(uniformDirection, blend->direction.x, blend->direction.y);
         }
-        
+
         if (secondary_colour) {
             glUniform4f(uniformColourSecondary, secondary_colour->x_ / 255.0f, secondary_colour->y_ / 255.0f, secondary_colour->z_ / 255.0f, secondary_colour->w_ / 255.0f);
         }
 
         glBindTexture(GL_TEXTURE_2D, texture_data.texture->data);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
     }
 
     texture_count_ = 0;
@@ -196,9 +243,9 @@ void Render::renderMoveable(Moveable* moveable) {
     if (moveable->hasFlag(CUSTOM)) {
         // drawCustom(moveable->getPoints(), moveable->getColourRef(), moveable->getGradientColourRef());
     } else if (moveable->hasFlag(CURVED)) {
-        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getColourRef(), &moveable->getGradientColourRef(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
+        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getColourRef(), moveable->getGradientColourP(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
     } else if (moveable->hasFlag(TEXTURED)) {
-        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), &moveable->getColourRef(), &moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), &moveable->getGradientColourRef());
+        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), &moveable->getColourRef(), &moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), moveable->getGradientColourP());
     } else {
         drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getColourRef(), &moveable->getGradientColourRef(), moveable->getPriority(), 0.0f, moveable->hasFlag(FIXED_POS));
     }

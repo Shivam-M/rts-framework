@@ -103,18 +103,22 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
     return ft_font;
 }
 
-GLuint lastBoundTexture = 0;
+GLuint lastBoundTexture = -1;
+Colour lastBoundColour = Colour(0, 0, 0, 0);
 float vertices[1024 * 6 * 4 * 2];
 float xpos, ypos, w, h;
 size_t vertexIndex = 0;
 void TextRenderer::render_text(Font* ft_font, const float& x, const float& y, string const& text, const Colour& colour, const float& scale, const float& priority) {
-    glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
     glUniform1f(uniformPriority, priority);
-    
 
     if (lastBoundTexture != ft_font->texture) {
         glBindTexture(GL_TEXTURE_2D, ft_font->texture);
         lastBoundTexture = ft_font->texture;
+    }
+
+    if (lastBoundColour != colour) {
+        glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
+        lastBoundColour = colour;
     }
 
     float baseline_y = floor(y + 0.5f);

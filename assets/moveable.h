@@ -125,6 +125,10 @@ class Moveable {
 		Colour& getColourRef() { return colour; }
 		Colour getColour() { return colour; }
 		Colour& getGradientColourRef() { return gradient_colour; }
+		Colour* getGradientColourP() { 
+			if (gradient_colour == colour or gradient_colour == COLOUR_NULL) return nullptr;
+			else return &gradient_colour;
+		}
 		Colour getGradientColour() { return gradient_colour; }
 		Colour getDefaultColour() { return default_colour; }
 

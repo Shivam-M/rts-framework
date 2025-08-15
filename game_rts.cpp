@@ -54,6 +54,8 @@ void GameRTS::extendedInitialisation() {
 
 	UIManager::Hide("ui_menu_pause");
 	UIManager::Hide("ui_nation_tooltip");
+	UIManager::Hide("ui_province_tooltip");
+	UIManager::Hide("ui_unit_tooltip");
 	UIManager::Hide("ui_war_declaration");
 	UIManager::Hide("ui_event_choice");
 	UIManager::Hide("ui_war_indicator");
@@ -474,6 +476,7 @@ int GameRTS::gameLoop() {
 	float delta_time = 0.f, current_time = 0.f;
 	float last_frame_time = static_cast<float>(glfwGetTime());
 	float update_time;
+	float second_time;
 
 #ifdef DEBUG_PROFILING
 	vector<float> temp_profiling_u;
@@ -501,17 +504,19 @@ int GameRTS::gameLoop() {
 			updateProperties();
 			updates++;
 			delta_time--;
-			update_time_ = static_cast<float>(glfwGetTime()) - update_time;
+			update_time_ = glfwGetTime() - update_time;
 		}
 
 		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0f / fps_limit)) {
-			last_frame_time = static_cast<float>(glfwGetTime());
+			last_frame_time = glfwGetTime();
 			render->renderWindow();
 			updateCursor();
 			frames++;
 		}
 
-		if (glfwGetTime() - timer > 1.0f) {
+		second_time = glfwGetTime() - timer;
+		if (second_time > 1.0f) {
+			// timer += second_time;
 			timer++;
 			average_frames = (frame_count * average_frames + frames) / (frame_count + 1);
 			frame_count += 1;

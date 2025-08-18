@@ -184,13 +184,15 @@ void GameRTS::moveUnit(Province* province) {
 
 Moveable* GameRTS::getObjectUnderMouse() {
 	Moveable* object = nullptr;
-	float min_distance = 100.f;
 	for (Moveable* moveable : game->objects) {
 		if (moveable->getFlags() & (UNEDITABLE | DISABLED)) continue;
 		if (!game_paused) moveable->onHoverStop();
 
-		Vector2 location, size;
+		if (moveable->hasFlag(PROVINCE)) {
+			if (!cursorPositionOnTexture(moveable, cursor_position)) continue;
+		}
 
+		Vector2 location, size;
 		if (moveable->hasFlag(FIXED_POS)) {
 			location = moveable->getLocation();
 			size = moveable->getSize();
@@ -199,19 +201,7 @@ Moveable* GameRTS::getObjectUnderMouse() {
 			size = moveable->getSize() * render->scale;
 		}
 
-		if (!within(location, size, cursor_position)) continue;
-
-		if (moveable->hasFlag(UI)) {
-			object = moveable;
-			min_distance = -1;
-			continue;
-		}
-
-		Vector2 centre = moveable->getCentre() * render->scale + render->offsets;
-		
-		float distance = (centre.x - cursor_position.x) * (centre.x - cursor_position.x) + (centre.y - cursor_position.y) * (centre.y - cursor_position.y);
-		if (distance < min_distance) {
-			min_distance = distance;
+		if (within(location, size, cursor_position)) {
 			object = moveable;
 		}
 	}
@@ -405,7 +395,7 @@ void GameRTS::updateProperties() {
 	if (getButton(GLFW_MOUSE_BUTTON_LEFT)) {
 		Moveable* draggable_panel = selected_object;
 
-		while (draggable_panel && draggable_panel->parent && !(draggable_panel->getFlags() & DRAGGABLE)) {
+		while (draggable_panel && draggable_panel->parent && !(draggable_panel->hasFlag(DRAGGABLE))) {
 			draggable_panel = draggable_panel->parent;
 		}
 

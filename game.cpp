@@ -229,6 +229,38 @@ static bool within(const Vector2& location, const Vector2& size, const Vector2& 
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
+bool Game::cursorPositionOnTexture(Moveable* moveable, const Vector2& cursor_position) {
+	Texture* texture = moveable->getTexture();
+	if (!texture || !texture->image) return false;
+
+	Vector2 location, size;
+	if (moveable->hasFlag(FIXED_POS)) {
+		location = moveable->getLocation();
+		size = moveable->getSize();
+	}
+	else {
+		location = moveable->getLocation() * render->scale + render->offsets;
+		size = moveable->getSize() * render->scale;
+	}
+
+	float u = (cursor_position.x - location.x) / size.x;
+	float v = (cursor_position.y - location.y) / size.y;
+
+	if (u < 0 || u > 1 || v < 0 || v > 1) return false;
+
+	int x = static_cast<int>(u * texture->width);
+	int y = static_cast<int>(v * texture->height);
+
+	x = clamp(x, 0, texture->width - 1);
+	y = clamp(y, 0, texture->height - 1);
+
+	int channels = texture->composition;
+	int index = (y * texture->width + x) * channels;
+	unsigned char alpha = texture->image[index + 3];
+
+	return alpha > 0;
+}
+
 Moveable* Game::getObjectUnderMouse() {
 	Moveable* object = nullptr;
 	float min_distance = 100.0f;

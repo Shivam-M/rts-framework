@@ -77,6 +77,7 @@ class Game {
 		void debugMode();
 		void toggleDebug();
 		void updateCursor();
+		bool cursorPositionOnTexture(Moveable* moveable, const Vector2& cursor_position);
 		void setButton(const int& button, const int& state) { button_map[button] = state; }
 		const int& getButton(const int& button) { return button_map[button]; }
 		virtual int gameLoop();

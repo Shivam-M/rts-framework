@@ -8,12 +8,23 @@ struct Vector2 {
 	float x, y;
 	Vector2(const float& x = 0.0f, const float& y = 0.0f) : x(x), y(y) {}
 	void set(const float& x_value, const float& y_value) { x = x_value, y = y_value; }
-	Vector2 operator*(const float& number) { return Vector2(x * number, y * number); }
-	Vector2 operator*(const Vector2& other) { return Vector2(x * other.x, y * other.y); }
-	Vector2 operator+(const float& number) { return Vector2(x + number, y + number); }
-	Vector2 operator+(const Vector2& other) { return Vector2(x + other.x, y + other.y); }
-	Vector2 operator-(const Vector2& other) { return Vector2(x - other.x, y - other.y); }
-	Vector2 operator/(const Vector2& other) const { return Vector2(x / other.x, y / other.y); }
+	Vector2& operator+=(const Vector2& other) { x += other.x; y += other.y; return *this; }
+	Vector2& operator+=(const float& number) { x += number;  y += number;  return *this; }
+	Vector2& operator-=(const Vector2& other) { x -= other.x; y -= other.y; return *this; }
+	Vector2& operator-=(const float& number) { x -= number;  y -= number;  return *this; }
+	Vector2& operator*=(const Vector2& other) { x *= other.x; y *= other.y; return *this; }
+	Vector2& operator*=(const float& number) { x *= number;  y *= number;  return *this; }
+	Vector2& operator/=(const Vector2& other) { x /= other.x; y /= other.y; return *this; }
+	Vector2& operator/=(const float& number) { x /= number;  y /= number;  return *this; }
+
+	Vector2 operator+(const Vector2& other) const { Vector2 result = *this; result += other; return result; }
+	Vector2 operator+(const float& number)  const { Vector2 result = *this; result += number; return result; }
+	Vector2 operator-(const Vector2& other) const { Vector2 result = *this; result -= other; return result; }
+	Vector2 operator-(const float& number)  const { Vector2 result = *this; result -= number; return result; }
+	Vector2 operator*(const Vector2& other) const { Vector2 result = *this; result *= other; return result; }
+	Vector2 operator*(const float& number)  const { Vector2 result = *this; result *= number; return result; }
+	Vector2 operator/(const Vector2& other) const { Vector2 result = *this; result /= other; return result; }
+	Vector2 operator/(const float& number)  const { Vector2 result = *this; result /= number; return result; }
 };
 
 class Vector4 {
@@ -37,17 +48,54 @@ class Vector4 {
 
 		void setAll(float x, float y, float z, float w) { x_ = x; y_ = y; z_ = z; w_ = w; }
 
-		Vector4 operator+(const Vector4& other) const { return Vector4(x_ + other.x_, y_ + other.y_, z_ + other.z_, w_ + other.w_); }
-		Vector4 operator+(const float& number) const { return Vector4(x_ + number, y_ + number, z_ + number, w_ + number); }
+		Vector4& operator+=(const Vector4& other) {
+			x_ += other.x_; y_ += other.y_; z_ += other.z_; w_ += other.w_;
+			return *this;
+		}
 
-		Vector4 operator-(const Vector4& other) const { return Vector4(x_ - other.x_, y_ - other.y_, z_ - other.z_, w_ - other.w_); }
-		Vector4 operator-(const float& number) const { return Vector4(x_ - number, y_ - number, z_ - number, w_ - number); }
+		Vector4& operator+=(const float& number) {
+			x_ += number; y_ += number; z_ += number; w_ += number;
+			return *this;
+		}
 
-		Vector4 operator*(const Vector4& other) const { return Vector4(x_ * other.x_, y_ * other.y_, z_ * other.z_, w_ * other.w_); }
-		Vector4 operator*(const float& number) const { return Vector4(x_ * number, y_ * number, z_ * number, w_ * number); }
+		Vector4& operator-=(const Vector4& other) {
+			x_ -= other.x_; y_ -= other.y_; z_ -= other.z_; w_ -= other.w_;
+			return *this;
+		}
 
-		Vector4 operator/(const Vector4& other) const { return Vector4(x_ / other.x_, y_ / other.y_, z_ / other.z_, w_ / other.w_); }
-		Vector4 operator/(const float& number) const { return Vector4(x_ / number, y_ / number, z_ / number, w_ / number); }
+		Vector4& operator-=(const float& number) {
+			x_ -= number; y_ -= number; z_ -= number; w_ -= number;
+			return *this;
+		}
+
+		Vector4& operator*=(const Vector4& other) {
+			x_ *= other.x_; y_ *= other.y_; z_ *= other.z_; w_ *= other.w_;
+			return *this;
+		}
+
+		Vector4& operator*=(const float& number) {
+			x_ *= number; y_ *= number; z_ *= number; w_ *= number;
+			return *this;
+		}
+
+		Vector4& operator/=(const Vector4& other) {
+			x_ /= other.x_; y_ /= other.y_; z_ /= other.z_; w_ /= other.w_;
+			return *this;
+		}
+
+		Vector4& operator/=(const float& number) {
+			x_ /= number; y_ /= number; z_ /= number; w_ /= number;
+			return *this;
+		}
+
+		Vector4 operator+(const Vector4& other) const { Vector4 result = *this; result += other; return result; }
+		Vector4 operator+(const float& number) const { Vector4 result = *this; result += number; return result; }
+		Vector4 operator-(const Vector4& other) const { Vector4 result = *this; result -= other; return result; }
+		Vector4 operator-(const float& number) const { Vector4 result = *this; result -= number; return result; }
+		Vector4 operator*(const Vector4& other) const { Vector4 result = *this; result *= other; return result; }
+		Vector4 operator*(const float& number) const { Vector4 result = *this; result *= number; return result; }
+		Vector4 operator/(const Vector4& other) const { Vector4 result = *this; result /= other; return result; }
+		Vector4 operator/(const float& number) const { Vector4 result = *this; result /= number; return result; }
 
 		bool operator==(const Vector4& other) const { return x_ == other.x_ && y_ == other.y_ && z_ == other.z_ && w_ == other.w_; }
 		bool operator!=(const Vector4& other) const { return x_ != other.x_ || y_ != other.y_ || z_ != other.z_ || w_ != other.w_; }

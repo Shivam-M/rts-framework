@@ -27,7 +27,7 @@ void Unit::setPath(vector<Province*> path) {
 	for (Province* province : path) {
 		ColourShift colourshift = ColourShift(province->getColour(), province->getColour().setW(150));
 		colourshift.speed = 0.02f;
-		colourshift.setCondition(&PathCount);
+		colourshift.conditionalise(&PathCount);
 		province->setColourShift(colourshift);
 		log_t("* " CON_RED, province->getName(), CON_NORMAL " (" CON_RED, province->getID(), CON_NORMAL ")");
 	}
@@ -47,6 +47,9 @@ void Unit::takeFatalities(int amount) {
 		addFlag(DISABLED);
 		setState(DEAD);
 		text->addFlag(DISABLED);
+		if (province_->getBesieger() == this) {
+			province_->setBesieger(nullptr);
+		}
 	}
 }
 

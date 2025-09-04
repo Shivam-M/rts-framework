@@ -66,6 +66,9 @@ class Province : public Moveable {  // TODO: Move definitions to a .cpp file
 
 		void setNation(Nation* nation) { nation_ = nation; }
 		Nation* getNation() { return nation_; }
+
+		void setBesieger(Unit* unit) { besieger_ = unit; }
+
 		Unit* getBesieger() { return besieger_; }
 		Unit* getController() { return controlled_by; } // Should be nation instead as this unit might be dead
 
@@ -73,7 +76,7 @@ class Province : public Moveable {  // TODO: Move definitions to a .cpp file
 			besieger_ = unit;
 			ColourShift colourshift = ColourShift(getColour(), colour);
 			colourshift.speed = 0.03f;
-			colourshift.setCondition(&SiegeID);
+			colourshift.conditionalise(&SiegeID);
 
 			/*
 			ColourShift2 colourshift2 = ColourShift2(getColour(), colour, 0.03f);

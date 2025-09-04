@@ -69,40 +69,25 @@ void Moveable::loadScript(string path) {
 }
 
 void Moveable::shiftColour() {
-	
-	Colour change = (colour_shift.first_colour - colour_shift.second_colour) * colour_shift.speed;
-	ColourShift::DIRECTION direction = colour_shift.direction;
+	colour_shift.progress += (colour_shift.direction == ColourShift::Direction::Up ? colour_shift.speed : -colour_shift.speed);
 
-	if (colour_shift.direction == ColourShift::UP) {
-		colour = colour + change;
-		if (colour >= max(colour_shift.first_colour, colour_shift.second_colour)) {
-			colour = max(colour_shift.first_colour, colour_shift.second_colour);
-			colour_shift.direction = ColourShift::DOWN;
-		}
-	} else {	
-		if (colour_shift.loop == false && ((default_colour.sum() - colour.sum()) < -10)) {
-			shifting_colour = false;
-			return;
-		}
-		
-		colour = colour - change;
-		if (colour <= min(colour_shift.first_colour, colour_shift.second_colour)) {
-			colour = min(colour_shift.first_colour, colour_shift.second_colour);
-			colour_shift.direction = ColourShift::UP;
+	if (colour_shift.progress >= 1.0f || colour_shift.progress <= 0.0f) {
+		colour_shift.progress = clamp(colour_shift.progress, 0.0f, 1.0f);
+		if (colour_shift.loop) {
+			colour_shift.direction = (colour_shift.progress == 1.0f ? ColourShift::Direction::Down : ColourShift::Direction::Up);
+		} else {
+			stopColourShift();
 		}
 	}
+
 	if (colour_shift.with_gradient) gradient_colour = colour;
-	if (colour_shift.loop == false && (direction != colour_shift.direction || colour.getW() <= 0)) // temp
-		shifting_colour = false;
-	if (colour_shift.fade_to_death && colour.getW() <= 0) addFlag(DISABLED);
-	if (colour_shift.condition != nullptr) {
-		if (*colour_shift.condition != colour_shift.target) stopColourShift();
-	}
+	if (colour_shift.fade_to_death && colour.getW() <= 0)  addFlag(DISABLED);
+	if (colour_shift.condition && *colour_shift.condition != colour_shift.target) stopColourShift();
 }
 
 void Moveable::stopColourShift() {
-	// colour = default_colour; -- check particles impact
 	shifting_colour = false;
+	// if (filters.size() > 0 && filters.front()->mode == ColourFilter::Mode::Replacement) filters.pop_front();
 }
 
 void Moveable::common(const float& modifier) {
@@ -118,8 +103,25 @@ void Moveable::update(const float& modifier) {
 	location.x += velocity.x;
 	location.y += velocity.y;
 
+	evaluated_colour = colour;
+
 	if (shifting_colour) {
 		shiftColour();
+		evaluated_colour = colour_shift.evaluate();
+	}
+
+	for (ColourFilter* filter : filters) {
+		switch (filter->mode) {
+			case ColourFilter::Mode::Replacement:
+				evaluated_colour = filter->colour;
+				break;
+			case ColourFilter::Mode::Addition:
+				evaluated_colour += filter->colour;
+				break;
+			case ColourFilter::Mode::Multiplication:
+				evaluated_colour *= filter->colour;
+				break;
+		}
 	}
 }
 

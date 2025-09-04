@@ -31,8 +31,8 @@ class Panel: public Moveable {
 			moveable->setPriority(getPriority());
 			moveable->addFlag(UNDER_PANEL);
 			moveable->addFlag(UI);
-			moveable->size = moveable->size * getSize();
-			moveable->location = getLocation() + (moveable->location * getSize());
+			moveable->size *= size;
+			moveable->location = location + (moveable->location * size);
 			moveable->parent = this;
 			bundle_.push_back(moveable);
 		}
@@ -43,8 +43,8 @@ class Panel: public Moveable {
 				entrance.speed = 0.0075f;
 				mv->colour = mv->getColour().setW(0);
 				entrance.loop = false;
-				entrance.reswap();
-				entrance.direction = ColourShift::DIRECTION::DOWN;
+				// entrance.reswap();
+				entrance.direction = ColourShift::Direction::Up;
 				mv->setColourShift(entrance);
 			}
 
@@ -52,8 +52,9 @@ class Panel: public Moveable {
 
 		void fade_out() {
 			for (Moveable* mv : bundle_) {
-				mv->setColour(mv->getDefaultColour());
+				// mv->setColour(mv->getDefaultColour());
 				ColourShift entrance = ColourShift(mv->getColour(), mv->getColour().setW(0));
+				entrance.direction = ColourShift::Direction::Up;
 				entrance.speed = 0.0075f;
 				entrance.loop = false;
 				entrance.fade_to_death = true;

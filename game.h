@@ -18,6 +18,7 @@ class Text;
 class Loader;
 struct Level;
 struct GLFWwindow;
+struct ColourFilter;
 
 class Game {
 	public:
@@ -39,6 +40,7 @@ class Game {
 		Moveable* selected_object = nullptr;
 		Moveable* hovered_object = nullptr;
 		Moveable* dragged_object = nullptr;
+		ColourFilter* global_filter;
 
 		map<int, int> button_map;
 

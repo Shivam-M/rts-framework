@@ -55,6 +55,8 @@ Game::Game(int argc, char** argv) {
 	mouse = new Mouse(this);
 	console = new Console(this);
 
+	global_filter = new ColourFilter(Colour(1, 1, 1, 0.9), ColourFilter::Mode::Multiplication);
+
 	Font* debug_font =		Fonts::getFont("data/fonts/consolab.ttf", 11, true);
 	t_FPSCounter =			new Text({0.925f, 0.050f}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
 	t_Information =			new Text({0.030f, 0.050f}, debug_font, Colour(34, 166, 179, 255), "");
@@ -125,23 +127,13 @@ void Game::dynamicLoadLevel(const string& level_path, const string& instance_nam
 	delete level;
 }
 
-static int paused = 0;
-static ColourShift fadeShift(Colour first_colour, Colour second_colour, bool swap, ColourShift::DIRECTION = ColourShift::DIRECTION::UP) {
-	ColourShift colourshift = ColourShift(first_colour, second_colour);
-	if (swap) colourshift.reswap();
-	colourshift.setCondition(&paused);
-	colourshift.loop = false;
-	colourshift.speed = 0.03f;
-	colourshift.with_gradient = true;
-	return colourshift;
-}
-
 void Game::extendedInitialisation() {
 	console->build();
 }
 
 void Game::debugMode() {
-	UIManager::Toggle("ui_menu_pause");
+	global_filter->colour.w_ *= 0.1f;
+	// UIManager::Toggle("ui_menu_pause");
 }
 
 void Game::toggleDebug() {
@@ -219,10 +211,12 @@ void Game::updateObjects(const float& modifier) {
 
 void Game::registerObject(Moveable* object) { 
 	objects.push_back(object);
+	object->filters.push_back(global_filter);
 }
 
-void Game::registerObject(Text* t) { 
-	text_objects.push_back(t); 
+void Game::registerObject(Text* text_object) { 
+	text_objects.push_back(text_object);
+	text_object->filters.push_back(global_filter);
 }
 
 static bool within(const Vector2& location, const Vector2& size, const Vector2& point) {

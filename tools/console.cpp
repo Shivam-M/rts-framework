@@ -129,6 +129,11 @@ void Console::execute() {
 			for (Moveable* m : game->objects)
 				log_t(m->getName(), CON_RED ": " CON_NORMAL, m->getLocation().x, ", ", m->getLocation().y);
 		}
+		else if (cmd == "DEBUG") {
+			if (game->selected_object) {
+				game->selected_object->filters.push_back(new ColourFilter(Colour(0.5, 0.5, 0.5, 100), ColourFilter::Mode::Multiplication));
+			}
+		}
 		else {
 			feedback("Invalid command or usage: " + command);
 		}

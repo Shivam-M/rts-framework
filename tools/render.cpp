@@ -243,11 +243,11 @@ void Render::renderMoveable(Moveable* moveable) {
     if (moveable->hasFlag(CUSTOM)) {
         // drawCustom(moveable->getPoints(), moveable->getColourRef(), moveable->getGradientColourRef());
     } else if (moveable->hasFlag(CURVED)) {
-        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getColourRef(), moveable->getGradientColourP(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
+        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getEvaluatedColour(), moveable->getGradientColourP(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
     } else if (moveable->hasFlag(TEXTURED)) {
-        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), &moveable->getColourRef(), &moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), moveable->getGradientColourP());
+        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), &moveable->getEvaluatedColour(), &moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), moveable->getGradientColourP());
     } else {
-        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getColourRef(), &moveable->getGradientColourRef(), moveable->getPriority(), 0.0f, moveable->hasFlag(FIXED_POS));
+        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getEvaluatedColour(), &moveable->getGradientColourRef(), moveable->getPriority(), 0.0f, moveable->hasFlag(FIXED_POS));
     }
 }
 
@@ -286,7 +286,7 @@ void Render::renderWindow() {
     const float background_scale = 1.05f;
     for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED) && (text->getFlags() & TEXT_BACKGROUND)) {
         text_dimensions = text->getTextSize();
-        text_dimensions = text_dimensions / resolution;
+        text_dimensions /= resolution;
 
         text_location = text->getLocation();
         text_location.y -= text_dimensions.y;
@@ -308,7 +308,7 @@ void Render::renderWindow() {
             text->hasFlag(FIXED_POS) ? text->getLocation() : text->getLocation() * scale + offsets,
             text->getContent(),
             text->getFont(),
-            text->getColourRef(),
+            text->getEvaluatedColour(),
             text->hasFlag(FIXED_POS) ? text->getScale() : text->getScale() * scale,
             text->getPriority());
     }

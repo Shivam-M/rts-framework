@@ -90,7 +90,11 @@ void GameRTS::setupRTSGame() {
 	}
 
 	player_nation = nations[0];
-	for (Moveable* m : objects) if (m->hasFlag(THEMED)) m->setColour(player_nation->getColour().setW(m->getColour().getW()));
+	for (Moveable* moveable : objects) {
+		if (moveable->hasFlag(THEMED)) {
+			moveable->setColour(player_nation->getColour().setW(moveable->getColour().getW()));
+		}
+	}
 }
 
 void loadProvinceNeighbours(string neighbours) {
@@ -404,7 +408,7 @@ void GameRTS::updateProperties() {
 				drag_offset = cursor_position - draggable_panel->location;
 				dragged_object = draggable_panel;
 			}
-			draggable_panel->setLocation((cursor_position - drag_offset).x, (cursor_position - drag_offset).y);
+			draggable_panel->location = cursor_position - drag_offset;
 		} else {
 			dragged_object = nullptr;
 		}

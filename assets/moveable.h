@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <deque>
 
 using namespace std;
 
@@ -42,34 +43,47 @@ enum {
     NO_RENDER =         1 << 28
 };
 
-// TODO: Replace with new Blend value
+struct ColourFilter {
+	enum class Mode { Addition, Multiplication, Replacement };
+	Mode mode;
+	Colour colour;
+
+	ColourFilter(const Colour& c, const Mode& m) : colour(c), mode(m) {}
+};
+
 struct ColourShift {
-	ColourShift() {};
-	ColourShift(Colour first, Colour second) : first_colour(first), second_colour(second) {
-		if (first < second) swap(first_colour, second_colour);
-	}
-	void setCondition(int* value) {
+	enum class Direction { Up, Down };
+	Direction direction = Direction::Down;
+	Colour first, second, evaluated;
+	float speed = 0.1f;
+	float progress = 0.0f;
+	int* condition = nullptr;
+	int target = -1;
+	bool loop = true, fade_to_death = false, with_gradient = false;
+
+	ColourShift() = default;
+	ColourShift(const Colour& f, const Colour& s) : first(f), second(s) {}
+
+	void conditionalise(int* value) {
 		condition = value;
 		target = *value;
 	}
-	void reswap() { swap(first_colour, second_colour); }
-	enum DIRECTION { UP, DOWN };
-	DIRECTION direction = DOWN;
-	Colour first_colour, second_colour;
-	bool loop = true, fade_to_death = false, with_gradient = false;
-	int* condition = nullptr;
-	int target = -1;
-	float speed = 0.1f;
+
+	const Colour& evaluate() {
+		evaluated = first * (1.0f - progress) + second * progress;
+		return evaluated;
+	}
 };
 
 struct Blend {
-	Blend() {}
-	Blend(int typ, float spd, float sze, Vector2 dir, bool fxd) : type(typ), speed(spd), size(sze), direction(dir), fixed(fxd) {}
 	int type = 0;
+	bool fixed = false;
 	float speed = 1.0f;
 	float size = 1.0f;
-	bool fixed = false;
-	Vector2 direction = Vector2(0.0f, 0.0f);
+	Vector2 direction;
+
+	Blend() = default;
+	Blend(int typ, float spd, float sze, Vector2 dir, bool fxd) : type(typ), speed(spd), size(sze), direction(dir), fixed(fxd) {}
 };
 
 enum BUTTON_ACTION {PAUSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, SAVE_GAME, TEST_FONTS, TOGGLE_TOOLTIP, HIRE_UNIT, UI_DEBUG_TOGGLE, DECLARE_WAR, DEBUG, OTHER, PAUSE_SIMULATION};
@@ -100,7 +114,9 @@ class Moveable {
 
 		ColourShift colour_shift;
 		Colour colour = Colour("FFFFFF");
+		deque<ColourFilter*> filters;
 		Colour gradient_colour = COLOUR_NULL;
+		Colour evaluated_colour = COLOUR_NULL;
 		Colour default_colour = colour;
 
 		bool shifting_colour = false, is_active = true, hover_tooltip = false;
@@ -124,6 +140,7 @@ class Moveable {
 
 		Colour& getColourRef() { return colour; }
 		Colour getColour() { return colour; }
+		Colour& getEvaluatedColour() { return evaluated_colour; }
 		Colour& getGradientColourRef() { return gradient_colour; }
 		Colour* getGradientColourP() { 
 			if (gradient_colour == colour or gradient_colour == COLOUR_NULL) return nullptr;
@@ -154,7 +171,11 @@ class Moveable {
 		void setButtonAction(BUTTON_ACTION action) { addFlag(BUTTON); button_action = action; }
 
 		void stopColourShift();
-		void setColourShift(ColourShift col_shift) { colour_shift = col_shift; shifting_colour = true; }
+		void setColourShift(ColourShift col_shift) {
+			colour_shift = col_shift;
+			shifting_colour = true;
+			// filters.emplace_front(new ColourFilter(colour_shift.evaluate(), ColourFilter::Mode::Replacement));
+		}
 		void setColour(Colour col) { colour = col; default_colour = col; }
 		void setDefaultColour(Colour col) { default_colour = col; }
 		void setGradientColour(Colour col) { gradient_colour = col; }

@@ -72897,7 +72897,7 @@ MA_API ma_result ma_node_init_preallocated(ma_node_graph* pNodeGraph, const ma_n
     if (pNodeBase->pCachedData != NULL) {
         ma_uint32 iBus;
 
-    #if 1   /* Toggle this between 0 and 1 to turn debugging on or off. 1 = fill with a sine wave for debugging; 0 = fill with silence. */
+    #if 1   /* toggle this between 0 and 1 to turn debugging on or off. 1 = fill with a sine wave for debugging; 0 = fill with silence. */
         /* For safety we'll go ahead and default the buffer to silence. */
         for (iBus = 0; iBus < ma_node_get_input_bus_count(pNodeBase); iBus += 1) {
             ma_silence_pcm_frames(ma_node_get_cached_input_ptr(pNode, iBus), pNodeBase->cachedDataCapInFramesPerBus, ma_format_f32, ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iBus]));

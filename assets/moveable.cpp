@@ -10,9 +10,9 @@
 
 using namespace std;
 
-void Moveable::setTextOffset(float x, float y) {
+void Moveable::set_text_offset(float x, float y) {
 	text_offset.set(x, y); 
-	if (text) text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
+	if (text) text->set_location(location.x + text_offset.x, location.y + text_offset.y);
 }
 
 void setValues(Vector2& vector, string values) {
@@ -22,7 +22,7 @@ void setValues(Vector2& vector, string values) {
 }
 
 // Add vars.
-void Moveable::tickTimer(const float& modifier) {
+void Moveable::tick_timer(const float& modifier) {
 	if (script == nullptr) return;
 	if (script_timer > 0) { script_timer -= (1.0f / 60) * modifier; return; }
 	if (script_line >= script->size()) return;
@@ -43,18 +43,18 @@ void Moveable::tickTimer(const float& modifier) {
 	else if (action == "Y") location.y = stof(data);
 	else if (action == "WIDTH") size.x = stof(data);
 	else if (action == "HEIGHT") size.y = stof(data);
-	else if (action == "COLOUR") setColour(Colour::HexToRGB(data));
-	else if (action == "ALPHA") colour.setW(stof(data));
-	else if (action == "GRADIENT") setGradientColour(Colour::HexToRGB(data));
-	else if (action == "GRADIENT_ALPHA") gradient_colour.setW(stof(data));
+	else if (action == "COLOUR") set_colour(Colour::hex_to_rgb(data));
+	else if (action == "ALPHA") colour.set_alpha(stof(data));
+	else if (action == "GRADIENT") set_gradient_colour(Colour::hex_to_rgb(data));
+	else if (action == "GRADIENT_ALPHA") gradient_colour.set_alpha(stof(data));
 	else if (action == "JUMP") script_line = stoi(data);
-	else if (action == "TEXTURE") setTexture(Image::getImage(data));
+	else if (action == "TEXTURE") set_texture(Image::get_image(data));
 	// TODO else if (action == "COLOUR_SHIFT");
 	script_line++;
 }
 
-void Moveable::loadScript(string path) {
-	log_t("Loading script... " + path + " [" + getName() + "]");
+void Moveable::load_script(string path) {
+	log_t("Loading script... " + path + " [" + get_name() + "]");
 	string line;
 	fstream in(path);
 	while (getline(in, line))
@@ -68,7 +68,7 @@ void Moveable::loadScript(string path) {
 			}
 }
 
-void Moveable::shiftColour() {
+void Moveable::shift_colour() {
 	colour_shift.progress += (colour_shift.direction == ColourShift::Direction::Up ? colour_shift.speed : -colour_shift.speed);
 
 	if (colour_shift.progress >= 1.0f || colour_shift.progress <= 0.0f) {
@@ -76,22 +76,22 @@ void Moveable::shiftColour() {
 		if (colour_shift.loop) {
 			colour_shift.direction = (colour_shift.progress == 1.0f ? ColourShift::Direction::Down : ColourShift::Direction::Up);
 		} else {
-			stopColourShift();
+			stop_colour_shift();
 		}
 	}
 
 	if (colour_shift.with_gradient) gradient_colour = colour;
-	if (colour_shift.fade_to_death && colour.getW() <= 0)  addFlag(DISABLED);
-	if (colour_shift.condition && *colour_shift.condition != colour_shift.target) stopColourShift();
+	if (colour_shift.fade_to_death && colour.get_w() <= 0)  add_flag(DISABLED);
+	if (colour_shift.condition && *colour_shift.condition != colour_shift.target) stop_colour_shift();
 }
 
-void Moveable::stopColourShift() {
+void Moveable::stop_colour_shift() {
 	shifting_colour = false;
 	// if (filters.size() > 0 && filters.front()->mode == ColourFilter::Mode::Replacement) filters.pop_front();
 }
 
 void Moveable::common(const float& modifier) {
-	tickTimer(modifier);
+	tick_timer(modifier);
 }
 
 void Moveable::update(const float& modifier) {
@@ -106,7 +106,7 @@ void Moveable::update(const float& modifier) {
 	evaluated_colour = colour;
 
 	if (shifting_colour) {
-		shiftColour();
+		shift_colour();
 		evaluated_colour = colour_shift.evaluate();
 	}
 
@@ -125,16 +125,16 @@ void Moveable::update(const float& modifier) {
 	}
 }
 
-void Moveable::onHover() {
+void Moveable::on_hover() {
 	if (!shifting_colour) colour.w_ /= 1.25;
-	if (hover_tooltip && hasFlag(BUTTON)) {
-		getText()->removeFlag(DISABLED);
+	if (hover_tooltip && has_flag(BUTTON)) {
+		get_text()->remove_flag(DISABLED);
 	}
 }
 
-void Moveable::onHoverStop() {
-	if (!shifting_colour) resetColour();
-	if (hover_tooltip && hasFlag(BUTTON)) {
-		getText()->addFlag(DISABLED);
+void Moveable::on_hover_stop() {
+	if (!shifting_colour) reset_colour();
+	if (hover_tooltip && has_flag(BUTTON)) {
+		get_text()->add_flag(DISABLED);
 	}
 }

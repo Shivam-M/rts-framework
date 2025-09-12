@@ -36,17 +36,17 @@ class Vector4 {
 
 		Vector4(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f) : x_(x), y_(y), z_(z), w_(w) {}
 
-		float getX() const { return x_; }
-		float getY() const { return y_; }
-		float getZ() const { return z_; }
-		float getW() const { return w_; }
+		float get_x() const { return x_; }
+		float get_y() const { return y_; }
+		float get_z() const { return z_; }
+		float get_w() const { return w_; }
 
-		void setX(float x) { x_ = x; }
-		void setY(float y) { y_ = y; }
-		void setZ(float z) { z_ = z; }
-		void setW(float w) { w_ = w; }
+		void set_x(float x) { x_ = x; }
+		void set_y(float y) { y_ = y; }
+		void set_z(float z) { z_ = z; }
+		void set_alpha(float w) { w_ = w; }
 
-		void setAll(float x, float y, float z, float w) { x_ = x; y_ = y; z_ = z; w_ = w; }
+		void set_all(float x, float y, float z, float w) { x_ = x; y_ = y; z_ = z; w_ = w; }
 
 		Vector4& operator+=(const Vector4& other) {
 			x_ += other.x_; y_ += other.y_; z_ += other.z_; w_ += other.w_;
@@ -139,33 +139,33 @@ class Vector4 {
 
 class Colour: public Vector4 { 
 	public:
-		static Colour HexToRGB(const string& hex, const float& alpha = 1.0f);
-		static string RGBToHex(Vector4 rgb);
+		static Colour hex_to_rgb(const string& hex, const float& alpha = 1.0f);
+		static string rgb_to_hex(Vector4 rgb);
 
 		Colour(const Vector4& vec) : Vector4(vec) {}
 
 		Colour() {}
 
-		Colour(const string& hex, const float& alpha = 1.0f) { *this = HexToRGB(hex, alpha); }
+		Colour(const string& hex, const float& alpha = 1.0f) { *this = hex_to_rgb(hex, alpha); }
 
-		Colour(const float& r, const float& g, const float& b, const float& a = 255.0f) { setX(r).setY(g).setZ(b).setW(a); }
+		Colour(const float& r, const float& g, const float& b, const float& a = 255.0f) { set_x(r).set_y(g).set_z(b).set_alpha(a); }
 
-		Colour& setX(const float& x) {
+		Colour& set_x(const float& x) {
 			x_ = x;
 			return *this;
 		}
 
-		Colour& setY(const float& y) {
+		Colour& set_y(const float& y) {
 			y_ = y;
 			return *this;
 		}
 
-		Colour& setZ(const float& z) {
+		Colour& set_z(const float& z) {
 			z_ = z;
 			return *this;
 		}
 
-		Colour& setW(const float& w) {
+		Colour& set_alpha(const float& w) {
 			w_ = w;
 			return *this;
 		}
@@ -174,6 +174,6 @@ class Colour: public Vector4 {
 			return (x_ <= -1 && y_ <= -1 && z_ <= -1 && w_ <= -1);
 		}
 
-		string getHex() { return RGBToHex(*this); }
-		Vector4 getRGBAf() { return *this / 255.0f; }
+		string get_hex() { return rgb_to_hex(*this); }
+		Vector4 get_float() { return *this / 255.0f; }
 };

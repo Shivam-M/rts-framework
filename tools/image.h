@@ -11,7 +11,7 @@ class Image {
 	public:
 		static map<string, Texture*> images;
 
-		static Texture* getImage(const string&);
-		static void loadImage(const string&);
-		static void loadMap(const string&, const string&);
+		static Texture* get_image(const string&);
+		static void load_image(const string&);
+		static void load_map(const string&, const string&);
 };

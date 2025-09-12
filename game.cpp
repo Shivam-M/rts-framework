@@ -57,7 +57,7 @@ Game::Game(int argc, char** argv) {
 
 	global_filter = new ColourFilter(Colour(1, 1, 1, 0.9), ColourFilter::Mode::Multiplication);
 
-	Font* debug_font =		Fonts::getFont("data/fonts/consolab.ttf", 11, true);
+	Font* debug_font =		Fonts::get_font("data/fonts/consolab.ttf", 11, true);
 	t_FPSCounter =			new Text({0.925f, 0.050f}, debug_font, Colour(0, 206, 201, 255), "FPS: --");
 	t_Information =			new Text({0.030f, 0.050f}, debug_font, Colour(34, 166, 179, 255), "");
 	t_Information2 =		new Text({0.030f, 0.075f}, debug_font, Colour(34, 166, 179, 255), "");
@@ -67,14 +67,14 @@ Game::Game(int argc, char** argv) {
 	t_Alt3 =				new Text({0.550f, 0.050f}, debug_font, Colour(223, 249, 251, 255), "ALT: --");
 	t_Notification =		new Text({0.175f, 0.050f}, debug_font, Colour(189, 195, 199, 255), "");
 
-	registerObject(t_FPSCounter);
-	registerObject(t_Alt);
-	registerObject(t_Alt2);
-	registerObject(t_Alt3);
-	registerObject(t_Notification);
-	registerObject(t_Information2);
-	registerObject(t_Information3);
-	registerObject(t_Information);
+	register_object(t_FPSCounter);
+	register_object(t_Alt);
+	register_object(t_Alt2);
+	register_object(t_Alt3);
+	register_object(t_Notification);
+	register_object(t_Information2);
+	register_object(t_Information3);
+	register_object(t_Information);
 
 	glfwSetKeyCallback(window, keyboard->callback);
 	glfwSetMouseButtonCallback(window, mouse->callback);
@@ -86,7 +86,7 @@ Game::Game(int argc, char** argv) {
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_,  " seconds " CON_NORMAL "to load the base game.");
 }
 
-void Game::loadLevels(string level_directory) {
+void Game::load_levels(string level_directory) {
 	int level_counter = 0;
 	vector<fs::directory_entry> entries;
 
@@ -105,43 +105,43 @@ void Game::loadLevels(string level_directory) {
 
 		for (Moveable* m : level->objects) {
 			if (level->offset_positions) m->location.x += level_counter;
-			registerObject(m);
+			register_object(m);
 		}
 
-		for (Text* t : level->text_objects) registerObject(t);
+		for (Text* t : level->text_objects) register_object(t);
 		levels.push_back(level);
 		level_counter++;
 		delete level;
 	}
 }
 
-void Game::dynamicLoadLevel(const string& level_path, const string& instance_name) {
+void Game::load_level_dynamically(const string& level_path, const string& instance_name) {
 	Level* level = loader->load_level(level_path, &queue_objects, &text_objects, 0, instance_name);
 	if (!level) return;
 	for (Moveable* m : level->objects) {
 		if (level->offset_positions) m->location.x += levels.size();
-		registerObject(m);
+		register_object(m);
 	}
-	for (Text* t : level->text_objects) registerObject(t);
+	for (Text* t : level->text_objects) register_object(t);
 	levels.push_back(level);
 	delete level;
 }
 
-void Game::extendedInitialisation() {
+void Game::initialise_extended() {
 	console->build();
 }
 
-void Game::debugMode() {
+void Game::debug_mode() {
 	global_filter->colour.w_ *= 0.1f;
-	// UIManager::Toggle("ui_menu_pause");
+	// UIManager::toggle("ui_menu_pause");
 }
 
-void Game::toggleDebug() {
+void Game::toggle_debug() {
 	mouse->debug_control_scheme ^= true;
-	t_Notification->setContent("Updated control scheme to: " + to_string(mouse->debug_control_scheme));
+	t_Notification->set_content("Updated control scheme to: " + to_string(mouse->debug_control_scheme));
 }
 
-void Game::updateStatistics(const int& f, const int& u) {
+void Game::update_statistics(const int& f, const int& u) {
 	if (console->visible()) {
 #ifdef _WIN32
 		PROCESS_MEMORY_COUNTERS memCounter;
@@ -153,24 +153,24 @@ void Game::updateStatistics(const int& f, const int& u) {
 	}
 
 	string t_time = to_string(render->draw_times[1] * 1000), s_time = to_string(render->draw_times[0] * 1000), u_time = to_string(update_time_ * 1000);
-	t_FPSCounter->setContent("FPS: " + to_string(f));
-	t_Alt->setContent("T: " + t_time.substr(0, t_time.size() - 2) + "ms");
-	t_Alt2->setContent("S: " + s_time.substr(0, s_time.size() - 2) + "ms");
-	t_Alt3->setContent("U: " + u_time.substr(0, u_time.size() - 2) + "ms");
+	t_FPSCounter->set_content("FPS: " + to_string(f));
+	t_Alt->set_content("T: " + t_time.substr(0, t_time.size() - 2) + "ms");
+	t_Alt2->set_content("S: " + s_time.substr(0, s_time.size() - 2) + "ms");
+	t_Alt3->set_content("U: " + u_time.substr(0, u_time.size() - 2) + "ms");
 
 	log_t("FPS: " CON_RED, f, CON_NORMAL " \tUpdates: " CON_RED, u, CON_NORMAL " \tGame time: " CON_RED, update_time_,  "s" CON_NORMAL "\t[", CON_RED, (int)(1 / update_time_), CON_NORMAL "]");
 }
 
-void Game::updateCursor() {
+void Game::update_cursor() {
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	cursor_position.set(x / render->resolution.x, y / render->resolution.y);
 }
 
-void Game::updateProperties() {
-	updateCursor();
+void Game::update_properties() {
+	update_cursor();
 
-	if (getButton(GLFW_MOUSE_BUTTON_MIDDLE)) {
+	if (get_button(GLFW_MOUSE_BUTTON_MIDDLE)) {
 		render->offsets.x += (cursor_position.x - original_position.x) * 0.01;
 		render->offsets.y += (cursor_position.y - original_position.y) * 0.01;
 	}
@@ -178,15 +178,15 @@ void Game::updateProperties() {
 	if (!selected_object) return;
 
 	if (mouse->debug_control_scheme) {
-		if (getButton(GLFW_MOUSE_BUTTON_RIGHT)) {
+		if (get_button(GLFW_MOUSE_BUTTON_RIGHT)) {
 			Vector2 new_size = Vector2(abs(game->mouse_position.x - cursor_position.x), abs(game->mouse_position.y - cursor_position.y));
-			selected_object->setSize(new_size.x, new_size.y);
-			t_Notification->setContent("Set size of " + game->selected_object->getName() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
+			selected_object->set_size(new_size.x, new_size.y);
+			t_Notification->set_content("Set size of " + game->selected_object->get_name() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
 	}
 }
 
-void Game::updateObjects(const float& modifier) {
+void Game::update_objects(const float& modifier) {
 	erase_if(objects, [modifier](Moveable* moveable) {
 		if (!moveable->is_active) {
 			delete moveable;
@@ -209,12 +209,12 @@ void Game::updateObjects(const float& modifier) {
 	queue_objects.clear();
 }
 
-void Game::registerObject(Moveable* object) { 
+void Game::register_object(Moveable* object) { 
 	objects.push_back(object);
 	object->filters.push_back(global_filter);
 }
 
-void Game::registerObject(Text* text_object) { 
+void Game::register_object(Text* text_object) { 
 	text_objects.push_back(text_object);
 	text_object->filters.push_back(global_filter);
 }
@@ -223,18 +223,18 @@ static bool within(const Vector2& location, const Vector2& size, const Vector2& 
 	return point.x > location.x && point.x < location.x + size.x && point.y > location.y && point.y < location.y + size.y;
 }
 
-bool Game::cursorPositionOnTexture(Moveable* moveable, const Vector2& cursor_position) {
-	Texture* texture = moveable->getTexture();
+bool Game::is_cursor_on_texture(Moveable* moveable, const Vector2& cursor_position) {
+	Texture* texture = moveable->get_texture();
 	if (!texture || !texture->image) return false;
 
 	Vector2 location, size;
-	if (moveable->hasFlag(FIXED_POS)) {
-		location = moveable->getLocation();
-		size = moveable->getSize();
+	if (moveable->has_flag(FIXED_POS)) {
+		location = moveable->get_location();
+		size = moveable->get_size();
 	}
 	else {
-		location = moveable->getLocation() * render->scale + render->offsets;
-		size = moveable->getSize() * render->scale;
+		location = moveable->get_location() * render->scale + render->offsets;
+		size = moveable->get_size() * render->scale;
 	}
 
 	float u = (cursor_position.x - location.x) / size.x;
@@ -255,24 +255,24 @@ bool Game::cursorPositionOnTexture(Moveable* moveable, const Vector2& cursor_pos
 	return alpha > 0;
 }
 
-Moveable* Game::getObjectUnderMouse() {
+Moveable* Game::get_object_under_mouse() {
 	Moveable* object = nullptr;
 	float min_distance = 100.0f;
 
 	for (Moveable* moveable : game->objects) {
-		if (moveable->getFlags() & (UNEDITABLE | DISABLED)) continue;
+		if (moveable->get_flags() & (UNEDITABLE | DISABLED)) continue;
 
 		Vector2 location, size;
-		if (moveable->hasFlag(FIXED_POS)) {
-			location = moveable->getLocation();
-			size = moveable->getSize();
+		if (moveable->has_flag(FIXED_POS)) {
+			location = moveable->get_location();
+			size = moveable->get_size();
 		} else {
-			location = moveable->getLocation() * render->scale + render->offsets;
-			size = moveable->getSize() * render->scale;
+			location = moveable->get_location() * render->scale + render->offsets;
+			size = moveable->get_size() * render->scale;
 		}
 
 		if (within(location, size, cursor_position)) {
-			Vector2 centre = moveable->getCentre() * render->scale + render->offsets;
+			Vector2 centre = moveable->get_centre() * render->scale + render->offsets;
 			float dx = centre.x - cursor_position.x;
 			float dy = centre.y - cursor_position.y;
 			float distance = dx * dx + dy * dy;
@@ -288,7 +288,7 @@ Moveable* Game::getObjectUnderMouse() {
 	return object;
 }
 
-int Game::gameLoop() {
+int Game::game_loop() {
 	int frames = 0, updates = 0, frame_count = 0;
 	float average_frames = 0.f;
 	float limit = 1.0f / update_rate;
@@ -311,8 +311,8 @@ int Game::gameLoop() {
 
 		while (delta_time >= 1.0) {
 			update_time = glfwGetTime();
-			updateObjects(60.0 / update_rate);
-			updateProperties();
+			update_objects(60.0 / update_rate);
+			update_properties();
 			glfwPollEvents();
 			updates++;
 			delta_time--;
@@ -321,7 +321,7 @@ int Game::gameLoop() {
 
 		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0 / fps_limit)) {
 			last_frame_time = glfwGetTime();
-			render->renderWindow();
+			render->render_window();
 			frames++;
 		}
 
@@ -329,7 +329,7 @@ int Game::gameLoop() {
 			timer++;
 			average_frames = (frame_count * average_frames + frames) / (frame_count + 1);
 			frame_count += 1;
-			updateStatistics(frames, updates);
+			update_statistics(frames, updates);
 			updates = 0, frames = 0;
 #ifdef DEBUG_PROFILING
 			temp_profiling_u.push_back(update_time_);

@@ -16,9 +16,9 @@ class Fonts {
 		static map<pair<string, int>, Font*> fonts;
 		static map<pair<string, int>, bool> fonts_is_custom_temp;
 
-		static void loadFont(const string&, int, bool = false);
-		static Font* getFont(const string&, int, bool = false);
-		static pair<string, int> getProperties(Font*);
+		static void load_font(const string&, int, bool = false);
+		static Font* get_font(const string&, int, bool = false);
+		static pair<string, int> get_properties(Font*);
 };
 
 #define	ARIAL						"arial.ttf"

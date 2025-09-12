@@ -124,70 +124,70 @@ class Moveable {
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
 
-		const float& getPriority() { return priority; }
-		virtual vector<Vector2> getPoints() { return points; }
-		Text* getText() { return text; }
-		Texture* getTexture() { return texture; }
-		Texture* getSecondaryTexture() { return secondary_texture; }
-		string& getName() { return name; }
+		const float& get_priority() { return priority; }
+		virtual vector<Vector2> get_points() { return points; }
+		Text* get_text() { return text; }
+		Texture* get_texture() { return texture; }
+		Texture* get_secondary_texture() { return secondary_texture; }
+		string& get_name() { return name; }
 	
-		Vector2 getAcceleration() { return acceleration; }
-		Vector2 getVelocity() { return velocity; }
-		Vector2 getLocation() { return location; }
-		Vector2 getSize() { return size; }
-		Vector2 getCentre() { return Vector2(location.x + size.x / 2, location.y + size.y / 2); }
-		Vector2 getTextOffset() { return text_offset; }
+		Vector2 get_acceleration() { return acceleration; }
+		Vector2 get_velocity() { return velocity; }
+		Vector2 get_location() { return location; }
+		Vector2 get_size() { return size; }
+		Vector2 get_centre() { return Vector2(location.x + size.x / 2, location.y + size.y / 2); }
+		Vector2 get_text_offset() { return text_offset; }
 
-		Colour& getColourRef() { return colour; }
-		Colour getColour() { return colour; }
-		Colour& getEvaluatedColour() { return evaluated_colour; }
-		Colour& getGradientColourRef() { return gradient_colour; }
-		Colour* getGradientColourP() { 
+		Colour& get_colour_ref() { return colour; }
+		Colour get_colour() { return colour; }
+		Colour& get_evaluated_colour() { return evaluated_colour; }
+		Colour& get_gradient_colour_ref() { return gradient_colour; }
+		Colour* get_gradient_colour_p() { 
 			if (gradient_colour == colour or gradient_colour == COLOUR_NULL) return nullptr;
 			else return &gradient_colour;
 		}
-		Colour getGradientColour() { return gradient_colour; }
-		Colour getDefaultColour() { return default_colour; }
+		Colour get_gradient_colour() { return gradient_colour; }
+		Colour get_default_colour() { return default_colour; }
 
-		Blend& getBlend() { return blend; }
+		Blend& get_blend() { return blend; }
 
-		const int& getFlags() { return flags; }
-		void addFlag(const int& f) { flags |= f; }
-		void removeFlag(const int& f) { flags &= ~f; }
-		bool hasFlag(const int& f) { return flags & f; }
+		const int& get_flags() { return flags; }
+		void add_flag(const int& f) { flags |= f; }
+		void remove_flag(const int& f) { flags &= ~f; }
+		bool has_flag(const int& f) { return flags & f; }
 
-		void setText(Text* t) { text = t; }
-		void setTextOffset(float x, float y);
-		void setTexture(Texture* tex) { addFlag(TEXTURED); texture = tex; }
-		void setSecondaryTexture(Texture* tex) { addFlag(TEXTURED); secondary_texture = tex; }
-		void setName(string n) { name = n; }
-		void setPriority(float p) { priority = p; }
-		virtual void setAcceleration(float x, float y) { acceleration.set(x, y); }
-		virtual void setVelocity(float x, float y) { velocity.set(x, y); }
-		virtual void setLocation(float x, float y) { location.set(x, y); }
-		virtual void setSize(float x, float y) { size.set(x, y); }
+		void set_text(Text* t) { text = t; }
+		void set_text_offset(float x, float y);
+		void set_texture(Texture* tex) { add_flag(TEXTURED); texture = tex; }
+		void set_secondary_texture(Texture* tex) { add_flag(TEXTURED); secondary_texture = tex; }
+		void set_name(string n) { name = n; }
+		void set_priority(float p) { priority = p; }
+		virtual void set_acceleration(float x, float y) { acceleration.set(x, y); }
+		virtual void set_velocity(float x, float y) { velocity.set(x, y); }
+		virtual void set_location(float x, float y) { location.set(x, y); }
+		virtual void set_size(float x, float y) { size.set(x, y); }
 		
-		BUTTON_ACTION getButtonAction() { return button_action; }
-		void setButtonAction(BUTTON_ACTION action) { addFlag(BUTTON); button_action = action; }
+		BUTTON_ACTION get_button_action() { return button_action; }
+		void set_button_action(BUTTON_ACTION action) { add_flag(BUTTON); button_action = action; }
 
-		void stopColourShift();
-		void setColourShift(ColourShift col_shift) {
+		void stop_colour_shift();
+		void set_colour_shift(ColourShift col_shift) {
 			colour_shift = col_shift;
 			shifting_colour = true;
 			// filters.emplace_front(new ColourFilter(colour_shift.evaluate(), ColourFilter::Mode::Replacement));
 		}
-		void setColour(Colour col) { colour = col; default_colour = col; }
-		void setDefaultColour(Colour col) { default_colour = col; }
-		void setGradientColour(Colour col) { gradient_colour = col; }
-		void resetColour() { colour = default_colour; }
-		void shiftColour();
-		void setBlend(Blend b) { blend = b; }
-		void tickTimer(const float& modifier);
-		void loadScript(string script_path);
+		void set_colour(Colour col) { colour = col; default_colour = col; }
+		void set_default_colour(Colour col) { default_colour = col; }
+		void set_gradient_colour(Colour col) { gradient_colour = col; }
+		void reset_colour() { colour = default_colour; }
+		void shift_colour();
+		void set_blend(Blend b) { blend = b; }
+		void tick_timer(const float& modifier);
+		void load_script(string script_path);
 		
 		// Change to new button class override
-		virtual void onHover();
-		virtual void onHoverStop();
+		virtual void on_hover();
+		virtual void on_hover_stop();
 
 		void common(const float& modifier);
 		virtual void update(const float& modifier = 1.0);

@@ -28,7 +28,7 @@ class TextEntry : public Text {
 			}
 		}
 
-        void cursor_flash() {
+        void flash_cursor() {
             static auto last_flash = chrono::steady_clock::now();
             auto now = chrono::steady_clock::now();
             if (chrono::duration_cast<chrono::milliseconds>(now - last_flash).count() > CURSOR_FLASH_SPEED) {
@@ -39,10 +39,10 @@ class TextEntry : public Text {
 
         void update(const float& modifier = 1.0) override {
             Text::common(modifier);
-            cursor_flash();
+            flash_cursor();
         }
 
-        string& getContent(bool raw = false) override {
+        string& get_content(bool raw = false) override {
 			if (raw) return content;
             display_content = content;
             if (cursor_visible) 

@@ -41,7 +41,7 @@ void cropRectangle(const unsigned char* image, int width, int height, unsigned c
     }
 }
 
-void Image::loadMap(const string& path, const string& data) { // add cache
+void Image::load_map(const string& path, const string& data) { // add cache
     int width, height, channels;
     unsigned char* image = stbi_load(path.c_str(), &width, &height, &channels, 3);
 
@@ -122,7 +122,7 @@ void Image::loadMap(const string& path, const string& data) { // add cache
     output_file.close();
 }
 
-void Image::loadImage(const string& path) {
+void Image::load_image(const string& path) {
     if (images.count(path)) return;
     log_t("Loading image... " CON_RED + path + CON_NORMAL);
     Texture* texture = new Texture();
@@ -144,7 +144,7 @@ void Image::loadImage(const string& path) {
     images[path] = texture;
 }
 
-Texture* Image::getImage(const string& path) {
-	loadImage(path);
+Texture* Image::get_image(const string& path) {
+	load_image(path);
     return images[path];
 }

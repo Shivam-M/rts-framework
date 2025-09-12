@@ -21,28 +21,28 @@ class UIManager {
 		static map<string, MappingFunction> method_mappings_;
 
 	public:
-		static string GetName(Panel* ui_panel) { return ""; }
-		static Panel* GetPanel(const string& ui_name) { return ui_mappings_[ui_name]; }
+		static string get_name(Panel* ui_panel) { return ""; }
+		static Panel* get_panel(const string& ui_name) { return ui_mappings_[ui_name]; }
 
-		static void Register(const string& ui_name, Panel* ui_panel);
-		static void Unregister(const string& ui_name);
-		static void Unregister(Panel* ui_panel);
+		static void register_panel(const string& ui_name, Panel* ui_panel);
+		static void deregister_panel(const string& ui_name);
+		static void deregister_panel(Panel* ui_panel);
 
-		static void Show(const string& ui_name, const bool& with_fade = false);
-		static void Show(Panel* panel, const bool& with_fade = false);
+		static void show(const string& ui_name, const bool& with_fade = false);
+		static void show(Panel* panel, const bool& with_fade = false);
 
-		static void Hide(const string& ui_name, const bool& with_fade = false);
-		static void Hide(Panel* panel, const bool& with_fade = false);
+		static void hide(const string& ui_name, const bool& with_fade = false);
+		static void hide(Panel* panel, const bool& with_fade = false);
 
-		static void Toggle(const string& ui_name, const bool& with_fade = false);
-		static void Toggle(Panel* panel, const bool& with_fade = false);
+		static void toggle(const string& ui_name, const bool& with_fade = false);
+		static void toggle(Panel* panel, const bool& with_fade = false);
 
-		static void AssignValues(const string& panel_name, void* moveable, MappingFunction mapping_function = nullptr);
+		static void assign_values(const string& panel_name, void* moveable, MappingFunction mapping_function = nullptr);
 		
-		static void MapProvince(Panel* panel, void* moveable);
-		static void MapNation(Panel* panel, void* moveable);
-		static void MapUnit(Panel* panel, void* moveable);
-		static void MapWarDeclaration(Panel* panel, void* war_details);
-		static void MapHeader(Panel* panel, void* header_details);
-		static void MapBattle(Panel* panel, void* battle_details);
+		static void map_province(Panel* panel, void* moveable);
+		static void map_nation(Panel* panel, void* moveable);
+		static void map_unit(Panel* panel, void* moveable);
+		static void map_war_declaration(Panel* panel, void* war_details);
+		static void map_header(Panel* panel, void* header_details);
+		static void map_battle(Panel* panel, void* battle_details);
 };

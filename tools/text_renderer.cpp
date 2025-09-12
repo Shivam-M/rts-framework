@@ -14,7 +14,7 @@ int AtlasWidth = 4096, AtlasHeight = 4096;
 GLuint uniformColour, uniformPriority;
 
 void TextRenderer::setup() {
-    TextShader = CompileShader("shaders/text.vert", "shaders/text.frag");
+    TextShader = compile_shader("shaders/text.vert", "shaders/text.frag");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT), 0.0f);
 
     glUseProgram(TextShader);

@@ -6,7 +6,7 @@
 map<pair<string, int>, Font*> Fonts::fonts = {};
 map<pair<string, int>, bool> Fonts::fonts_is_custom_temp = {};
 
-void Fonts::loadFont(const string& font_location, int font_size, bool custom) {
+void Fonts::load_font(const string& font_location, int font_size, bool custom) {
 	if (fonts.count({ font_location, font_size })) return;
 	log_t("Loading font... " CON_RED + font_location + CON_NORMAL " [size: " CON_RED + to_string(font_size) + CON_NORMAL "]");
 	Font* font = TextRenderer::load_font((custom ? "" : DIRECTORY) + font_location, font_size);
@@ -18,12 +18,12 @@ void Fonts::loadFont(const string& font_location, int font_size, bool custom) {
 	fonts_is_custom_temp.insert(pair<pair<string, int>, bool>(make_pair(font_location, font_size), custom)); // need extra for scale
 }
 
-Font* Fonts::getFont(const string& font_location, int font_size, bool custom) {
-	loadFont(font_location, font_size, custom);
+Font* Fonts::get_font(const string& font_location, int font_size, bool custom) {
+	load_font(font_location, font_size, custom);
 	return fonts[make_pair(font_location, font_size)];
 }
 
-pair<string, int> Fonts::getProperties(Font* font) { // Temp
+pair<string, int> Fonts::get_properties(Font* font) { // Temp
 	for (const auto& entry : fonts) {
 		if (entry.second == font) {
 			return { entry.first.first, fonts_is_custom_temp[entry.first] };

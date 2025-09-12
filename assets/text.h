@@ -27,12 +27,12 @@ class Text: public Moveable {
 		Text();
 		Text(Vector2 location, Font* font, Colour colour, string content = "", float scale = 1.f);
 
-		Font* getFont() { return font; }
-		virtual string& getContent(bool raw = false) { return content; }
-		const float& getScale() { return scale; }
-		Vector2 getTextSize() { return text_size; }
-		ALIGNMENT getAlignment() { return alignment; }
-		Vector2 getLocation() {
+		Font* get_font() { return font; }
+		virtual string& get_content(bool raw = false) { return content; }
+		const float& get_scale() { return scale; }
+		Vector2 get_text_size() { return text_size; }
+		ALIGNMENT get_alignment() { return alignment; }
+		Vector2 get_location() {
 			switch (alignment) {
 				case LEFT:
 					return Moveable::location;
@@ -51,9 +51,9 @@ class Text: public Moveable {
 				}
 		}
 
-		void updateCommon();
-		void setFont(Font* f) { font = f; updateCommon(); }
-		void setContent(const string& c) { content = c; updateCommon(); }
-		void setScale(float s) { scale = s; updateCommon(); }
-		void setAlignment(ALIGNMENT a) { alignment = a; updateCommon(); }
+		void update_common();
+		void set_font(Font* f) { font = f; update_common(); }
+		void set_content(const string& c) { content = c; update_common(); }
+		void set_scale(float s) { scale = s; update_common(); }
+		void set_alignment(ALIGNMENT a) { alignment = a; update_common(); }
 };

@@ -18,8 +18,8 @@ class Audio {
 		static void uninit();
 		static void enable();
 		static void disable();
-		static void stopAllSounds();
-		static void setVolume(const float volume);
+		static void stop();
+		static void set_volume(const float volume);
 };
 
 
@@ -34,7 +34,7 @@ class Sound {
 		Sound(const string& file, const float volume = 1.0f) {
 			sound = ma_sound();
 			load(file);
-			setVolume(volume);
+			set_volume(volume);
 		};
 		~Sound() { if (&sound) ma_sound_uninit(&sound); }
 
@@ -43,6 +43,6 @@ class Sound {
 		void play(const float volume);
 		void pause();
 		void stop();
-		void setVolume(const float volume);
-		const float& getVolume() const;
+		void set_volume(const float volume);
+		const float& get_volume() const;
 };

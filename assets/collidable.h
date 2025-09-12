@@ -14,7 +14,7 @@ class Collidable : public Moveable {
 		void update(const float& modifier = 1.0) override {
 			common(modifier);
 
-			if (getFlags() & MOVING) {
+			if (get_flags() & MOVING) {
 				if (direction_right && shuffle_size >= shuffle_limit || !direction_right && shuffle_size <= -shuffle_limit) {
 					direction_right = !direction_right;
 				}
@@ -33,5 +33,5 @@ class Collidable : public Moveable {
 			}
 		}
 
-		Collidable() { addFlag(COLLIDABLE); }
+		Collidable() { add_flag(COLLIDABLE); }
 };

@@ -73,22 +73,22 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		Render() {}
 		Render(GLFWwindow*, vector<Moveable*>*, vector<Text*>*);
 
-		void drawQuadBatch();
-		void drawQuadB(Vector2 location, Vector2 size, Colour* colour, Colour* gradient, float priority, float radius = 0.0f, bool fixed_position = false) {
+		void draw_batched_quads();
+		void draw_quad(Vector2 location, Vector2 size, Colour* colour, Colour* gradient, float priority, float radius = 0.0f, bool fixed_position = false) {
 			batched_quads_[quad_count_++] = QuadData(location, size, colour, gradient, priority, radius, fixed_position);
 		}
 
-		void drawTextureBatch();
-		void drawTextureB(Vector2 location, Vector2 size, Texture* texture, Colour* colour, Blend* blend, const bool& fixed_position = false, Texture* secondary_texture = nullptr, Colour* secondary_colour = nullptr) {
+		void draw_batched_textures();
+		void draw_texture(Vector2 location, Vector2 size, Texture* texture, Colour* colour, Blend* blend, const bool& fixed_position = false, Texture* secondary_texture = nullptr, Colour* secondary_colour = nullptr) {
 			batched_textures_[texture_count_++] = TextureData(location, size, texture, colour, blend, fixed_position, secondary_texture, secondary_colour);
 		}
 
-		void drawCustom(vector<Vector2> points, Colour colour, Colour gradient);
+		void draw_custom(vector<Vector2> points, Colour colour, Colour gradient);
 
-		void drawText(Vector2 location, string& message, Font* font, Colour& colour, const float& scale = 1.0f, const float& priority = 0.0f);
+		void draw_text(Vector2 location, string& message, Font* font, Colour& colour, const float& scale = 1.0f, const float& priority = 0.0f);
 
-		void renderMoveable(Moveable* moveable);
-		void renderWindow();
-		void toggleFullscreen();
-		void setRenderLevel(float level) { render_level_ = level; }
+		void render_moveable(Moveable* moveable);
+		void render_window();
+		void toggle_fullscreen();
+		void set_render_level(float level) { render_level_ = level; }
 };

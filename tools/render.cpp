@@ -24,7 +24,7 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    textureShader = CompileShader("shaders/textured.vert", "shaders/textured.frag");
+    textureShader = compile_shader("shaders/textured.vert", "shaders/textured.frag");
     glUseProgram(textureShader);
 
     uniformColour = glGetUniformLocation(textureShader, "colour");
@@ -67,7 +67,7 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
 
     // --
 
-    colourShader = CompileShader("shaders/coloured.vert", "shaders/coloured.frag");
+    colourShader = compile_shader("shaders/coloured.vert", "shaders/coloured.frag");
     glUseProgram(colourShader);
 
     glUniformMatrix4fv(glGetUniformLocation(colourShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -81,12 +81,12 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     uniformPriorityQuad = glGetUniformLocation(colourShader, "z_value");
 }
 
-void Render::drawText(Vector2 location, string& message, Font* font, Colour& colour, const float& font_scale, const float& priority) {
+void Render::draw_text(Vector2 location, string& message, Font* font, Colour& colour, const float& font_scale, const float& priority) {
     TextRenderer::render_text(font, location.x * resolution.x, (location.y) * resolution.y, message, colour, font_scale, priority);
 }
 
 GLfloat quad_vertex_buffer[1000 * 16];
-void Render::drawQuadBatch() {
+void Render::draw_batched_quads() {
     glBindVertexArray(textureVAO);
     glUseProgram(colourShader);
     glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
@@ -153,18 +153,18 @@ void Render::drawQuadBatch() {
     quad_count_ = 0;
 }
 
-void Render::drawCustom(vector<Vector2> points, Colour colour, Colour gradient) {
+void Render::draw_custom(vector<Vector2> points, Colour colour, Colour gradient) {
     return; // TODO: Reimplement custom shapes for sidescroller
 }
 
-void Render::toggleFullscreen() {
+void Render::toggle_fullscreen() {
     fullscreen_ = !fullscreen_;
     glfwSetWindowMonitor(window_, fullscreen_ ? glfwGetPrimaryMonitor() : NULL, 100, 100, resolution.x, resolution.y, GLFW_DONT_CARE);
-    renderWindow();
+    render_window();
 }
 
 GLfloat vertex_buffer[1000 * 16];
-void Render::drawTextureBatch() {
+void Render::draw_batched_textures() {
     glBindVertexArray(textureVAO);
     glUseProgram(textureShader);
     glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
@@ -239,19 +239,19 @@ void Render::drawTextureBatch() {
     texture_count_ = 0;
 }
 
-void Render::renderMoveable(Moveable* moveable) {
-    if (moveable->hasFlag(CUSTOM)) {
-        // drawCustom(moveable->getPoints(), moveable->getColourRef(), moveable->getGradientColourRef());
-    } else if (moveable->hasFlag(CURVED)) {
-        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getEvaluatedColour(), moveable->getGradientColourP(), moveable->getPriority(), 0.025, moveable->hasFlag(FIXED_POS));
-    } else if (moveable->hasFlag(TEXTURED)) {
-        drawTextureB(moveable->getLocation(), moveable->getSize(), moveable->getTexture(), &moveable->getEvaluatedColour(), &moveable->getBlend(), moveable->hasFlag(FIXED_POS), moveable->getSecondaryTexture(), moveable->getGradientColourP());
+void Render::render_moveable(Moveable* moveable) {
+    if (moveable->has_flag(CUSTOM)) {
+        // draw_custom(moveable->get_points(), moveable->get_colour_ref(), moveable->get_gradient_colour_ref());
+    } else if (moveable->has_flag(CURVED)) {
+        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->get_evaluated_colour(), moveable->get_gradient_colour_p(), moveable->get_priority(), 0.025, moveable->has_flag(FIXED_POS));
+    } else if (moveable->has_flag(TEXTURED)) {
+        draw_texture(moveable->get_location(), moveable->get_size(), moveable->get_texture(), &moveable->get_evaluated_colour(), &moveable->get_blend(), moveable->has_flag(FIXED_POS), moveable->get_secondary_texture(), moveable->get_gradient_colour_p());
     } else {
-        drawQuadB(moveable->getLocation(), moveable->getSize(), &moveable->getEvaluatedColour(), &moveable->getGradientColourRef(), moveable->getPriority(), 0.0f, moveable->hasFlag(FIXED_POS));
+        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->get_evaluated_colour(), &moveable->get_gradient_colour_ref(), moveable->get_priority(), 0.0f, moveable->has_flag(FIXED_POS));
     }
 }
 
-void Render::renderWindow() {
+void Render::render_window() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float time_shapes = glfwGetTime();
@@ -259,11 +259,11 @@ void Render::renderWindow() {
     int culled_moveables = 0;
 
     for (Moveable* moveable: *objects_) {
-        if (moveable->getFlags() & (DISABLED | PARTICLES | PANEL | NO_RENDER))
+        if (moveable->get_flags() & (DISABLED | PARTICLES | PANEL | NO_RENDER))
             skipped_moveables++;
         else if ((moveable->location.x + moveable->size.x <= 0) || (moveable->location.y + moveable->size.y <= 0) || (moveable->location.x >= 1) || (moveable->location.y >= 1))
             culled_moveables++;
-        else renderMoveable(moveable);
+        else render_moveable(moveable);
     }
 
     skipped_count = skipped_moveables;
@@ -272,10 +272,10 @@ void Render::renderWindow() {
     // glDepthMask(GL_FALSE);
     
     // glDisable(GL_DEPTH_TEST);
-    drawTextureBatch();
+    draw_batched_textures();
     
     // glEnable(GL_DEPTH_TEST);    
-    drawQuadBatch();
+    draw_batched_quads();
 
     draw_times[0] = glfwGetTime() - time_shapes;
     
@@ -284,11 +284,11 @@ void Render::renderWindow() {
     Vector2 text_dimensions, text_location;
     Colour text_background_colour = Colour(40, 40, 40, 255);
     const float background_scale = 1.05f;
-    for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED) && (text->getFlags() & TEXT_BACKGROUND)) {
-        text_dimensions = text->getTextSize();
+    for (Text* text : *text_objects_) if (!(text->get_flags() & DISABLED) && (text->get_flags() & TEXT_BACKGROUND)) {
+        text_dimensions = text->get_text_size();
         text_dimensions /= resolution;
 
-        text_location = text->getLocation();
+        text_location = text->get_location();
         text_location.y -= text_dimensions.y;
 
         text_dimensions.x *= background_scale;
@@ -296,27 +296,27 @@ void Render::renderWindow() {
         text_location.x -= text_dimensions.x * (background_scale - 1) / (2 * background_scale);
         text_location.y -= text_dimensions.y * (background_scale * 1.5 - 1) / (2 * background_scale * 1.5);
 
-        text_background_colour.setW(min(text->getColourRef().getW(), 200.f));
-        drawQuadB(text_location, text_dimensions, &text_background_colour, &text_background_colour, 0.00, 0.0125);
+        text_background_colour.set_alpha(min(text->get_colour_ref().get_w(), 200.f));
+        draw_quad(text_location, text_dimensions, &text_background_colour, &text_background_colour, 0.00, 0.0125);
     }
 
-    drawQuadBatch();
+    draw_batched_quads();
     
     TextRenderer::init_shader();
-    for (Text* text : *text_objects_) if (!(text->getFlags() & DISABLED)) {
-        drawText(
-            text->hasFlag(FIXED_POS) ? text->getLocation() : text->getLocation() * scale + offsets,
-            text->getContent(),
-            text->getFont(),
-            text->getEvaluatedColour(),
-            text->hasFlag(FIXED_POS) ? text->getScale() : text->getScale() * scale,
-            text->getPriority());
+    for (Text* text : *text_objects_) if (!(text->get_flags() & DISABLED)) {
+        draw_text(
+            text->has_flag(FIXED_POS) ? text->get_location() : text->get_location() * scale + offsets,
+            text->get_content(),
+            text->get_font(),
+            text->get_evaluated_colour(),
+            text->has_flag(FIXED_POS) ? text->get_scale() : text->get_scale() * scale,
+            text->get_priority());
     }
     TextRenderer::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;
 
     // glEnable(GL_DEPTH_TEST);
-    // drawQuadBatch();
+    // draw_batched_quads();
 
     glfwSwapBuffers(window_);
 

@@ -22,17 +22,17 @@ class Player: public Moveable {
 	public:
 		Player();
 
-		bool facingRight();
-		bool isJumping();
-		void replenishJump();
-		void executeJump();
-		void setAcceleration(float, float) override;
+		bool is_facing_right();
+		bool is_jumping();
+		void replenish_jump();
+		void jump();
+		void set_acceleration(float, float) override;
 		void update(const float& = 1.0) override;
 		void stop();
-		void increaseRotation(float);
-		void stopRotation();
+		void increase_rotation(float);
+		void stop_rotation();
 
-		void defaultPhysics(float);
+		void default_physics(float);
 
 		float max_speed = 0.00375f; //* 2;// *10;
 		float rotation = 0.f;

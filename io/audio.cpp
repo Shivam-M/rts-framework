@@ -31,9 +31,9 @@ void Audio::enable() { enabled = true; }
 
 void Audio::disable() { enabled = false; }
 
-void Audio::stopAllSounds() {}
+void Audio::stop() {}
 
-void Audio::setVolume(const float volume) {
+void Audio::set_volume(const float volume) {
 	ma_engine_set_volume(&engine, volume);
 	volume_ = volume;
 }
@@ -61,7 +61,7 @@ void Sound::play() {
 }
 
 void Sound::play(const float volume) {
-	setVolume(volume);
+	set_volume(volume);
 	play();
 }
 
@@ -73,11 +73,11 @@ void Sound::stop() {
 	ma_sound_seek_to_pcm_frame(&sound, 0);
 }
 
-void Sound::setVolume(const float volume) {
+void Sound::set_volume(const float volume) {
 	ma_sound_set_volume(&sound, volume);
 	volume_ = volume;
 }
 
-const float& Sound::getVolume() const {
+const float& Sound::get_volume() const {
 	return volume_;
 }

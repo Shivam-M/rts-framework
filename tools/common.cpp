@@ -23,7 +23,7 @@ string read_file(const string& filename) {
     return buffer;
 }
 
-GLuint CompileShader(const char* vertex_shader_path, const char* fragment_shader_path) {
+GLuint compile_shader(const char* vertex_shader_path, const char* fragment_shader_path) {
     int success;
     char info[512];
 

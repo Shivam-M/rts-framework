@@ -6,64 +6,64 @@
 
 using namespace std;
 
-void Nation::addProvince(Province* province) {
+void Nation::add_province(Province* province) {
 	owned_provinces_.push_back(province);
-	province->setNation(this);
+	province->set_nation(this);
 }
 
-void Nation::removeProvince(Province* province) {
-	if (ownsProvince(province)) {
-		if (getCapital() != province) {
+void Nation::remove_province(Province* province) {
+	if (owns_province(province)) {
+		if (get_capital() != province) {
 			owned_provinces_.erase(remove(owned_provinces_.begin(), owned_provinces_.end(), province), owned_provinces_.end());
-		} else if (getNumberProvinces() > 1) {
+		} else if (get_province_count() > 1) {
 			owned_provinces_.erase(remove(owned_provinces_.begin(), owned_provinces_.end(), province), owned_provinces_.end());
-			setCapital(getOwnedProvinces()[0]);
+			set_capital(get_provinces()[0]);
 		} else {
 			log_t("** NATION TO LOSE CAPITAL **");
 		}
 	}
 }
 
-int Nation::getArmySize() {
+int Nation::get_army_size() {
 	int army_size = 0;
 	for (Unit* unit : owned_army_units_) {
-		army_size += unit->getAmount();
+		army_size += unit->get_amount();
 	}
 	return army_size;
 }
 
-void Nation::addUnit(Unit* unit) {
+void Nation::add_unit(Unit* unit) {
 	owned_army_units_.push_back(unit);
-	unit->setNation(this);
-	unit->setColour(getColour());
+	unit->set_nation(this);
+	unit->set_colour(get_colour());
 }
 
 void Nation::evaluate() {
 	float final_income = income_;
 
-	for (Province* province : getOwnedProvinces()) {
+	for (Province* province : get_provinces()) {
 		province->evaluate();
-		final_income += province->getValue();
+		final_income += province->get_value();
 	}
 
-	for (Unit* unit : getOwnedUnits()) {
+	for (Unit* unit : get_army()) {
 		unit->evaluate();
 	}
 
-	money_ += final_income - getOutgoings();
+	money_ += final_income - get_expenses();
 	in_debt_ = money_ < 0.00f;
 }
 
-Unit* Nation::hireUnit(int size, float skill) {
+Unit* Nation::hire_unit(int size, float skill) {
 	float cost = size * UNIT_COST * skill;
 	if (money_ <= cost) return nullptr;
-	Unit* unit = new Unit(UnitCount++, this, size, skill, getCapital());
-	addMoney(-cost);
-	addUnit(unit);
+	Unit* unit = new Unit(UnitCount++, this, size, skill, get_capital());
+	add_money(-cost);
+	add_unit(unit);
 	return unit;
 }
 
-void Nation::dismissUnit(Unit* unit) {
+void Nation::dismiss_unit(Unit* unit) {
 	owned_army_units_.erase(remove(owned_army_units_.begin(), owned_army_units_.end(), unit), owned_army_units_.end());
 	delete unit;
 }

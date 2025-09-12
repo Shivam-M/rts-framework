@@ -11,66 +11,66 @@ using namespace std;
 
 Unit::Unit(int identifier, Nation* nation, int size, float skill, Province* province) :
 	identifier_(identifier), nation_(nation), amount_(size), skill_factor_(skill) {
-	setProvince(province);
-	addFlag(TEXTURED | UNIT);
-	setTexture(Image::getImage("data/images/unit_thick.png"));
-	Moveable::setSize(0.075f, 0.075f / 1.16f);
+	set_province(province);
+	add_flag(TEXTURED | UNIT);
+	set_texture(Image::get_image("data/images/unit_thick.png"));
+	Moveable::set_size(0.075f, 0.075f / 1.16f);
 }
 
-void Unit::setPath(vector<Province*> path) {
+void Unit::set_path(vector<Province*> path) {
 	PathCount++;
 	travel_path_ = path;
-	setTarget(travel_path_.at(0));
-	setState(TRAVELLING);
-	log_t("Set path for unit " CON_RED, getName(), CON_NORMAL " (" CON_RED, getID(), CON_NORMAL "):");
+	set_target_province(travel_path_.at(0));
+	set_state(TRAVELLING);
+	log_t("Set path for unit " CON_RED, get_name(), CON_NORMAL " (" CON_RED, get_id(), CON_NORMAL "):");
 
 	for (Province* province : path) {
-		ColourShift colourshift = ColourShift(province->getColour(), province->getColour().setW(150));
+		ColourShift colourshift = ColourShift(province->get_colour(), province->get_colour().set_alpha(150));
 		colourshift.speed = 0.02f;
 		colourshift.conditionalise(&PathCount);
-		province->setColourShift(colourshift);
-		log_t("* " CON_RED, province->getName(), CON_NORMAL " (" CON_RED, province->getID(), CON_NORMAL ")");
+		province->set_colour_shift(colourshift);
+		log_t("* " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->get_id(), CON_NORMAL ")");
 	}
 }
 
-void Unit::advancePath() {
+void Unit::advance_path() {
 	travel_path_.erase(travel_path_.begin());
 	if (!travel_path_.empty()) {
-		setTarget(travel_path_.at(0));
+		set_target_province(travel_path_.at(0));
 	}
 }
 
-void Unit::takeFatalities(int amount) {
+void Unit::inflict_fatalities(int amount) {
 	amount_ -= amount;
 	if (amount_ <= 0) {
 		amount_ = 0;
-		addFlag(DISABLED);
-		setState(DEAD);
-		text->addFlag(DISABLED);
-		if (province_->getBesieger() == this) {
-			province_->setBesieger(nullptr);
+		add_flag(DISABLED);
+		set_state(DEAD);
+		text->add_flag(DISABLED);
+		if (province_->get_besieger() == this) {
+			province_->set_besieger(nullptr);
 		}
 	}
 }
 
-void Unit::endBattle() {
+void Unit::finish_battle() {
 	if (battle_info_) {
-		GameRTS::instance->registerEvent(BATTLE_END, battle_info_);
+		GameRTS::instance->register_event(BATTLE_END, battle_info_);
 		battle_info_ = nullptr;
-		text->removeFlag(DISABLED);
+		text->remove_flag(DISABLED);
 	}
 }
 
-void Unit::receiveBattle(Unit* unit, BattleInformation* battle_info) {
-	text->addFlag(DISABLED);
-	setState(FIGHTING);
+void Unit::receive_battle(Unit* unit, BattleInformation* battle_info) {
+	text->add_flag(DISABLED);
+	set_state(FIGHTING);
 	enemy_unit_ = unit;
 	battle_info_ = battle_info;
 }
 
-void Unit::initiateBattle(Unit* unit) {
-	text->addFlag(DISABLED);
-	setState(FIGHTING);
+void Unit::initiate_battle(Unit* unit) {
+	text->add_flag(DISABLED);
+	set_state(FIGHTING);
 	battle_info_ = new BattleInformation();
 	battle_info_->attacker_units.push_back(this);
 	battle_info_->defender_units.push_back(unit);
@@ -78,37 +78,37 @@ void Unit::initiateBattle(Unit* unit) {
 	battle_info_->total_defender_starting_strength = unit->amount_;
 	battle_info_->province = province_;
 	enemy_unit_ = unit;
-	enemy_unit_->receiveBattle(this, battle_info_);
-	GameRTS::instance->registerEvent(BATTLE_START, battle_info_);
+	enemy_unit_->receive_battle(this, battle_info_);
+	GameRTS::instance->register_event(BATTLE_START, battle_info_);
 }
 
-void Unit::initiate() {
-	setLocation(province_->getCentre().x, province_->getCentre().y);
-	province_->registerUnit(this);
+void Unit::initialise() {
+	set_location(province_->get_centre().x, province_->get_centre().y);
+	province_->register_unit(this);
 }
 
 void Unit::evaluate() {
-	Vector2 home_location = province_->getCentre();
+	Vector2 home_location = province_->get_centre();
 	Vector2 target_location;
 	Vector2 distance;
 	float magnet = 0.001f;
 
-	if (target_province_) target_location = target_province_->getCentre();
+	if (target_province_) target_location = target_province_->get_centre();
 
-	switch (getState()) {
+	switch (get_state()) {
 		case FIGHTING:
-			enemy_unit_->takeFatalities(50 * skill_factor_ * random_float());
-			if (enemy_unit_->getState() == DEAD) {
+			enemy_unit_->inflict_fatalities(50 * skill_factor_ * random_float());
+			if (enemy_unit_->get_state() == DEAD) {
 				enemy_unit_ = nullptr;
-				setState(target_province_ ? TRAVELLING : NORMAL);
-				endBattle();
+				set_state(target_province_ ? TRAVELLING : NORMAL);
+				finish_battle();
 			}
 			break;
 		case SIEGING:
-			province_->progressSiege(skill_factor_ * random_float());
-			if (province_->getSiegeProgress() >= 100) {
-				province_->setBlend(blend_sieged);
-				province_->setGradientColour(getColour().setW(200));
+			province_->progress_siege(skill_factor_ * random_float());
+			if (province_->get_siege_progress() >= 100) {
+				province_->set_blend(blend_sieged);
+				province_->set_gradient_colour(get_colour().set_alpha(200));
 			}
 			break;
 		case TRAVELLING:
@@ -119,48 +119,48 @@ void Unit::evaluate() {
 			distance.y = abs(target_location.y - location.y);
 
 			if (distance.x < magnet && distance.y < magnet) {
-				province_->deregisterUnit(this);
-				province_->stopColourShift();
+				province_->deregister_unit(this);
+				province_->stop_colour_shift();
 				province_ = target_province_;
-				target_province_->registerUnit(this);
+				target_province_->register_unit(this);
 				target_province_ = nullptr;
 
-				log_t("Unit " CON_RED, getName(), CON_NORMAL " (" CON_RED, getID(), CON_NORMAL ") arrived at province " CON_RED, province_->getName(), CON_NORMAL " (" CON_RED, province_->getID(), CON_NORMAL ")");
+				log_t("Unit " CON_RED, get_name(), CON_NORMAL " (" CON_RED, get_id(), CON_NORMAL ") arrived at province " CON_RED, province_->get_name(), CON_NORMAL " (" CON_RED, province_->get_id(), CON_NORMAL ")");
 
 				if (!travel_path_.empty()) {
-					advancePath();
+					advance_path();
 				}
 
 				if (travel_path_.empty()) {
-					province_->stopColourShift();
-					setState(NORMAL);
+					province_->stop_colour_shift();
+					set_state(NORMAL);
 				}
 
-				const auto& units = province_->getStationedUnits();
+				const auto& units = province_->get_stationed_units();
 				for (Unit* unit: units) {
-					if (unit == this || unit->getNation() == getNation()) continue;
-					if (unit->getState() != FIGHTING && unit->getState() != DEAD) {
-						initiateBattle(unit);
+					if (unit == this || unit->get_nation() == get_nation()) continue;
+					if (unit->get_state() != FIGHTING && unit->get_state() != DEAD) {
+						initiate_battle(unit);
 						break;
 					}
 				}
 			}
 			break;
 		case NORMAL:
-			if (province_->getNation() == getNation()) break;
+			if (province_->get_nation() == get_nation()) break;
 
-			if (province_->getBesieger() == nullptr || province_->getBesieger() == this) {
-				province_->beginSiege(this, getColour());
-				setState(SIEGING);
+			if (province_->get_besieger() == nullptr || province_->get_besieger() == this) {
+				province_->initiate_siege(this, get_colour());
+				set_state(SIEGING);
 			}
 			break;
 	}
 
 	if (text) {
-		Vector2 text_location = getCentre();
+		Vector2 text_location = get_centre();
 		text_location.y -= 0.0275f;
 
-		text->setContent(format("{} - {}", name, amount_));
-		text->setLocation(text_location.x, text_location.y);
+		text->set_content(format("{} - {}", name, amount_));
+		text->set_location(text_location.x, text_location.y);
 	}
 }

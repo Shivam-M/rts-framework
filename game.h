@@ -68,24 +68,25 @@ class Game {
 		int fps_limit = 0;
 		int update_rate = 144;
 		
-		virtual void extendedInitialisation();
-		virtual void updateObjects(const float& modifier = 1.0f);
-		virtual void updateStatistics(const int& frames, const int& updates);
-		virtual void updateProperties();
-		void loadLevels(string level_directory);
-		void dynamicLoadLevel(const string& level_path, const string& instance_name = "");
-		void registerObject(Moveable* object);
-		void registerObject(Text* text_object);
-		void debugMode();
-		void toggleDebug();
-		void updateCursor();
-		bool cursorPositionOnTexture(Moveable* moveable, const Vector2& cursor_position);
-		void setButton(const int& button, const int& state) { button_map[button] = state; }
-		const int& getButton(const int& button) { return button_map[button]; }
-		virtual int gameLoop();
-		virtual Moveable* getObjectUnderMouse();
+		virtual int game_loop();
+		virtual void initialise_extended();
+		virtual void update_objects(const float& modifier = 1.0f);
+		virtual void update_statistics(const int& frames, const int& updates);
+		virtual void update_properties();
+		virtual void update_cursor();
+		virtual Moveable* get_object_under_mouse();
 
-		Player* getPlayer() { return player; }
+		bool is_cursor_on_texture(Moveable* moveable, const Vector2& cursor_position);
+		void load_levels(string level_directory);
+		void load_level_dynamically(const string& level_path, const string& instance_name = "");
+		void register_object(Moveable* object);
+		void register_object(Text* text_object);
+		void debug_mode();
+		void toggle_debug();
+		void set_button(const int& button, const int& state) { button_map[button] = state; }
+		const int& get_button(const int& button) { return button_map[button]; }
+
+		Player* get_player() { return player; }
 
 		Game() : Game(0, nullptr) {}
 		Game(int, char**);

@@ -82,8 +82,8 @@ struct Date {
 	}
 };
 
-static void loadProvinceNeighbours(string neighbours_file);
-static void loadProvinceAttributes(string attributes_file);
+static void load_province_neighbours(string neighbours_file);
+static void load_province_attributes(string attributes_file);
 
 using namespace std;
 
@@ -103,23 +103,23 @@ class GameRTS : Game {
 		bool game_paused = false;
 		bool simulation_paused = false;
 		bool picking_nation = false;
-		
-		void extendedInitialisation() override;
-		void updateObjects(const float& modifier = 1.0f) override;
-		void updateStatistics(const int& frames, const int& updates) override;
-		void updateProperties() override;
-		void pauseGame();
-		void setupRTSGame();
-		void expandNation(Province* province);
-		void moveUnit(Province* province);
-		void hoverProvince(Province* province);
-		void hoverUnit(Unit* unit);
-		void updateCursor();
-		void executeAction(int action, Moveable* button = nullptr);
-		void registerEvent(Event event, void* details = nullptr);
-		int  gameLoop() override;
 
-		Moveable* getObjectUnderMouse() override;
+		int game_loop() override;
+		void initialise_extended() override;
+		void update_objects(const float& modifier = 1.0f) override;
+		void update_statistics(const int& frames, const int& updates) override;
+		void update_properties() override;
+		void update_cursor() override;
+		Moveable* get_object_under_mouse() override;
+
+		void pause_game();
+		void initialise_rts_game();
+		void expand_nation(Province* province);
+		void move_unit(Province* province);
+		void hover_province(Province* province);
+		void hover_unit(Unit* unit);
+		void execute_action(int action, Moveable* button = nullptr);
+		void register_event(Event event, void* details = nullptr);
 
 		GameRTS();
 		GameRTS(int a, char** b);

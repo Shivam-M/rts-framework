@@ -39,86 +39,73 @@ class Province : public Moveable {  // TODO: Move definitions to a .cpp file
 	public:
 		Province(int identifier) : identifier_(identifier) {}
 
-		void setID(int identifier) { identifier_ = identifier; }
-		int getID() { return identifier_; }
+		void evaluate() {}
 
-		void incrementLevel(int amount = 1) { level_ += amount; }
-		void setLevel(int level) { level_ = level; };
-		int getLevel() { return level_; }
+		void set_id(int identifier) { identifier_ = identifier; }
+		int get_id() { return identifier_; }
 
-		float getValue() { return value_; }
-		void setValue(float value) { value_ = value; }
+		void increment_level(int amount = 1) { level_ += amount; }
+		void set_level(int level) { level_ = level; };
+		int get_level() { return level_; }
 
-		void setTerrain(TERRAIN terrain) { terrain_ = terrain; }
-		TERRAIN getTerrain() { return terrain_; }
-		const string& getTerrainName() { return TERRAIN_NAMES[terrain_]; }
+		float get_value() { return value_; }
+		void set_value(float value) { value_ = value; }
 
-		void setState(PROV_STATE state) { state_ = state; }
-		PROV_STATE getState() { return state_; }
+		void set_terrain(TERRAIN terrain) { terrain_ = terrain; }
+		TERRAIN get_terrain() { return terrain_; }
+		const string& get_terrain_name() { return TERRAIN_NAMES[terrain_]; }
 
-		vector<Province*>& getNeighbours() { return neighbours_; }
-		void addNeighbour(Province* neighbour) { neighbours_.push_back(neighbour); }
-		bool isNeighbour(Province* other) { return find(neighbours_.begin(), neighbours_.end(), other) != neighbours_.end(); }
+		void set_state(PROV_STATE state) { state_ = state; }
+		PROV_STATE get_state() { return state_; }
 
-		void registerUnit(Unit* unit) { stationed_units.push_back(unit); }
-		void deregisterUnit(Unit* unit) { stationed_units.erase(remove(stationed_units.begin(), stationed_units.end(), unit), stationed_units.end()); }
-		vector<Unit*>& getStationedUnits() { return stationed_units; }
+		vector<Province*>& get_neighbours() { return neighbours_; }
+		void register_neighbour(Province* neighbour) { neighbours_.push_back(neighbour); }
+		bool is_neighbour(Province* other) { return find(neighbours_.begin(), neighbours_.end(), other) != neighbours_.end(); }
 
-		void setNation(Nation* nation) { nation_ = nation; }
-		Nation* getNation() { return nation_; }
+		void register_unit(Unit* unit) { stationed_units.push_back(unit); }
+		void deregister_unit(Unit* unit) { stationed_units.erase(remove(stationed_units.begin(), stationed_units.end(), unit), stationed_units.end()); }
+		vector<Unit*>& get_stationed_units() { return stationed_units; }
 
-		void setBesieger(Unit* unit) { besieger_ = unit; }
+		void set_nation(Nation* nation) { nation_ = nation; }
+		Nation* get_nation() { return nation_; }
 
-		Unit* getBesieger() { return besieger_; }
-		Unit* getController() { return controlled_by; } // Should be nation instead as this unit might be dead
+		void set_besieger(Unit* unit) { besieger_ = unit; }
 
-		void beginSiege(Unit* unit, Colour colour) {
+		Unit* get_besieger() { return besieger_; }
+		Unit* get_controller() { return controlled_by; } // Should be nation instead as this unit might be dead
+
+		void initiate_siege(Unit* unit, Colour colour) {
 			besieger_ = unit;
-			ColourShift colourshift = ColourShift(getColour(), colour);
+			ColourShift colourshift = ColourShift(get_colour(), colour);
 			colourshift.speed = 0.03f;
 			colourshift.conditionalise(&SiegeID);
-
-			/*
-			ColourShift2 colourshift2 = ColourShift2(getColour(), colour, 0.03f);
-			colourshift2.setCondition(&SiegeID);
-
-			setColourShift2(colourshift2);
-			*/
-
-			setColourShift(colourshift);
-			setState(BESIEGING);
+			set_colour_shift(colourshift);
+			set_state(BESIEGING);
 		}
 
-		void progressSiege(float amount) {
-			if (getState() != PROV_STATE::BESIEGING) return;
+		void progress_siege(float amount) {
+			if (get_state() != PROV_STATE::BESIEGING) return;
 
 			siege_progress_ += amount;
 
 			if (siege_progress_ >= 100) {
 				controlled_by = besieger_;
 				besieger_ = nullptr;
-				setState(UNDER_CONTROL);
+				set_state(UNDER_CONTROL);
 				SiegeID++;
 			}
 		}
 
-		float getSiegeProgress() { return siege_progress_; }
+		float get_siege_progress() { return siege_progress_; }
 
-		void endSiege() {
-			setState(PROV_STATE::NORMAL);
+		void end_siege() {
+			set_state(PROV_STATE::NORMAL);
 			siege_progress_ = 0;
 			besieger_ = nullptr;
 			SiegeID++;
 		}
 
-		void evaluate() {
-			/*if (text != nullptr) {
-				text->setLocation(location.x + text_offset.x, location.y + text_offset.y);
-				text->setContent(getName() + " [" + to_string(getID()) + "] - (" + to_string(location.x) + ", " + to_string(location.y) + ")");
-			}*/
-		}
-
-		static vector<Province*> getShortestPath(Province* source, Province* destination) { // TODO: Cache paths
+		static vector<Province*> find_shortest_path(Province* source, Province* destination) { // TODO: Cache paths
 			queue<Province*> q;
 			unordered_set<Province*> visited;
 			unordered_map<Province*, Province*> previous;
@@ -138,7 +125,7 @@ class Province : public Moveable {  // TODO: Move definitions to a .cpp file
 					} return path;
 				}
 
-				for (Province* neighbor : current->getNeighbours()) {
+				for (Province* neighbor : current->get_neighbours()) {
 					if (visited.find(neighbor) == visited.end()) {
 						visited.insert(neighbor);
 						previous[neighbor] = current;

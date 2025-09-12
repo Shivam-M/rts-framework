@@ -38,41 +38,41 @@ class Nation : public Moveable {
 		int flags = 0;
 
 	public:
-		Nation(int identifier, string name, Province* capital = nullptr) : identifier_(identifier), name_(name), capital_province_(capital) { addFlag(NATION); }
-
-		void setID(int identifier) { identifier_ = identifier; }
-		int getID() { return identifier_; }
-
-		Province* getCapital() { return capital_province_; }
-		void setCapital(Province* province) { if (ownsProvince(province)) capital_province_ = province; }
-
-		vector<Province*>& getOwnedProvinces() { return owned_provinces_; }
-		int getNumberProvinces() { return owned_provinces_.size(); }
-		bool ownsProvince(Province* province) { return find(owned_provinces_.begin(), owned_provinces_.end(), province) != owned_provinces_.end(); }
-		void addProvince(Province* province);
-		void removeProvince(Province* province);
-
-		int getArmySize();
-		vector<Unit*>& getOwnedUnits() { return owned_army_units_; }
-		void addUnit(Unit* unit);
-
-		float getMoney() { return money_; }
-		void setMoney(float money) { money_ = money; }
-		void addMoney(float amount) { money_ += amount; }
-
-		float getIncome() { return income_; }
-		void setIncome(float income) { income_ = income; }
-		void addIncome(float amount) { income_ += amount; }
-
-		float getOutgoings() { return outgoings_; }
-		void setOutgoings(float outgoings) { outgoings_ = outgoings; }
-		void addOutgoing(float amount) { outgoings_ += amount; }
-
-		bool isInDebt() { return in_debt_; }
+		Nation(int identifier, string name, Province* capital = nullptr) : identifier_(identifier), name_(name), capital_province_(capital) { add_flag(NATION); }
 
 		void evaluate();
 
-		Unit* hireUnit(int size, float skill = 1.00f);
+		void set_id(int identifier) { identifier_ = identifier; }
+		int get_id() { return identifier_; }
 
-		void dismissUnit(Unit* unit);
+		Province* get_capital() { return capital_province_; }
+		void set_capital(Province* province) { if (owns_province(province)) capital_province_ = province; }
+
+		vector<Province*>& get_provinces() { return owned_provinces_; }
+		int get_province_count() { return owned_provinces_.size(); }
+		bool owns_province(Province* province) { return find(owned_provinces_.begin(), owned_provinces_.end(), province) != owned_provinces_.end(); }
+		void add_province(Province* province);
+		void remove_province(Province* province);
+
+		int get_army_size();
+		vector<Unit*>& get_army() { return owned_army_units_; }
+		void add_unit(Unit* unit);
+
+		float get_money() { return money_; }
+		void set_money(float money) { money_ = money; }
+		void add_money(float amount) { money_ += amount; }
+
+		float get_income() { return income_; }
+		void set_income(float income) { income_ = income; }
+		void add_income(float amount) { income_ += amount; }
+
+		float get_expenses() { return outgoings_; }
+		void set_expenses(float outgoings) { outgoings_ = outgoings; }
+		void add_expense(float amount) { outgoings_ += amount; }
+
+		bool is_in_debt() { return in_debt_; }
+
+		Unit* hire_unit(int size, float skill = 1.00f);
+
+		void dismiss_unit(Unit* unit);
 };

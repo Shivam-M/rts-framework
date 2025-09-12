@@ -69,4 +69,4 @@ void log_t(Args&&... args) {
 
 float random_float();
 
-GLuint CompileShader(const char* vertex_shader, const char* fragment_shader);
+GLuint compile_shader(const char* vertex_shader, const char* fragment_shader);

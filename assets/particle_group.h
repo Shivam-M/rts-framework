@@ -14,7 +14,7 @@ class ParticleGroup : public Moveable {
 
 	public:
 		ParticleGroup(Vector2 loc, Vector2 sze, Moveable moveable, int num, vector<Moveable*>* queue = nullptr) : template_moveable(moveable), amount(num) {
-			addFlag(PARTICLES);
+			add_flag(PARTICLES);
 			location = loc;
 			size = sze;
 			particles.reserve(amount);
@@ -22,7 +22,7 @@ class ParticleGroup : public Moveable {
 			for (int i = 0; i < amount; i++) {
 				Moveable* particle = new Moveable(template_moveable);
 				particle->colour_shift.speed *= random_float();
-				particle->setLocation(getLocation().x + (getSize().x  * random_float()), getLocation().y + (getSize().y * random_float()));
+				particle->set_location(get_location().x + (get_size().x  * random_float()), get_location().y + (get_size().y * random_float()));
 				particles.push_back(particle);
 				queue->push_back(particle);
 			}
@@ -32,10 +32,10 @@ class ParticleGroup : public Moveable {
 			Moveable::update(modifier);
 			for (auto& particle : particles) {
 				// particle->update();
-				if (particle->getFlags() & DISABLED) {
-					// particle->setColour(template_moveable.getColour());
-					particle->setLocation(getLocation().x + (getSize().x * random_float()), getLocation().y + (getSize().y * random_float()));
-					particle->removeFlag(DISABLED);
+				if (particle->get_flags() & DISABLED) {
+					// particle->set_colour(template_moveable.get_colour());
+					particle->set_location(get_location().x + (get_size().x * random_float()), get_location().y + (get_size().y * random_float()));
+					particle->remove_flag(DISABLED);
 				}
 			}
 		}

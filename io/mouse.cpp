@@ -27,23 +27,23 @@ void Mouse::scroll_callback(GLFWwindow* window, double x, double y) {
 }
 
 void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
-	game->setButton(button, action);
+	game->set_button(button, action);
 
 	if (debug_control_scheme) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 			if (game->selected_object) {
-				game->selected_object->setLocation(game->cursor_position.x, game->cursor_position.y);
-				game->t_Notification->setContent("Set location of " + game->selected_object->getName() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
-				log_t("Set location of " + game->selected_object->getName() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
+				game->selected_object->set_location(game->cursor_position.x, game->cursor_position.y);
+				game->t_Notification->set_content("Set location of " + game->selected_object->get_name() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
+				log_t("Set location of " + game->selected_object->get_name() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 			game->original_position = game->cursor_position;
-			game->selected_object = game->getObjectUnderMouse(); // hovered_object;
-			game->t_Notification->setContent("");
+			game->selected_object = game->get_object_under_mouse(); // hovered_object;
+			game->t_Notification->set_content("");
 
 			if (game->selected_object) {
-				game->t_Notification->setContent("Selected " + game->selected_object->getName());
-				log_t("Selected " CON_RED + game->selected_object->getName());
+				game->t_Notification->set_content("Selected " + game->selected_object->get_name());
+				log_t("Selected " CON_RED + game->selected_object->get_name());
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 			game->mouse_position = GLFW_PRESS ? game->cursor_position : 0;
@@ -52,30 +52,30 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 			game->original_position = game->cursor_position;
 			game->selected_object = nullptr;
-			game->t_Notification->setContent("");
+			game->t_Notification->set_content("");
 			game->selected_object = game->hovered_object;
 
 			if (game->selected_object) {
-				game->t_Notification->setContent("Selected " + game->selected_object->getName());
-				log_t("Selected " CON_RED + game->selected_object->getName());
+				game->t_Notification->set_content("Selected " + game->selected_object->get_name());
+				log_t("Selected " CON_RED + game->selected_object->get_name());
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-			Moveable* moveable = game->getObjectUnderMouse();
+			Moveable* moveable = game->get_object_under_mouse();
 			if (moveable == nullptr) return;
 			if (game->selected_object) {
-				if (game->selected_object->hasFlag(UNIT)) {
-					if (moveable->hasFlag(PROVINCE)) {
-						reinterpret_cast<GameRTS*>(game)->moveUnit(reinterpret_cast<Province*>(moveable));
+				if (game->selected_object->has_flag(UNIT)) {
+					if (moveable->has_flag(PROVINCE)) {
+						reinterpret_cast<GameRTS*>(game)->move_unit(reinterpret_cast<Province*>(moveable));
 					}
 				} else {
-					if (moveable->hasFlag(PROVINCE)) {
-						reinterpret_cast<GameRTS*>(game)->expandNation(reinterpret_cast<Province*>(moveable));
+					if (moveable->has_flag(PROVINCE)) {
+						reinterpret_cast<GameRTS*>(game)->expand_nation(reinterpret_cast<Province*>(moveable));
 					}
 				}
 			}
 			else {
-				if (moveable->hasFlag(PROVINCE)) {
-					reinterpret_cast<GameRTS*>(game)->expandNation(reinterpret_cast<Province*>(moveable));
+				if (moveable->has_flag(PROVINCE)) {
+					reinterpret_cast<GameRTS*>(game)->expand_nation(reinterpret_cast<Province*>(moveable));
 				}
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {

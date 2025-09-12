@@ -79,64 +79,64 @@ static map<string, Panel*> panel_map;
 static json properties;
 static string instance_suffix = "";
 
-void Loader::parseCommon(Moveable* moveable) {
-	string script = getString("script");
-	if (script != "") moveable->loadScript(script);
-	moveable->addFlag(getInt("flags"));
-	moveable->setName(getString("name"));
-	moveable->setSize(getFloat("width"), getFloat("height"));
-	moveable->setLocation(getFloat("x"), getFloat("y"));
-	moveable->setColour(Colour::HexToRGB(getString("colour"), (getFloat("alpha"))));
-	moveable->metadata = getString("metadata");
-	if (getString("alt_colour") != "") {
-	 	moveable->setGradientColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
+void Loader::parse_common(Moveable* moveable) {
+	string script = get_string("script");
+	if (script != "") moveable->load_script(script);
+	moveable->add_flag(get_int("flags"));
+	moveable->set_name(get_string("name"));
+	moveable->set_size(get_float("width"), get_float("height"));
+	moveable->set_location(get_float("x"), get_float("y"));
+	moveable->set_colour(Colour::hex_to_rgb(get_string("colour"), (get_float("alpha"))));
+	moveable->metadata = get_string("metadata");
+	if (get_string("alt_colour") != "") {
+	 	moveable->set_gradient_colour(Colour::hex_to_rgb(get_string("alt_colour"), (get_float("alt_alpha"))));
 	}
-	if (getString("texture", "NULL") != "NULL") {
-		moveable->setTexture(Image::getImage(getString("texture")));
+	if (get_string("texture", "NULL") != "NULL") {
+		moveable->set_texture(Image::get_image(get_string("texture")));
 	}
-	if (getString("parent", "NULL") != "NULL") {
-		Panel* parent_panel = panel_map[getString("parent") + instance_suffix];
+	if (get_string("parent", "NULL") != "NULL") {
+		Panel* parent_panel = panel_map[get_string("parent") + instance_suffix];
 		parent_panel->add(moveable);
 	}
-	if (getInt("fixed")) {
-		moveable->addFlag(FIXED_POS);
+	if (get_int("fixed")) {
+		moveable->add_flag(FIXED_POS);
 	}
-	if (getInt("blend_type")) {
-		Blend blend = Blend(getInt("blend_type"), getFloat("blend_speed"), getFloat("blend_size"), Vector2(0.5f, 0.5f), getBool("blend_fixed"));
-		moveable->setBlend(blend);
+	if (get_int("blend_type")) {
+		Blend blend = Blend(get_int("blend_type"), get_float("blend_speed"), get_float("blend_size"), Vector2(0.5f, 0.5f), get_bool("blend_fixed"));
+		moveable->set_blend(blend);
 	}
-	if (getBool("uneditable")) {
-		moveable->addFlag(UNEDITABLE);
+	if (get_bool("uneditable")) {
+		moveable->add_flag(UNEDITABLE);
 	}
 }
 
-ParticleGroup* Loader::parseStars(vector<Moveable*>* queue) { // TODO PARSE VALUES
+ParticleGroup* Loader::parse_stars(vector<Moveable*>* queue) { // TODO PARSE VALUES
 	Moveable star = Moveable({}, { 0.0025f, 0.0025f * (16.0f / 9.0f) }, Colour(255, 255, 255, 150), Colour(255, 255, 255, 150));
-	ColourShift colourshift = ColourShift(star.getColour(), Colour(255, 255, 255, 0));
+	ColourShift colourshift = ColourShift(star.get_colour(), Colour(255, 255, 255, 0));
 	colourshift.speed = 0.05f;
 	colourshift.with_gradient = true;
 	colourshift.fade_to_death = true;
-	star.setColourShift(colourshift);
+	star.set_colour_shift(colourshift);
 	ParticleGroup* stars = new ParticleGroup({ 0.0f, 0.0f }, { 1.0f, 1.0f }, star, 75, queue);
-	parseCommon(stars);
+	parse_common(stars);
 	return stars;
 }
 
-Collidable* Loader::parseCollidable() {
+Collidable* Loader::parse_collidable() {
 	Collidable* collidable = new Collidable();
-	parseCommon(collidable);
+	parse_common(collidable);
 	return collidable;
 }
 
-Moveable* Loader::parseMoveable() {
+Moveable* Loader::parse_moveable() {
 	Moveable* moveable = new Moveable();
-	parseCommon(moveable);
+	parse_common(moveable);
 	return moveable;
 }
 
-Collidable* Loader::parseCustom() {
+Collidable* Loader::parse_custom() {
 	Collidable* quad = new Collidable();
-	parseCommon(quad);
+	parse_common(quad);
 
 	/* vector<Vector2> points;
 	int c, d = 0;
@@ -149,170 +149,170 @@ Collidable* Loader::parseCustom() {
 		} d++;
 	} */
 
-	quad->addFlag(CUSTOM);
+	quad->add_flag(CUSTOM);
 	// quad->setPoints(points[0], points[1], points[2], points[3]);
-	// quad->setSize(abs(points[0][0] - points[1][0]), abs(points[0][1] - points[1][1])); // Temp
-	if (getString("texture") != "NULL") {
-		quad->setTexture(Image::getImage(getString("texture")));
+	// quad->set_size(abs(points[0][0] - points[1][0]), abs(points[0][1] - points[1][1])); // Temp
+	if (get_string("texture") != "NULL") {
+		quad->set_texture(Image::get_image(get_string("texture")));
 	}
 	return quad;
 }
 
-Moveable* Loader::parseButton() {
+Moveable* Loader::parse_button() {
 	Moveable* button = new Moveable();
-	Text* text = parseText();
-	parseCommon(button);
+	Text* text = parse_text();
+	parse_common(button);
 
-	Vector2 dimensions = TextRenderer::calculate_text_dimensions(text->getFont(), text->getContent(), text->getScale());
+	Vector2 dimensions = TextRenderer::calculate_text_dimensions(text->get_font(), text->get_content(), text->get_scale());
 	float x_offset = (button->size.x - (dimensions.x / WINDOW_WIDTH)) / 2.0f;
 	float y_offset = (button->size.y + (dimensions.y / WINDOW_HEIGHT)) / 2.0f;
 
-	text->colour.setW(200);
+	text->colour.set_alpha(200);
 
-	if (getString("alt_colour") != "") {
-		button->setColour(Colour::HexToRGB(getString("alt_colour"), (getFloat("alt_alpha"))));
+	if (get_string("alt_colour") != "") {
+		button->set_colour(Colour::hex_to_rgb(get_string("alt_colour"), (get_float("alt_alpha"))));
 	}
-	button->setText(text);
-	button->setTextOffset(x_offset, y_offset);
-	button->setButtonAction((BUTTON_ACTION)getInt("action"));
-	if (getInt("fixed")) {
-		button->addFlag(FIXED_POS);
+	button->set_text(text);
+	button->set_text_offset(x_offset, y_offset);
+	button->set_button_action((BUTTON_ACTION)get_int("action"));
+	if (get_int("fixed")) {
+		button->add_flag(FIXED_POS);
 	}
 	return button;
 }
 
-Text* Loader::parseText() {
+Text* Loader::parse_text() {
 	Text* text = new Text();
-	parseCommon(text);
-	text->setScale(getFloat("scale"));
-	string a = getString("font");
-	text->setFont(Fonts::getFont(getString("font"), getInt("size"), getInt("font_custom")));
-	text->setContent(getString("content"));
-	text->setAlignment((ALIGNMENT)getInt("alignment"));
-	if (getBool("unfixed")) {  // use existing fixed var
-		text->removeFlag(FIXED_POS); // TODO: temp, no flag should be default in text constructor
+	parse_common(text);
+	text->set_scale(get_float("scale"));
+	string a = get_string("font");
+	text->set_font(Fonts::get_font(get_string("font"), get_int("size"), get_int("font_custom")));
+	text->set_content(get_string("content"));
+	text->set_alignment((ALIGNMENT)get_int("alignment"));
+	if (get_bool("unfixed")) {  // use existing fixed var
+		text->remove_flag(FIXED_POS); // TODO: temp, no flag should be default in text constructor
 	}
 	return text;
 }
 
-Collidable* Loader::parseSlider() {
+Collidable* Loader::parse_slider() {
 	Collidable* slider = new Collidable();
-	parseCommon(slider);
-	slider->addFlag(MOVING);
+	parse_common(slider);
+	slider->add_flag(MOVING);
 	return slider;
 }
 
-Panel* Loader::parsePanel() {
+Panel* Loader::parse_panel() {
 	Panel* panel = new Panel();  // maybe store as a prefab?
-	panel->setPriority(getFloat("priority"));
-	panel->addFlag(PANEL);
-	parseCommon(panel);
-	string name = getString("name");
+	panel->set_priority(get_float("priority"));
+	panel->add_flag(PANEL);
+	parse_common(panel);
+	string name = get_string("name");
 	if (instance_suffix != "") {
 		name += instance_suffix;
 	}
 	panel_map[name] = panel;
-	UIManager::Register(name, panel);
-	if (getBool("draggable")) {
-		panel->addFlag(DRAGGABLE);
+	UIManager::register_panel(name, panel);
+	if (get_bool("draggable")) {
+		panel->add_flag(DRAGGABLE);
 	}
 	return panel;
 }
 
-map<int, Province*>& Loader::getProvinceMap() { return province_map; }
+map<int, Province*>& Loader::get_province_map() { return province_map; }
 
-map<int, Nation*>& Loader::getNationMap() { return nation_map; }
+map<int, Nation*>& Loader::get_nation_map() { return nation_map; }
 
-map<int, Unit*>& Loader::getUnitMap() { return unit_map; }
+map<int, Unit*>& Loader::get_unit_map() { return unit_map; }
 
-Province* Loader::parseProvince() {
-	Province* province = new Province(getInt("id"));
-	Font* font = Fonts::getFont("data/fonts/consolab.ttf", 8, true);
+Province* Loader::parse_province() {
+	Province* province = new Province(get_int("id"));
+	Font* font = Fonts::get_font("data/fonts/consolab.ttf", 8, true);
 
-	parseCommon(province);
-	province->setTexture(Image::getImage("data/generated/" + to_string(province->getID()) + "_province.png"));
-	province->setValue(getFloat("value"));
-	province->setText(new Text(province->getLocation(), font, Colour(189, 195, 199, 150), province->getName()));
-	province->addFlag(PROVINCE);
-	province_map[province->getID()] = province;
+	parse_common(province);
+	province->set_texture(Image::get_image("data/generated/" + to_string(province->get_id()) + "_province.png"));
+	province->set_value(get_float("value"));
+	province->set_text(new Text(province->get_location(), font, Colour(189, 195, 199, 150), province->get_name()));
+	province->add_flag(PROVINCE);
+	province_map[province->get_id()] = province;
 
-	if (province->getTexture()->image == nullptr) {
-		if (getString("texture", "NULL") != "NULL") province->setTexture(Image::getImage(getString("texture", "NULL")));
+	if (province->get_texture()->image == nullptr) {
+		if (get_string("texture", "NULL") != "NULL") province->set_texture(Image::get_image(get_string("texture", "NULL")));
 	}
 
 	/*Blend blend = Blend(2, 1.0f, 1.0f, Vector2(-1.f, -1.5f), false);
-	province->setBlend(blend);*/
+	province->set_blend(blend);*/
 
 	return province;
 }
 
-Unit* Loader::parseUnit() {
-	Unit* unit = new Unit(getInt("id"), nullptr, getInt("size"), getFloat("skill"), province_map[getInt("province")]);
-	parseCommon(unit);
+Unit* Loader::parse_unit() {
+	Unit* unit = new Unit(get_int("id"), nullptr, get_int("size"), get_float("skill"), province_map[get_int("province")]);
+	parse_common(unit);
 
-	Font* font = Fonts::getFont("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
-	Text* unit_text = new Text(unit->getLocation(), font, Colour(220, 221, 225, 200), unit->getName(), 0.5f);
-	unit_text->setAlignment(CENTRE);
-	unit_text->addFlag(TEXT_BACKGROUND | UNSAVEABLE);
-	unit_text->removeFlag(FIXED_POS);
-	unit->setText(unit_text);
-	unit->setTextOffset(0, -0.0025);
+	Font* font = Fonts::get_font("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
+	Text* unit_text = new Text(unit->get_location(), font, Colour(220, 221, 225, 200), unit->get_name(), 0.5f);
+	unit_text->set_alignment(CENTRE);
+	unit_text->add_flag(TEXT_BACKGROUND | UNSAVEABLE);
+	unit_text->remove_flag(FIXED_POS);
+	unit->set_text(unit_text);
+	unit->set_text_offset(0, -0.0025);
 	// unit->location.x -= 1; // Offset x by -1 (sidescroller levelling) -- unused?
 
-	unit_map[getInt("id")] = unit;
+	unit_map[get_int("id")] = unit;
 	return unit;
 }
 
-Nation* Loader::parseNation() {
-	Nation* nation = new Nation(getInt("id"), getString("name"), province_map[getInt("capital")]);
-	parseCommon(nation);
-	nation->addFlag(NO_RENDER);
+Nation* Loader::parse_nation() {
+	Nation* nation = new Nation(get_int("id"), get_string("name"), province_map[get_int("capital")]);
+	parse_common(nation);
+	nation->add_flag(NO_RENDER);
 
-	for (const auto& element : getArray("provinces")) {
+	for (const auto& element : get_array("provinces")) {
 		Province* province = province_map[(int)element];
 		if (province == nullptr) continue;
 
-		nation->addProvince(province);
-		province->setColour(nation->getColour());
-		log_t("Assigned province " CON_RED, province->getName(), CON_NORMAL " (" CON_RED, province->getID(), CON_NORMAL ") to nation " CON_RED, nation->getName(), CON_NORMAL " (" CON_RED, nation->getID(), CON_NORMAL ")");
+		nation->add_province(province);
+		province->set_colour(nation->get_colour());
+		log_t("Assigned province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->get_id(), CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->get_id(), CON_NORMAL ")");
 	}
 
-	for (const auto& element : getArray("units")) {
+	for (const auto& element : get_array("units")) {
 		Unit* unit = unit_map[(int)element];
 		if (unit == nullptr) continue;
-		nation->addUnit(unit);
-		Colour col = nation->getColour();
-		col.setW(200);
-		unit->setColour(col);
-		// unit->initiate();
-		log_t("Assigned unit " CON_RED, unit->getName(), CON_NORMAL " (" CON_RED, unit->getID(), CON_NORMAL ") to nation " CON_RED, nation->getName(), CON_NORMAL " (" CON_RED, nation->getID(), CON_NORMAL ")");
+		nation->add_unit(unit);
+		Colour col = nation->get_colour();
+		col.set_alpha(200);
+		unit->set_colour(col);
+		// unit->initialise();
+		log_t("Assigned unit " CON_RED, unit->get_name(), CON_NORMAL " (" CON_RED, unit->get_id(), CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->get_id(), CON_NORMAL ")");
 	}
 
-	nation_map[getInt("id")] = nation;
+	nation_map[get_int("id")] = nation;
 	return nation;
 }
 
-string Loader::getVariable(const string& var) {
+string Loader::get_variable(const string& var) {
 	auto target_value = current_level_data.find("variables");
 	if (target_value == current_level_data.end()) return "";
 	json vars = current_level_data["variables"];
 	return vars[var];
 }
 
-string Loader::getString(const string& key, const string& def) {
+string Loader::get_string(const string& key, const string& def) {
 	if (properties.find(key) != properties.end()) {
 		string value = properties[key];
-		if (value[0] == 38) return getVariable(value.erase(0, 1)); // '&'
+		if (value[0] == 38) return get_variable(value.erase(0, 1)); // '&'
 		return properties[key];
 	} return !def.empty() ? def : (string)DEFAULTS[key];
 }
 
 template <typename T>
-T Loader::getValue(const string& key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
+T Loader::get_value(const string& key) { return properties.find(key) != properties.end() ? properties[key] : DEFAULTS[key]; }
 
-bool Loader::getBool(const string& key) { return getValue<bool>(key); }
-int Loader::getInt(const string& key) { return getValue<int>(key); }
-float Loader::getFloat(const string& key) { return getValue<float>(key); }
+bool Loader::get_bool(const string& key) { return get_value<bool>(key); }
+int Loader::get_int(const string& key) { return get_value<int>(key); }
+float Loader::get_float(const string& key) { return get_value<float>(key); }
 
 //template <typename T>
 //T Loader::getJsonValue(string key, string inner_key) {
@@ -320,7 +320,7 @@ float Loader::getFloat(const string& key) { return getValue<float>(key); }
 //	return main.find(inner_key) != main.end() ? main[inner_key] : DEFAULTS[key][inner_key];
 //}
 
-json::array_t Loader::getArray(const string& key) {
+json::array_t Loader::get_array(const string& key) {
 	auto target_value = properties.find(key);
 	return target_value != properties.end() && target_value.value().is_array() ? properties[key] : DEFAULTS[key];
 }
@@ -353,21 +353,21 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, con
 			Colour(level_data["background"], level_data["background_alpha"]),
 			Colour(level_data["alt_background"], level_data["alt_background_alpha"])
 		);
-		background->addFlag(UNEDITABLE);
-		background->setName("Background " + to_string(identifier));
+		background->add_flag(UNEDITABLE);
+		background->set_name("Background " + to_string(identifier));
 
 		Blend blend = Blend(1, 1.0f, 1.0f, Vector2(0.5f, 1.0f), false);
-		background->setBlend(blend);
+		background->set_blend(blend);
 
 		auto target_value = level_data.find("image");
 		if (target_value != level_data.end()) {
-			background->setTexture(Image::getImage(level_data["image"]));
+			background->set_texture(Image::get_image(level_data["image"]));
 		}
 
 		target_value = level_data.find("fixed_position");
 		if (target_value != level_data.end()) {
 			if ((bool)level_data["fixed_position"]) {
-				background->addFlag(FIXED_POS);
+				background->add_flag(FIXED_POS);
 			}
 		}
 
@@ -388,35 +388,35 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, con
 		string type = properties["type"];
 
 		if (type == "COLLIDABLE") {
-			level->objects.push_back(parseCollidable());
+			level->objects.push_back(parse_collidable());
 		} else if (type == "PANEL") {
-			level->objects.push_back(parsePanel());
+			level->objects.push_back(parse_panel());
 		} else if (type == "STARS") {
-			level->objects.push_back(parseStars(q));
+			level->objects.push_back(parse_stars(q));
 		} else if (type == "QUAD") {
-			level->objects.push_back(parseCustom());
+			level->objects.push_back(parse_custom());
 		} else if (type == "MOVEABLE") {
-			level->objects.push_back(parseMoveable());
+			level->objects.push_back(parse_moveable());
 		} else if (type == "TEXT") {
-			level->text_objects.push_back(parseText());
+			level->text_objects.push_back(parse_text());
 		} else if (type == "BUTTON") {
-			Moveable* button = parseButton();
+			Moveable* button = parse_button();
 			level->objects.push_back(button);
 			if (button->text) {
 				level->text_objects.push_back(button->text);
 			}
 		} else if (type == "SLIDER") {
-			level->objects.push_back(parseSlider());
+			level->objects.push_back(parse_slider());
 		} else if (type == "PROVINCE") {
-			level->objects.push_back(parseProvince());
+			level->objects.push_back(parse_province());
 		} else if (type == "NATION") {
-			level->objects.push_back(parseNation());
+			level->objects.push_back(parse_nation());
 		} else if (type == "UNIT") {
-			Unit* unit = parseUnit();
+			Unit* unit = parse_unit();
 			level->objects.push_back(unit);
-			level->text_objects.push_back(unit->getText());
+			level->text_objects.push_back(unit->get_text());
 		} else {
-			level->objects.push_back(parseMoveable());
+			level->objects.push_back(parse_moveable());
 		}
 	}
 
@@ -425,7 +425,7 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, con
 	return level;
 }
 
-void Loader::writeObjects(vector<Moveable*> objects, vector<Text*> text_objects) {
+void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects) {
 	ifstream file("data/levels/debug/0.json");
 	if (!file.is_open()) return;
 
@@ -436,61 +436,61 @@ void Loader::writeObjects(vector<Moveable*> objects, vector<Text*> text_objects)
 	json delayed_additions = json::array();
 	json objects_array = json::array();
 	for (Moveable* m : objects) {
-		if (m->hasFlag(PANEL)) continue; // temp
-		if (m->hasFlag(UNSAVEABLE)) continue;
-		if (m->hasFlag(UI)) continue;
-		if (m->getName().find("Background") != string::npos) continue;
+		if (m->has_flag(PANEL)) continue; // temp
+		if (m->has_flag(UNSAVEABLE)) continue;
+		if (m->has_flag(UI)) continue;
+		if (m->get_name().find("Background") != string::npos) continue;
 		json moveable_data = {
 			{"type", "MOVEABLE"},
 			{"x", m->location.x },
 			{"y", m->location.y },
 			{"width", m->size.x },
 			{"height", m->size.y },
-			{"colour", m->getColour().getHex() },
-			{"alt_colour", m->getGradientColour().getHex() },
-			{"alpha", m->getColour().getW() / 255.0f},
-			{"alt_alpha", m->getGradientColour().getW() / 255.0f},
-			{"name", m->getName()},
-			{"flags", m->getFlags() }
+			{"colour", m->get_colour().get_hex() },
+			{"alt_colour", m->get_gradient_colour().get_hex() },
+			{"alpha", m->get_colour().get_w() / 255.0f},
+			{"alt_alpha", m->get_gradient_colour().get_w() / 255.0f},
+			{"name", m->get_name()},
+			{"flags", m->get_flags() }
 		};
-		if (m->hasFlag(BUTTON)) {
+		if (m->has_flag(BUTTON)) {
 			moveable_data["type"] = "BUTTON";
-			moveable_data["action"] = reinterpret_cast<Moveable*>(m)->getButtonAction();
+			moveable_data["action"] = reinterpret_cast<Moveable*>(m)->get_button_action();
 
-			Text* t = m->getText();
-			moveable_data["font"] = Fonts::getProperties(t->getFont()).first;
-			moveable_data["font_custom"] = (int)(Fonts::getProperties(t->getFont()).second);
-			moveable_data["size"] = t->getFont()->h;
-			moveable_data["content"] = t->getContent();
-			moveable_data["scale"] = t->getScale();
+			Text* t = m->get_text();
+			moveable_data["font"] = Fonts::get_properties(t->get_font()).first;
+			moveable_data["font_custom"] = (int)(Fonts::get_properties(t->get_font()).second);
+			moveable_data["size"] = t->get_font()->h;
+			moveable_data["content"] = t->get_content();
+			moveable_data["scale"] = t->get_scale();
 		}
 		// Note: in the level loader, units are pushed by -1 on the x-axis -- shouldn't be a problem if assigned to a province
-		if (m->hasFlag(TEXTURED)) {
-			moveable_data["texture"] = m->getTexture()->path;
+		if (m->has_flag(TEXTURED)) {
+			moveable_data["texture"] = m->get_texture()->path;
 		}
-		if (m->hasFlag(PROVINCE)) {
+		if (m->has_flag(PROVINCE)) {
 			moveable_data["type"] = "PROVINCE";
-			moveable_data["id"] = reinterpret_cast<Province*>(m)->getID();
+			moveable_data["id"] = reinterpret_cast<Province*>(m)->get_id();
 		}
-		if (m->hasFlag(UNIT)) {
+		if (m->has_flag(UNIT)) {
 			moveable_data["type"] = "UNIT";
-			moveable_data["id"] = reinterpret_cast<Unit*>(m)->getID();
-			moveable_data["province"] = reinterpret_cast<Unit*>(m)->getProvince()->getID();
-			moveable_data["skill"] = reinterpret_cast<Unit*>(m)->getSkill();
-			moveable_data["size"] = reinterpret_cast<Unit*>(m)->getAmount();
+			moveable_data["id"] = reinterpret_cast<Unit*>(m)->get_id();
+			moveable_data["province"] = reinterpret_cast<Unit*>(m)->get_province()->get_id();
+			moveable_data["skill"] = reinterpret_cast<Unit*>(m)->get_skill();
+			moveable_data["size"] = reinterpret_cast<Unit*>(m)->get_amount();
 		}
-		if (m->hasFlag(NATION)) {
+		if (m->has_flag(NATION)) {
 			moveable_data["type"] = "NATION";
-			moveable_data["id"] = reinterpret_cast<Nation*>(m)->getID();
-			moveable_data["capital"] = reinterpret_cast<Nation*>(m)->getCapital()->getID();
+			moveable_data["id"] = reinterpret_cast<Nation*>(m)->get_id();
+			moveable_data["capital"] = reinterpret_cast<Nation*>(m)->get_capital()->get_id();
 			moveable_data["provinces"] = {};
 			moveable_data["units"] = {};
-			for (Unit* unit : reinterpret_cast<Nation*>(m)->getOwnedUnits()) moveable_data["units"].push_back(unit->getID());
-			for (Province* province : reinterpret_cast<Nation*>(m)->getOwnedProvinces()) moveable_data["provinces"].push_back(province->getID());
+			for (Unit* unit : reinterpret_cast<Nation*>(m)->get_army()) moveable_data["units"].push_back(unit->get_id());
+			for (Province* province : reinterpret_cast<Nation*>(m)->get_provinces()) moveable_data["provinces"].push_back(province->get_id());
 			delayed_additions.push_back(moveable_data);
 			continue;
 		}
-		if (m->hasFlag(COLLIDABLE)) moveable_data["type"] = "SLIDER";
+		if (m->has_flag(COLLIDABLE)) moveable_data["type"] = "SLIDER";
 
 		objects_array.push_back(moveable_data);
 	}
@@ -498,24 +498,24 @@ void Loader::writeObjects(vector<Moveable*> objects, vector<Text*> text_objects)
 	objects_array.insert(objects_array.end(), delayed_additions.begin(), delayed_additions.end());
 
 	for (Text* t : text_objects) {
-		if (t->hasFlag(UI)) continue;
-		if (t->hasFlag(UNSAVEABLE)) continue;
+		if (t->has_flag(UI)) continue;
+		if (t->has_flag(UNSAVEABLE)) continue;
 		json moveable_data = {
 			{"x", t->location.x },
 			{"y", t->location.y },
 			{"width", t->size.x },
 			{"height", t->size.y },
-			{"colour", t->getColour().getHex() },
-			{"alpha", t->getColour().getW() / 255.0f},
-			{"name", t->getName()}
+			{"colour", t->get_colour().get_hex() },
+			{"alpha", t->get_colour().get_w() / 255.0f},
+			{"name", t->get_name()}
 		};
-		if (t->hasFlag(TEXT)) {
+		if (t->has_flag(TEXT)) {
 			moveable_data["type"] = "TEXT";
-			moveable_data["font"] = Fonts::getProperties(t->getFont()).first;
-			moveable_data["font_custom"] = (int)(Fonts::getProperties(t->getFont()).second);
-			moveable_data["size"] = t->getFont()->h;
-			moveable_data["content"] = t->getContent();
-			moveable_data["scale"] = t->getScale();
+			moveable_data["font"] = Fonts::get_properties(t->get_font()).first;
+			moveable_data["font_custom"] = (int)(Fonts::get_properties(t->get_font()).second);
+			moveable_data["size"] = t->get_font()->h;
+			moveable_data["content"] = t->get_content();
+			moveable_data["scale"] = t->get_scale();
 		}
 		objects_array.push_back(moveable_data);
 	}

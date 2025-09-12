@@ -26,27 +26,27 @@ struct Level {
 
 class Loader {
 	private:
-		static void parseCommon(Moveable*);
-		static ParticleGroup* parseStars(vector<Moveable*>*);
-		static Collidable* parseCollidable();
-		static Collidable* parseCustom();
-		static Moveable* parseMoveable();;
-		static string getVariable(const string&);
-		static Text* parseText();
-		static Moveable* parseButton();
-		static Collidable* parseSlider();
-		static Province* parseProvince();
-		static Nation* parseNation();
-		static Unit* parseUnit();
-		static Panel* parsePanel();
+		static void parse_common(Moveable*);
+		static ParticleGroup* parse_stars(vector<Moveable*>*);
+		static Collidable* parse_collidable();
+		static Collidable* parse_custom();
+		static Collidable* parse_slider();
+		static Moveable* parse_button();
+		static Moveable* parse_moveable();;
+		static Text* parse_text();
+		static Province* parse_province();
+		static Nation* parse_nation();
+		static Unit* parse_unit();
+		static Panel* parse_panel();
+		static string get_variable(const string&);
 
 		template <typename T>
-		static T getValue(const string& key);
-		static bool getBool(const string&);
-		static float getFloat(const string&);
-		static int getInt(const string&);
-		static string getString(const string&, const string& = "");
-		static json::array_t getArray(const string&);
+		static T get_value(const string& key);
+		static bool get_bool(const string&);
+		static float get_float(const string&);
+		static int get_int(const string&);
+		static string get_string(const string&, const string& = "");
+		static json::array_t get_array(const string&);
 		
 		// TODO: Come back to this - will need support in level_designer.py too
 		/*
@@ -62,8 +62,8 @@ class Loader {
 
 	public:
 		static Level* load_level(string file_path, vector<Moveable*>* queue_objects, vector<Text*>* text_objects, const int& identifier, const string& instance_suffix = "");
-		static map<int, Province*>& getProvinceMap();
-		static map<int, Nation*>& getNationMap();
-		static map<int, Unit*>& getUnitMap();
-		static void writeObjects(vector<Moveable*> objects, vector<Text*> text_objects);
+		static map<int, Province*>& get_province_map();
+		static map<int, Nation*>& get_nation_map();
+		static map<int, Unit*>& get_unit_map();
+		static void write_objects(vector<Moveable*> objects, vector<Text*> text_objects);
 };

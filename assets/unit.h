@@ -34,45 +34,37 @@ class Unit: public Moveable {
 
 		Unit(int identifier, Nation* nation, int size, float skill = 1.00f, Province* province = nullptr);
 
-		void setID(int identifier) { identifier_ = identifier; }
-		int getID() { return identifier_; }
-
-		int getAmount() { return amount_; }
-		void setAmount(int amount) { amount_ = amount; }
-
-		float getSkill() { return skill_factor_; }
-		void setSkill(float skill) { skill_factor_ = skill; }
-
-		float getSpeed() { return speed_; }
-		void setSpeed(float speed) { speed_ = speed; }
-
-		UNIT_STATE getState() { return state_; }
-		void setState(UNIT_STATE state) { state_ = state; }
-
-		Province* getProvince() { return province_; }
-		void setProvince(Province* province) { province_ = province; }
-
-		Province* getTarget() { return target_province_; }
-		void setTarget(Province* province) { target_province_ = province; }
-
-		vector<Province*> getPath() { return travel_path_; }
-
-		void setPath(vector<Province*> path);
-
-		void advancePath();
-
-		void takeFatalities(int amount);
-
-		void receiveBattle(Unit* unit, BattleInformation* battle_info);
-
-		void endBattle();
-
-		void initiateBattle(Unit* unit);
-
-		void initiate();
-
-		Nation* getNation() { return nation_; }
-		void setNation(Nation* nation) { nation_ = nation; }
-
+		void initialise();
 		void evaluate();
+		void inflict_fatalities(int amount);
+		void initiate_battle(Unit* unit);
+		void receive_battle(Unit* unit, BattleInformation* battle_info);
+		void finish_battle();
+		void advance_path();
+		void set_path(vector<Province*> path);
+		vector<Province*> get_path() { return travel_path_; }
+
+		void set_id(int identifier) { identifier_ = identifier; }
+		int get_id() { return identifier_; }
+
+		int get_amount() { return amount_; }
+		void set_amount(int amount) { amount_ = amount; }
+
+		float get_skill() { return skill_factor_; }
+		void set_skill(float skill) { skill_factor_ = skill; }
+
+		float get_speed() { return speed_; }
+		void set_speed(float speed) { speed_ = speed; }
+
+		UNIT_STATE get_state() { return state_; }
+		void set_state(UNIT_STATE state) { state_ = state; }
+
+		Province* get_province() { return province_; }
+		void set_province(Province* province) { province_ = province; }
+
+		Province* get_target_province() { return target_province_; }
+		void set_target_province(Province* province) { target_province_ = province; }
+
+		Nation* get_nation() { return nation_; }
+		void set_nation(Nation* nation) { nation_ = nation; }
 };

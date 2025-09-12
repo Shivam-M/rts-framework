@@ -12,6 +12,6 @@ int main(int argc, char** argv) {
 #else
 	GameRTS game = GameRTS(argc, argv);
 #endif
-	game.extendedInitialisation();
-	return game.gameLoop();
+	game.initialise_extended();
+	return game.game_loop();
 }

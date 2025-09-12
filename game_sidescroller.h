@@ -9,10 +9,10 @@ class GameSidescroller : Game {
 		const float GRAVITY = 0.004f;
 		bool traversed = false;
 		
-		void checkCollision();
-		void extendedInitialisation() override;
-		void updateObjects(const float& modifier = 1.0f) override;
-		int gameLoop() override;
+		void check_collision();
+		void initialise_extended() override;
+		void update_objects(const float& modifier = 1.0f) override;
+		int game_loop() override;
 
 		GameSidescroller() : Game() {}
 		GameSidescroller(int a, char** b) : Game(a, b) {}

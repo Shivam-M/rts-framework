@@ -63,12 +63,12 @@ void GameRTS::initialise_extended() {
 	UIManager::hide("ui_battle_unit");
 	// UIManager::hide("ui_information_header");
 
-	cursor = new Moveable();
-	cursor->set_texture(Image::get_image("data/images/cursor.png"));
-	cursor->set_size(0.04 * (9 / 16.0), 0.04);
-	cursor->add_flag(FIXED_POS);
+	cursor_ = new Moveable();
+	cursor_->set_texture(Image::get_image("data/images/cursor.png"));
+	cursor_->set_size(0.04 * (9 / 16.0), 0.04);
+	cursor_->add_flag(FIXED_POS);
 
-	register_object(cursor);
+	register_object(cursor_);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
@@ -118,7 +118,7 @@ void load_province_neighbours(string neighbours) {
 			province->register_neighbour(other_province);
 			other_province->register_neighbour(province);
 
-			log_t("Assigned province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->get_id(), CON_NORMAL ") as a neighbour with " CON_RED, other_province->get_name(), CON_NORMAL " (" CON_RED, other_province->get_id(), CON_NORMAL ")");
+			log_t("Assigned province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ") as a neighbour with " CON_RED, other_province->get_name(), CON_NORMAL " (" CON_RED, other_province->identifier, CON_NORMAL ")");
 		}
 	}
 }
@@ -158,10 +158,9 @@ void GameRTS::update_statistics(const int& frames, const int& updates) {
 	string nation_string = "-- [X]";
 	ostringstream nation_treasury;
 	if (player_nation) {
-		nation_string = player_nation->get_name() + " [" + to_string(player_nation->get_id()) + "]";
+		nation_string = player_nation->get_name() + " [" + to_string(player_nation->identifier) + "]";
 
-		const float& money = player_nation->get_money();
-		t_Information2->set_content(format("Money: {:.2f}", money));
+		t_Information2->set_content(format("Money: {:.2f}", player_nation->money));
 		t_Information3->set_colour(player_nation->get_colour_ref());
 	}
 
@@ -174,14 +173,14 @@ static bool within(const Vector2& location, const Vector2& size, const Vector2& 
 }
 
 void GameRTS::expand_nation(Province* province) {
-	viewed_nation = province->get_nation();
+	viewed_nation = province->nation;
 	UIManager::show("ui_nation_tooltip");
 }
 
 void GameRTS::move_unit(Province* province) {
 	Unit* unit = reinterpret_cast<Unit*>(selected_object);
-	if (unit->get_state() != Unit::FIGHTING && unit->get_state() != Unit::DEAD ) {
-		unit->set_path(Province::find_shortest_path(unit->get_province(), province));
+	if (unit->state != Unit::State::Fighting && unit->state != Unit::State::Dead ) {
+		unit->set_path(Province::find_shortest_path(unit->province, province));
 		unit->initialise();
 	}
 }
@@ -226,7 +225,7 @@ Moveable* GameRTS::get_object_under_mouse() {
 				hover_province(province);
 			} else {
 				object->on_hover_stop();
-				for (Province* province : province->get_nation()->get_provinces()) province->on_hover();
+				for (Province* province : province->nation->get_provinces()) province->on_hover();
 			}
 		} else if (object->has_flag(UNIT)) {
 			hover_unit(reinterpret_cast<Unit*>(object));
@@ -253,8 +252,8 @@ void GameRTS::update_cursor() {  // tied to update rate
 	float relx = x / render->resolution.x;
 	float rely = y / render->resolution.y;
 	cursor_position.set(relx, rely);
-	cursor->location.x = relx;
-	cursor->location.y = rely;
+	cursor_->location.x = relx;
+	cursor_->location.y = rely;
 }
 
 void GameRTS::execute_action(int action, Moveable* button) {  // keep option for action-only
@@ -286,7 +285,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			for (Moveable* moveable : objects) {
 				if (moveable->has_flag(PROVINCE)) {
 					Colour colour = moveable->get_colour();
-					colour.set_alpha(!value_view ? 200 : 75 + (reinterpret_cast<Province*>(moveable)->get_value()) * 200);
+					colour.set_alpha(!value_view ? 200 : 75 + (reinterpret_cast<Province*>(moveable)->value) * 200);
 					moveable->set_colour(colour);
 				}
 			}
@@ -295,7 +294,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			Loader::write_objects(objects, text_objects);
 			break;
 		case HIRE_UNIT:
-			player_nation->set_money(999999999.f);
+			player_nation->money = 9999999.f;
 			hired_unit = player_nation->hire_unit(999, 5.f);
 			if (hired_unit) {
 				Font* font = Fonts::get_font("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
@@ -417,7 +416,7 @@ void GameRTS::update_properties() {
 	}
 
 	if (selected_object->has_flag(PROVINCE) && picking_nation) {
-		player_nation = reinterpret_cast<Province*>(selected_object)->get_nation();
+		player_nation = reinterpret_cast<Province*>(selected_object)->nation;
 		picking_nation = false;
 
 		for (Moveable* m : objects) {
@@ -426,7 +425,7 @@ void GameRTS::update_properties() {
 			}
 		}
 
-		log_t("Player is now controlling nation " CON_RED, player_nation->get_name(), CON_NORMAL " (" CON_RED, player_nation->get_id(), CON_NORMAL ")");
+		log_t("Player is now controlling nation " CON_RED, player_nation->get_name(), CON_NORMAL " (" CON_RED, player_nation->identifier, CON_NORMAL ")");
 	}
 
 	if (mouse->debug_control_scheme) {
@@ -456,7 +455,7 @@ void GameRTS::update_objects(const float& modifier) {
 	// }); // Temp, use z values for priorities instead in a Vector3
 	Game::update_objects(modifier);
 
-	HeaderInformation header_information = { player_nation->get_money(), date.format()};
+	HeaderInformation header_information = { player_nation->money, date.format()};
 
 	if (!UIManager::get_panel("ui_information_header")->has_flag(DISABLED))
 		UIManager::assign_values("ui_information_header", &header_information);

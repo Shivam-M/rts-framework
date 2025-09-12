@@ -89,7 +89,7 @@ using namespace std;
 
 class GameRTS : Game {
 	private:
-		Moveable* cursor;
+		Moveable* cursor_;
 	
 	public:
 		static GameRTS* instance;

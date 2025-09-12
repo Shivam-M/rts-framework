@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="assets\colour.cpp" />
     <ClCompile Include="assets\nation.cpp" />
+    <ClCompile Include="assets\province.cpp" />
     <ClCompile Include="assets\unit.cpp" />
     <ClCompile Include="io\audio.cpp" />
     <ClCompile Include="tools\ui_manager.cpp" />

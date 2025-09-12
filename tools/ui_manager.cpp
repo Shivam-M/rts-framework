@@ -89,21 +89,21 @@ void UIManager::assign_values(const string& panel_name, void* moveable, MappingF
 
 void UIManager::map_province(Panel* panel, void* moveable) { // TODO: check if converting non-ref to float& actually helps
     Province* province = static_cast<Province*>(moveable);
-    Nation* nation = province->get_nation();
+    Nation* nation = province->nation;
 
 	panel->get_text_by_name("ui_province_tooltip_name")->set_content(province->get_name());
 	panel->get_text_by_name("ui_province_tooltip_name")->set_colour(province->get_colour().set_alpha(255));
     panel->get_text_by_name("ui_province_tooltip_owned_by")->set_content("Owned by: " + nation->get_name());
-    panel->get_text_by_name("ui_province_tooltip_value")->set_content(format("Value: {:.2f}", province->get_value()));
+    panel->get_text_by_name("ui_province_tooltip_value")->set_content(format("Value: {:.2f}", province->value));
     panel->get_text_by_name("ui_province_tooltip_terrain")->set_content("Terrain: " + province->get_terrain_name());
 
-    const float& siege_progress = province->get_siege_progress();
+    const float& siege_progress = province->siege_progress;
     if (siege_progress <= 0) {
 		panel->get_text_by_name("ui_province_tooltip_siege")->set_content("");
     } else if (siege_progress < 100) {
         panel->get_text_by_name("ui_province_tooltip_siege")->set_content(format("Siege progress: {}%", static_cast<int>(siege_progress)));
-    } else if (province->get_controller()) {
-        panel->get_text_by_name("ui_province_tooltip_siege")->set_content(format("Sieged by: {}", province->get_controller()->get_nation()->get_name()));
+    } else if (province->controller) {
+        panel->get_text_by_name("ui_province_tooltip_siege")->set_content(format("Sieged by: {}", province->controller->nation->get_name()));
     }
 }
 
@@ -113,19 +113,19 @@ void UIManager::map_nation(Panel* panel, void* moveable) {
     panel->get_text_by_name("ui_nation_tooltip_name")->set_content(nation->get_name());
     panel->get_text_by_name("ui_nation_tooltip_name")->set_colour(nation->get_colour().set_alpha(150));
     panel->get_text_by_name("ui_nation_tooltip_capital")->set_content("Capital: " + nation->get_capital()->get_name());
-    panel->get_text_by_name("ui_nation_tooltip_treasury")->set_content(format("Treasury: {:.2f}", nation->get_money()));
+    panel->get_text_by_name("ui_nation_tooltip_treasury")->set_content(format("Treasury: {:.2f}", nation->money));
     panel->get_text_by_name("ui_nation_tooltip_army_size")->set_content(format("Army Size: {}", static_cast<int>(nation->get_army().size())));
 }
 
 void UIManager::map_unit(Panel* panel, void* moveable) {
     Unit* unit = static_cast<Unit*>(moveable);
-    Nation* nation = unit->get_nation();
+    Nation* nation = unit->nation;
 
 	panel->get_text_by_name("ui_unit_tooltip_name")->set_content(unit->get_name());
 	panel->get_text_by_name("ui_unit_tooltip_name")->set_colour(unit->get_colour().set_alpha(255));
 	panel->get_text_by_name("ui_unit_tooltip_owned_by")->set_content("Owned by: " + (nation ? nation->get_name() : "Independent"));  
-	panel->get_text_by_name("ui_unit_tooltip_value")->set_content(format("Skill: {:.2f}", unit->get_skill()));
-	panel->get_text_by_name("ui_unit_tooltip_terrain")->set_content(format("Size: {}", unit->get_amount()));
+	panel->get_text_by_name("ui_unit_tooltip_value")->set_content(format("Skill: {:.2f}", unit->skill));
+	panel->get_text_by_name("ui_unit_tooltip_terrain")->set_content(format("Size: {}", unit->amount));
 }
 
 void UIManager::map_war_declaration(Panel* panel, void* war_details) {
@@ -175,7 +175,7 @@ void set_battle_details_for_allies(Panel* panel, const string& side, const vecto
     int total_amount = 0;
     
     for (Unit* ally: allies) {
-        total_amount += ally->get_amount();
+        total_amount += ally->amount;
     }
 
     float const MAX_BAR_WIDTH = 0.1f;

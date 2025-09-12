@@ -230,11 +230,11 @@ Province* Loader::parse_province() {
 	Font* font = Fonts::get_font("data/fonts/consolab.ttf", 8, true);
 
 	parse_common(province);
-	province->set_texture(Image::get_image("data/generated/" + to_string(province->get_id()) + "_province.png"));
-	province->set_value(get_float("value"));
+	province->set_texture(Image::get_image("data/generated/" + to_string(province->identifier) + "_province.png"));
 	province->set_text(new Text(province->get_location(), font, Colour(189, 195, 199, 150), province->get_name()));
 	province->add_flag(PROVINCE);
-	province_map[province->get_id()] = province;
+	province->value = get_float("value");
+	province_map[province->identifier] = province;
 
 	if (province->get_texture()->image == nullptr) {
 		if (get_string("texture", "NULL") != "NULL") province->set_texture(Image::get_image(get_string("texture", "NULL")));
@@ -264,7 +264,7 @@ Unit* Loader::parse_unit() {
 }
 
 Nation* Loader::parse_nation() {
-	Nation* nation = new Nation(get_int("id"), get_string("name"), province_map[get_int("capital")]);
+	Nation* nation = new Nation(get_int("id"), province_map[get_int("capital")]);
 	parse_common(nation);
 	nation->add_flag(NO_RENDER);
 
@@ -274,7 +274,7 @@ Nation* Loader::parse_nation() {
 
 		nation->add_province(province);
 		province->set_colour(nation->get_colour());
-		log_t("Assigned province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->get_id(), CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->get_id(), CON_NORMAL ")");
+		log_t("Assigned province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->identifier, CON_NORMAL ")");
 	}
 
 	for (const auto& element : get_array("units")) {
@@ -285,7 +285,7 @@ Nation* Loader::parse_nation() {
 		col.set_alpha(200);
 		unit->set_colour(col);
 		// unit->initialise();
-		log_t("Assigned unit " CON_RED, unit->get_name(), CON_NORMAL " (" CON_RED, unit->get_id(), CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->get_id(), CON_NORMAL ")");
+		log_t("Assigned unit " CON_RED, unit->get_name(), CON_NORMAL " (" CON_RED, unit->identifier, CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->identifier, CON_NORMAL ")");
 	}
 
 	nation_map[get_int("id")] = nation;
@@ -470,23 +470,23 @@ void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects
 		}
 		if (m->has_flag(PROVINCE)) {
 			moveable_data["type"] = "PROVINCE";
-			moveable_data["id"] = reinterpret_cast<Province*>(m)->get_id();
+			moveable_data["id"] = reinterpret_cast<Province*>(m)->identifier;
 		}
 		if (m->has_flag(UNIT)) {
 			moveable_data["type"] = "UNIT";
-			moveable_data["id"] = reinterpret_cast<Unit*>(m)->get_id();
-			moveable_data["province"] = reinterpret_cast<Unit*>(m)->get_province()->get_id();
-			moveable_data["skill"] = reinterpret_cast<Unit*>(m)->get_skill();
-			moveable_data["size"] = reinterpret_cast<Unit*>(m)->get_amount();
+			moveable_data["id"] = reinterpret_cast<Unit*>(m)->identifier;
+			moveable_data["province"] = reinterpret_cast<Unit*>(m)->province->identifier;
+			moveable_data["skill"] = reinterpret_cast<Unit*>(m)->skill;
+			moveable_data["size"] = reinterpret_cast<Unit*>(m)->amount;
 		}
 		if (m->has_flag(NATION)) {
 			moveable_data["type"] = "NATION";
-			moveable_data["id"] = reinterpret_cast<Nation*>(m)->get_id();
-			moveable_data["capital"] = reinterpret_cast<Nation*>(m)->get_capital()->get_id();
+			moveable_data["id"] = reinterpret_cast<Nation*>(m)->identifier;
+			moveable_data["capital"] = reinterpret_cast<Nation*>(m)->get_capital()->identifier;
 			moveable_data["provinces"] = {};
 			moveable_data["units"] = {};
-			for (Unit* unit : reinterpret_cast<Nation*>(m)->get_army()) moveable_data["units"].push_back(unit->get_id());
-			for (Province* province : reinterpret_cast<Nation*>(m)->get_provinces()) moveable_data["provinces"].push_back(province->get_id());
+			for (Unit* unit : reinterpret_cast<Nation*>(m)->get_army()) moveable_data["units"].push_back(unit->identifier);
+			for (Province* province : reinterpret_cast<Nation*>(m)->get_provinces()) moveable_data["provinces"].push_back(province->identifier);
 			delayed_additions.push_back(moveable_data);
 			continue;
 		}

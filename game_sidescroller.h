@@ -11,7 +11,7 @@ class GameSidescroller : Game {
 		
 		void check_collision();
 		void initialise_extended() override;
-		void update_objects(const float& modifier = 1.0f) override;
+		void update_objects(float modifier = 1.0f) override;
 		int game_loop() override;
 
 		GameSidescroller() : Game() {}

@@ -25,18 +25,18 @@ class Audio {
 
 class Sound {
 	private:
-		ma_sound sound{};
+		ma_sound sound_{};
 		float volume_ = 1.0f;
 		bool playing_ = false;
 		string file_ = "";
 
 	public:
 		Sound(const string& file, const float volume = 1.0f) {
-			sound = ma_sound();
+			sound_ = ma_sound();
 			load(file);
 			set_volume(volume);
 		};
-		~Sound() { if (&sound) ma_sound_uninit(&sound); }
+		~Sound() { if (&sound_) ma_sound_uninit(&sound_); }
 
 		void load(const string file);
 		void play();

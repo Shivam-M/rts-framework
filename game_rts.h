@@ -106,7 +106,7 @@ class GameRTS : Game {
 
 		int game_loop() override;
 		void initialise_extended() override;
-		void update_objects(const float& modifier = 1.0f) override;
+		void update_objects(float modifier = 1.0f) override;
 		void update_statistics(const int& frames, const int& updates) override;
 		void update_properties() override;
 		void update_cursor() override;

@@ -81,12 +81,12 @@
     <ClCompile Include="assets\province.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="assets\panel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\colour.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GLFW\glfw3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tools\common.h">
@@ -96,12 +96,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tools\image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="assets\moveable.h">

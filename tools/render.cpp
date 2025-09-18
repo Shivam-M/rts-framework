@@ -9,7 +9,7 @@ using namespace std;
 GLuint textureVAO, textureVBO, textureShader;
 GLuint colourShader;
 
-static GLint uniformColourQuad, uniformColourSecondaryQuad, uniformRadiusQuad, uniformPriorityQuad, uniformTime, uniformType, uniformSpeed, uniformSize, uniformDirection;
+static GLint uniformColourQuad, uniformColourSecondaryQuad, uniformRadiusQuad, uniformTime, uniformType, uniformSpeed, uniformSize, uniformDirection;
 static GLint uniformColour, uniformColourSecondary, uniformTexture, uniformTextureSecondary, uniformUseSecondTexture;
 
 Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* text_objects) {
@@ -78,11 +78,10 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     uniformColourQuad = glGetUniformLocation(colourShader, "colour");
     uniformColourSecondaryQuad = glGetUniformLocation(colourShader, "colourSecondary");
     uniformRadiusQuad = glGetUniformLocation(colourShader, "radius");
-    uniformPriorityQuad = glGetUniformLocation(colourShader, "z_value");
 }
 
-void Render::draw_text(Vector2 location, string& message, Font* font, Colour& colour, const float& font_scale, const float& priority) {
-    TextRenderer::render_text(font, location.x * resolution.x, (location.y) * resolution.y, message, colour, font_scale, priority);
+void Render::draw_text(Vector2 location, const string& message, Font* font, const Colour& colour, const float& font_scale) {
+    TextRenderer::render_text(font, location.x * resolution.x, (location.y) * resolution.y, message, colour, font_scale);
 }
 
 GLfloat quad_vertex_buffer[1000 * 16];
@@ -243,11 +242,11 @@ void Render::render_moveable(Moveable* moveable) {
     if (moveable->has_flag(CUSTOM)) {
         // draw_custom(moveable->get_points(), moveable->get_colour_ref(), moveable->get_gradient_colour_ref());
     } else if (moveable->has_flag(CURVED)) {
-        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->get_evaluated_colour(), moveable->get_gradient_colour_p(), moveable->get_priority(), 0.025, moveable->has_flag(FIXED_POS));
+        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->evaluated_colour, &moveable->gradient_colour, 0.025f, moveable->has_flag(FIXED_POS));
     } else if (moveable->has_flag(TEXTURED)) {
-        draw_texture(moveable->get_location(), moveable->get_size(), moveable->get_texture(), &moveable->get_evaluated_colour(), &moveable->get_blend(), moveable->has_flag(FIXED_POS), moveable->get_secondary_texture(), moveable->get_gradient_colour_p());
+        draw_texture(moveable->get_location(), moveable->get_size(), moveable->get_texture(), &moveable->evaluated_colour, &moveable->blend, moveable->has_flag(FIXED_POS), moveable->get_secondary_texture(), &moveable->gradient_colour);
     } else {
-        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->get_evaluated_colour(), &moveable->get_gradient_colour_ref(), moveable->get_priority(), 0.0f, moveable->has_flag(FIXED_POS));
+        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->evaluated_colour, &moveable->gradient_colour, 0.0f, moveable->has_flag(FIXED_POS));
     }
 }
 
@@ -285,7 +284,7 @@ void Render::render_window() {
     Colour text_background_colour = Colour(40, 40, 40, 255);
     const float background_scale = 1.05f;
     for (Text* text : *text_objects_) if (!(text->get_flags() & DISABLED) && (text->get_flags() & TEXT_BACKGROUND)) {
-        text_dimensions = text->get_text_size();
+        text_dimensions = text->dimensions;
         text_dimensions /= resolution;
 
         text_location = text->get_location();
@@ -296,8 +295,8 @@ void Render::render_window() {
         text_location.x -= text_dimensions.x * (background_scale - 1) / (2 * background_scale);
         text_location.y -= text_dimensions.y * (background_scale * 1.5 - 1) / (2 * background_scale * 1.5);
 
-        text_background_colour.set_alpha(min(text->get_colour_ref().get_w(), 200.f));
-        draw_quad(text_location, text_dimensions, &text_background_colour, &text_background_colour, 0.00, 0.0125);
+        text_background_colour.set_alpha(min(text->colour.get_w(), 200.f));
+        draw_quad(text_location, text_dimensions, &text_background_colour, &text_background_colour, 0.0f, false);
     }
 
     draw_batched_quads();
@@ -308,9 +307,8 @@ void Render::render_window() {
             text->has_flag(FIXED_POS) ? text->get_location() : text->get_location() * scale + offsets,
             text->get_content(),
             text->get_font(),
-            text->get_evaluated_colour(),
-            text->has_flag(FIXED_POS) ? text->get_scale() : text->get_scale() * scale,
-            text->get_priority());
+            text->evaluated_colour,
+            text->has_flag(FIXED_POS) ? text->get_scale() : text->get_scale() * scale);
     }
     TextRenderer::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;

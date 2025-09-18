@@ -11,49 +11,33 @@ using namespace std;
 
 struct Font;
 
-enum ALIGNMENT { LEFT, CENTRE, RIGHT };
-
 class Text: public Moveable {
+	public:
+		enum class Alignment { Left, Centre, Right };
+
 	private:
-		float scale = 1.0f;
-		Font* font;
-		Vector2 text_size;
-		ALIGNMENT alignment = LEFT;
+		float scale_ = 1.0f;
+		Font* font_ = nullptr;
 
 	protected:
-		string content;
+		string content_;
 
 	public:
+		Alignment alignment = Alignment::Left;
+		Vector2 aligned_location;
+		Vector2 dimensions;
+
 		Text();
 		Text(Vector2 location, Font* font, Colour colour, string content = "", float scale = 1.f);
 
-		Font* get_font() { return font; }
-		virtual string& get_content(bool raw = false) { return content; }
-		const float& get_scale() { return scale; }
-		Vector2 get_text_size() { return text_size; }
-		ALIGNMENT get_alignment() { return alignment; }
-		Vector2 get_location() {
-			switch (alignment) {
-				case LEFT:
-					return Moveable::location;
-				case CENTRE: {
-					Vector2 temp = location;
-					temp.x -= text_size.x / WINDOW_WIDTH / 2.0f;
-					return temp;
-				}
-				case RIGHT: {
-					Vector2 temp = location;
-					temp.x -= text_size.x / WINDOW_WIDTH;
-					return temp;
-				}
-				default:
-					return Moveable::location;
-				}
-		}
+		const Vector2& get_location() override;
+		Font* get_font() { return font_; }
+		virtual const string& get_content(bool raw = false) { return content_; }
+		const float& get_scale() const { return scale_; }
 
+		void set_font(Font* font);
+		void set_content(const string& content);
+		void set_scale(float scale);
 		void update_common();
-		void set_font(Font* f) { font = f; update_common(); }
-		void set_content(const string& c) { content = c; update_common(); }
-		void set_scale(float s) { scale = s; update_common(); }
-		void set_alignment(ALIGNMENT a) { alignment = a; update_common(); }
+		void update(float modifier = 1.0) override;
 };

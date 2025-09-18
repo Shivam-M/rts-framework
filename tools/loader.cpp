@@ -83,7 +83,7 @@ void Loader::parse_common(Moveable* moveable) {
 	string script = get_string("script");
 	if (script != "") moveable->load_script(script);
 	moveable->add_flag(get_int("flags"));
-	moveable->set_name(get_string("name"));
+	moveable->name = get_string("name");
 	moveable->set_size(get_float("width"), get_float("height"));
 	moveable->set_location(get_float("x"), get_float("y"));
 	moveable->set_colour(Colour::hex_to_rgb(get_string("colour"), (get_float("alpha"))));
@@ -103,7 +103,7 @@ void Loader::parse_common(Moveable* moveable) {
 	}
 	if (get_int("blend_type")) {
 		Blend blend = Blend(get_int("blend_type"), get_float("blend_speed"), get_float("blend_size"), Vector2(0.5f, 0.5f), get_bool("blend_fixed"));
-		moveable->set_blend(blend);
+		moveable->blend = blend;
 	}
 	if (get_bool("uneditable")) {
 		moveable->add_flag(UNEDITABLE);
@@ -116,6 +116,8 @@ ParticleGroup* Loader::parse_stars(vector<Moveable*>* queue) { // TODO PARSE VAL
 	colourshift.speed = 0.05f;
 	colourshift.with_gradient = true;
 	colourshift.fade_to_death = true;
+	colourshift.loop = false;
+	colourshift.direction = ColourShift::Direction::Up;
 	star.set_colour_shift(colourshift);
 	ParticleGroup* stars = new ParticleGroup({ 0.0f, 0.0f }, { 1.0f, 1.0f }, star, 75, queue);
 	parse_common(stars);
@@ -172,9 +174,9 @@ Moveable* Loader::parse_button() {
 	if (get_string("alt_colour") != "") {
 		button->set_colour(Colour::hex_to_rgb(get_string("alt_colour"), (get_float("alt_alpha"))));
 	}
-	button->set_text(text);
+	button->text = text;
 	button->set_text_offset(x_offset, y_offset);
-	button->set_button_action((BUTTON_ACTION)get_int("action"));
+	button->set_button_action((Action)get_int("action"));
 	if (get_int("fixed")) {
 		button->add_flag(FIXED_POS);
 	}
@@ -188,7 +190,7 @@ Text* Loader::parse_text() {
 	string a = get_string("font");
 	text->set_font(Fonts::get_font(get_string("font"), get_int("size"), get_int("font_custom")));
 	text->set_content(get_string("content"));
-	text->set_alignment((ALIGNMENT)get_int("alignment"));
+	text->alignment = (Text::Alignment)get_int("alignment");
 	if (get_bool("unfixed")) {  // use existing fixed var
 		text->remove_flag(FIXED_POS); // TODO: temp, no flag should be default in text constructor
 	}
@@ -204,7 +206,6 @@ Collidable* Loader::parse_slider() {
 
 Panel* Loader::parse_panel() {
 	Panel* panel = new Panel();  // maybe store as a prefab?
-	panel->set_priority(get_float("priority"));
 	panel->add_flag(PANEL);
 	parse_common(panel);
 	string name = get_string("name");
@@ -231,7 +232,7 @@ Province* Loader::parse_province() {
 
 	parse_common(province);
 	province->set_texture(Image::get_image("data/generated/" + to_string(province->identifier) + "_province.png"));
-	province->set_text(new Text(province->get_location(), font, Colour(189, 195, 199, 150), province->get_name()));
+	province->text = new Text(province->get_location(), font, Colour(189, 195, 199, 150), province->name);
 	province->add_flag(PROVINCE);
 	province->value = get_float("value");
 	province_map[province->identifier] = province;
@@ -251,11 +252,11 @@ Unit* Loader::parse_unit() {
 	parse_common(unit);
 
 	Font* font = Fonts::get_font("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
-	Text* unit_text = new Text(unit->get_location(), font, Colour(220, 221, 225, 200), unit->get_name(), 0.5f);
-	unit_text->set_alignment(CENTRE);
+	Text* unit_text = new Text(unit->get_location(), font, Colour(220, 221, 225, 200), unit->name, 0.5f);
+	unit_text->alignment = Text::Alignment::Centre;
 	unit_text->add_flag(TEXT_BACKGROUND | UNSAVEABLE);
 	unit_text->remove_flag(FIXED_POS);
-	unit->set_text(unit_text);
+	unit->text = unit_text;
 	unit->set_text_offset(0, -0.0025);
 	// unit->location.x -= 1; // Offset x by -1 (sidescroller levelling) -- unused?
 
@@ -273,19 +274,17 @@ Nation* Loader::parse_nation() {
 		if (province == nullptr) continue;
 
 		nation->add_province(province);
-		province->set_colour(nation->get_colour());
-		log_t("Assigned province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->identifier, CON_NORMAL ")");
+		province->set_colour(nation->colour);
+		log_t("Assigned province " CON_RED, province->name, CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ") to nation " CON_RED, nation->name, CON_NORMAL " (" CON_RED, nation->identifier, CON_NORMAL ")");
 	}
 
 	for (const auto& element : get_array("units")) {
 		Unit* unit = unit_map[(int)element];
 		if (unit == nullptr) continue;
 		nation->add_unit(unit);
-		Colour col = nation->get_colour();
-		col.set_alpha(200);
-		unit->set_colour(col);
+		unit->set_colour(nation->get_colour().set_alpha(200));
 		// unit->initialise();
-		log_t("Assigned unit " CON_RED, unit->get_name(), CON_NORMAL " (" CON_RED, unit->identifier, CON_NORMAL ") to nation " CON_RED, nation->get_name(), CON_NORMAL " (" CON_RED, nation->identifier, CON_NORMAL ")");
+		log_t("Assigned unit " CON_RED, unit->name, CON_NORMAL " (" CON_RED, unit->identifier, CON_NORMAL ") to nation " CON_RED, nation->name, CON_NORMAL " (" CON_RED, nation->identifier, CON_NORMAL ")");
 	}
 
 	nation_map[get_int("id")] = nation;
@@ -354,10 +353,10 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, con
 			Colour(level_data["alt_background"], level_data["alt_background_alpha"])
 		);
 		background->add_flag(UNEDITABLE);
-		background->set_name("Background " + to_string(identifier));
+		background->name = "Background " + to_string(identifier);
 
 		Blend blend = Blend(1, 1.0f, 1.0f, Vector2(0.5f, 1.0f), false);
-		background->set_blend(blend);
+		background->blend = blend;
 
 		auto target_value = level_data.find("image");
 		if (target_value != level_data.end()) {
@@ -414,7 +413,7 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, con
 		} else if (type == "UNIT") {
 			Unit* unit = parse_unit();
 			level->objects.push_back(unit);
-			level->text_objects.push_back(unit->get_text());
+			level->text_objects.push_back(unit->text);
 		} else {
 			level->objects.push_back(parse_moveable());
 		}
@@ -439,25 +438,25 @@ void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects
 		if (m->has_flag(PANEL)) continue; // temp
 		if (m->has_flag(UNSAVEABLE)) continue;
 		if (m->has_flag(UI)) continue;
-		if (m->get_name().find("Background") != string::npos) continue;
+		if (m->name.find("Background") != string::npos) continue;
 		json moveable_data = {
 			{"type", "MOVEABLE"},
 			{"x", m->location.x },
 			{"y", m->location.y },
 			{"width", m->size.x },
 			{"height", m->size.y },
-			{"colour", m->get_colour().get_hex() },
-			{"alt_colour", m->get_gradient_colour().get_hex() },
-			{"alpha", m->get_colour().get_w() / 255.0f},
-			{"alt_alpha", m->get_gradient_colour().get_w() / 255.0f},
-			{"name", m->get_name()},
+			{"colour", m->colour.get_hex() },
+			{"alt_colour", m->gradient_colour.get_hex() },
+			{"alpha", m->colour.get_w() / 255.0f},
+			{"alt_alpha", m->gradient_colour.get_w() / 255.0f},
+			{"name", m->name},
 			{"flags", m->get_flags() }
 		};
 		if (m->has_flag(BUTTON)) {
 			moveable_data["type"] = "BUTTON";
 			moveable_data["action"] = reinterpret_cast<Moveable*>(m)->get_button_action();
 
-			Text* t = m->get_text();
+			Text* t = m->text;
 			moveable_data["font"] = Fonts::get_properties(t->get_font()).first;
 			moveable_data["font_custom"] = (int)(Fonts::get_properties(t->get_font()).second);
 			moveable_data["size"] = t->get_font()->h;
@@ -505,9 +504,9 @@ void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects
 			{"y", t->location.y },
 			{"width", t->size.x },
 			{"height", t->size.y },
-			{"colour", t->get_colour().get_hex() },
-			{"alpha", t->get_colour().get_w() / 255.0f},
-			{"name", t->get_name()}
+			{"colour", t->colour.get_hex() },
+			{"alpha", t->colour.get_w() / 255.0f},
+			{"name", t->name}
 		};
 		if (t->has_flag(TEXT)) {
 			moveable_data["type"] = "TEXT";

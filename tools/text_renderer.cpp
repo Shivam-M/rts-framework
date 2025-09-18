@@ -108,8 +108,8 @@ Colour lastBoundColour = Colour(0, 0, 0, 0);
 float vertices[1024 * 6 * 4 * 2];
 float xpos, ypos, w, h;
 size_t vertexIndex = 0;
-void TextRenderer::render_text(Font* ft_font, const float& x, const float& y, string const& text, const Colour& colour, const float& scale, const float& priority) {
-    glUniform1f(uniformPriority, priority);
+void TextRenderer::render_text(Font* ft_font, const float& x, const float& y, string const& text, const Colour& colour, const float& scale) {
+    // glUniform1f(uniformPriority, priority);
 
     if (lastBoundTexture != ft_font->texture) {
         glBindTexture(GL_TEXTURE_2D, ft_font->texture);

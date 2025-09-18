@@ -170,7 +170,7 @@ class Colour: public Vector4 {
 			return *this;
 		}
 
-		bool null() const {
+		bool is_null() const {
 			return (x_ <= -1 && y_ <= -1 && z_ <= -1 && w_ <= -1);
 		}
 

@@ -6,13 +6,13 @@ using namespace std;
 
 Province::Province(int id) : identifier(id) {}
 
-void Province::initiate_siege(Unit* unit, Colour colour) {
-	besieger = unit;
-	ColourShift colourshift = ColourShift(get_colour(), colour);
+void Province::initiate_siege(Unit* unit, Colour siege_colour) {
+	ColourShift colourshift = ColourShift(colour, siege_colour);
 	colourshift.speed = 0.03f;
 	colourshift.conditionalise(&SiegeID);
 	set_colour_shift(colourshift);
 	state = State::Besieging;
+	besieger = unit;
 }
 
 void Province::progress_siege(float amount) {

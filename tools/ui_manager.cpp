@@ -91,9 +91,9 @@ void UIManager::map_province(Panel* panel, void* moveable) { // TODO: check if c
     Province* province = static_cast<Province*>(moveable);
     Nation* nation = province->nation;
 
-	panel->get_text_by_name("ui_province_tooltip_name")->set_content(province->get_name());
+	panel->get_text_by_name("ui_province_tooltip_name")->set_content(province->name);
 	panel->get_text_by_name("ui_province_tooltip_name")->set_colour(province->get_colour().set_alpha(255));
-    panel->get_text_by_name("ui_province_tooltip_owned_by")->set_content("Owned by: " + nation->get_name());
+    panel->get_text_by_name("ui_province_tooltip_owned_by")->set_content("Owned by: " + nation->name);
     panel->get_text_by_name("ui_province_tooltip_value")->set_content(format("Value: {:.2f}", province->value));
     panel->get_text_by_name("ui_province_tooltip_terrain")->set_content("Terrain: " + province->get_terrain_name());
 
@@ -103,16 +103,16 @@ void UIManager::map_province(Panel* panel, void* moveable) { // TODO: check if c
     } else if (siege_progress < 100) {
         panel->get_text_by_name("ui_province_tooltip_siege")->set_content(format("Siege progress: {}%", static_cast<int>(siege_progress)));
     } else if (province->controller) {
-        panel->get_text_by_name("ui_province_tooltip_siege")->set_content(format("Sieged by: {}", province->controller->nation->get_name()));
+        panel->get_text_by_name("ui_province_tooltip_siege")->set_content(format("Sieged by: {}", province->controller->nation->name));
     }
 }
 
 void UIManager::map_nation(Panel* panel, void* moveable) {
     Nation* nation = static_cast<Nation*>(moveable);
 
-    panel->get_text_by_name("ui_nation_tooltip_name")->set_content(nation->get_name());
+    panel->get_text_by_name("ui_nation_tooltip_name")->set_content(nation->name);
     panel->get_text_by_name("ui_nation_tooltip_name")->set_colour(nation->get_colour().set_alpha(150));
-    panel->get_text_by_name("ui_nation_tooltip_capital")->set_content("Capital: " + nation->get_capital()->get_name());
+    panel->get_text_by_name("ui_nation_tooltip_capital")->set_content("Capital: " + nation->get_capital()->name);
     panel->get_text_by_name("ui_nation_tooltip_treasury")->set_content(format("Treasury: {:.2f}", nation->money));
     panel->get_text_by_name("ui_nation_tooltip_army_size")->set_content(format("Army Size: {}", static_cast<int>(nation->get_army().size())));
 }
@@ -121,9 +121,9 @@ void UIManager::map_unit(Panel* panel, void* moveable) {
     Unit* unit = static_cast<Unit*>(moveable);
     Nation* nation = unit->nation;
 
-	panel->get_text_by_name("ui_unit_tooltip_name")->set_content(unit->get_name());
+	panel->get_text_by_name("ui_unit_tooltip_name")->set_content(unit->name);
 	panel->get_text_by_name("ui_unit_tooltip_name")->set_colour(unit->get_colour().set_alpha(255));
-	panel->get_text_by_name("ui_unit_tooltip_owned_by")->set_content("Owned by: " + (nation ? nation->get_name() : "Independent"));  
+	panel->get_text_by_name("ui_unit_tooltip_owned_by")->set_content("Owned by: " + (nation ? nation->name : "Independent"));  
 	panel->get_text_by_name("ui_unit_tooltip_value")->set_content(format("Skill: {:.2f}", unit->skill));
 	panel->get_text_by_name("ui_unit_tooltip_terrain")->set_content(format("Size: {}", unit->amount));
 }
@@ -133,24 +133,24 @@ void UIManager::map_war_declaration(Panel* panel, void* war_details) {
     Nation* attacker_nation = war->attacker;
     Nation* defender_nation = war->defender;
 
-	panel->get_text_by_name("ui_war_declaration_attackers_text")->set_content(attacker_nation->get_name());
+	panel->get_text_by_name("ui_war_declaration_attackers_text")->set_content(attacker_nation->name);
     panel->get_text_by_name("ui_war_declaration_attackers_allies")->set_content("None");
-	panel->get_text_by_name("ui_war_declaration_defenders_text")->set_content(defender_nation->get_name());
+	panel->get_text_by_name("ui_war_declaration_defenders_text")->set_content(defender_nation->name);
     panel->get_text_by_name("ui_war_declaration_defenders_allies")->set_content("None");
-	panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content("War Goal: " + war->war_goal_target.target_province->get_name());
+	panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content("War Goal: " + war->war_goal_target.target_province->name);
 
     set_war_details_for_allies(panel, "attackers", attacker_nation->get_army_size(), attacker_nation->get_provinces().size(), war->attacker_allies);
     set_war_details_for_allies(panel, "defenders", defender_nation->get_army_size(), defender_nation->get_provinces().size(), war->defender_allies);
 
     switch (war->war_goal) {
         case TAKE_KEY_PROVINCE:
-            panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content(format("Control Province '{}'", war->war_goal_target.target_province->get_name()));
+            panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content(format("Control Province '{}'", war->war_goal_target.target_province->name));
             break;
         case TAKE_MULTIPLE_PROVINCES:
             panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content(format("Control At Least {} Provinces", war->war_goal_target.target_number));
             break;
         case VASSALISE:
-            panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content(format("Hold Full Control Of ''", defender_nation->get_name()));
+            panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content(format("Hold Full Control Of ''", defender_nation->name));
             break;
         default:
             panel->get_text_by_name("ui_war_declaration_text_war_goal_details")->set_content("Special Objective");
@@ -187,8 +187,8 @@ void set_battle_details_for_allies(Panel* panel, const string& side, const vecto
     panel->get_text_by_name("ui_battle_unit_fighter_" + side)->set_content(to_string(total_amount));
     panel->get_moveable_by_name("ui_battle_unit_power_bar_" + side)->location.x = panel->get_centre().x + x_position_offset;
     panel->get_moveable_by_name("ui_battle_unit_power_bar_" + side)->set_size(width, BAR_HEIGHT);
-    panel->get_moveable_by_name("ui_battle_unit_power_bar_" + side)->set_colour(allies[0]->get_colour());
-    panel->get_moveable_by_name("ui_battle_unit_power_bar_" + side)->set_gradient_colour(allies[0]->get_colour());
+    panel->get_moveable_by_name("ui_battle_unit_power_bar_" + side)->set_colour(allies[0]->colour);
+    panel->get_moveable_by_name("ui_battle_unit_power_bar_" + side)->set_gradient_colour(allies[0]->colour);
 }
 
 void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies) {
@@ -196,7 +196,7 @@ void set_war_details_for_allies(Panel* panel, const string& side, int strength, 
     for (size_t i = 0; i < allies.size(); ++i) {
         strength += allies[i]->get_army_size();
         provinces += allies[i]->get_provinces().size();
-        allies_stream << allies[i]->get_name();
+        allies_stream << allies[i]->name;
         if (i + 1 < allies.size()) allies_stream << ", ";
     }
 

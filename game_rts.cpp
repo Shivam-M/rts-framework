@@ -76,7 +76,7 @@ void GameRTS::initialise_extended() {
 }
 
 void GameRTS::initialise_rts_game() {
-	execute_action(CHANGE_MAP_VIEW);
+	execute_action(ToggleMapView);
 	Loader::get_unit_map()[1]->set_path(Province::find_shortest_path(Loader::get_province_map()[5], Loader::get_province_map()[18]));
 
 	for (const auto& u : Loader::get_unit_map()) {
@@ -118,7 +118,7 @@ void load_province_neighbours(string neighbours) {
 			province->register_neighbour(other_province);
 			other_province->register_neighbour(province);
 
-			log_t("Assigned province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ") as a neighbour with " CON_RED, other_province->get_name(), CON_NORMAL " (" CON_RED, other_province->identifier, CON_NORMAL ")");
+			log_t("Assigned province " CON_RED, province->name, CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ") as a neighbour with " CON_RED, other_province->name, CON_NORMAL " (" CON_RED, other_province->identifier, CON_NORMAL ")");
 		}
 	}
 }
@@ -158,10 +158,10 @@ void GameRTS::update_statistics(const int& frames, const int& updates) {
 	string nation_string = "-- [X]";
 	ostringstream nation_treasury;
 	if (player_nation) {
-		nation_string = player_nation->get_name() + " [" + to_string(player_nation->identifier) + "]";
+		nation_string = player_nation->name + " [" + to_string(player_nation->identifier) + "]";
 
 		t_Information2->set_content(format("Money: {:.2f}", player_nation->money));
-		t_Information3->set_colour(player_nation->get_colour_ref());
+		t_Information3->set_colour(player_nation->colour);
 	}
 
 	t_Information->set_content(date.format());
@@ -265,21 +265,21 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 
 	log_t("Executing button action: " CON_RED, action);
 	switch (action) {
-		case CHANGE_CONTROLS:
+		case ToggleControls:
 			game->mouse->debug_control_scheme ^= true;
 			t_Notification->set_content(format("Set debug control mode to: {}", game->mouse->debug_control_scheme));
 			break;
-		case PAUSE_GAME:
+		case PauseGame:
 			pause_game();
 			break;
-		case PAUSE_SIMULATION:
+		case PauseSimulation:
 			simulation_paused = !simulation_paused;
 			break;
-		case SWITCH_NATION:
+		case SwitchNation:
 			picking_nation ^= true;
 			t_Notification->set_content("Select a nation to control it");
 			break;
-		case CHANGE_MAP_VIEW: // Change to a mask
+		case ToggleMapView: // Change to a mask
 			value_view ^= true;
 			// queue action to be executed in getObjectUnderMouse() instead of cycling through moveables again?
 			for (Moveable* moveable : objects) {
@@ -290,28 +290,28 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 				}
 			}
 			break;
-		case SAVE_GAME:
+		case SaveGame:
 			Loader::write_objects(objects, text_objects);
 			break;
-		case HIRE_UNIT:
+		case HireUnit:
 			player_nation->money = 9999999.f;
 			hired_unit = player_nation->hire_unit(999, 5.f);
 			if (hired_unit) {
 				Font* font = Fonts::get_font("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
-				Text* unit_text = new Text(hired_unit->get_location(), font, Colour(220, 221, 225, 200), hired_unit->get_name(), 0.5f);
-				unit_text->set_alignment(CENTRE);
+				Text* unit_text = new Text(hired_unit->get_location(), font, Colour(220, 221, 225, 200), hired_unit->name, 0.5f);
+				unit_text->alignment = Text::Alignment::Centre;
 				unit_text->add_flag(TEXT_BACKGROUND | UNSAVEABLE);
 				unit_text->remove_flag(FIXED_POS);
-				hired_unit->set_name(player_nation->get_name() + " Hired Unit");
+				hired_unit->name = player_nation->name + " Hired Unit";
 				hired_unit->set_size(0.02125f, 0.0375f);
-				hired_unit->set_text(unit_text);
+				hired_unit->text = unit_text;
 				hired_unit->set_text_offset(0.f, -0.0025f);
 				hired_unit->initialise();
 				register_object(hired_unit);
 				register_object(unit_text);
 			}
 			break;
-		case TEST_FONTS:
+		case DebugFonts:
 			if (files_font.size() == 0) {
 				string path = ".\\data\\fonts";
 				for (const auto& file : fs::directory_iterator(path))
@@ -321,23 +321,23 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			if (index_font > files_font.size() - 1) index_font = 0;
 			for (const auto& u : Loader::get_unit_map()) {
 				Unit* unit = u.second;
-				unit->get_text()->set_font(Fonts::get_font(files_font[index_font], 16, true));
+				unit->text->set_font(Fonts::get_font(files_font[index_font], 16, true));
 			}
 			
 			t_Notification->set_content("Set game font to " + files_font[index_font]);
 			index_font++;
 			break;
-		case TOGGLE_TOOLTIP:
+		case ToggleTooltip:
 			UIManager::toggle("ui_nation_tooltip");
 			break;
-		case UI_DEBUG_TOGGLE:
+		case ToggleDebugUI:
 			UIManager::toggle("ui_war_indicator");
 			UIManager::toggle("ui_war_declaration");
 			UIManager::toggle("ui_event_choice");
 			UIManager::toggle("ui_unit_hire");
 			UIManager::toggle("ui_information_header");
 			break;
-		case DECLARE_WAR:
+		case DeclareWar:
 			war.attacker = player_nation;
 			war.defender = viewed_nation;
 			war.war_goal = TAKE_KEY_PROVINCE;
@@ -346,7 +346,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			UIManager::hide("ui_nation_tooltip");
 			UIManager::show("ui_war_declaration");
 			break;
-		case DEBUG:
+		case Debug:
 			load_level_dynamically("data/levels/ui/10-ui-battle-unit.json", "D38UG");
 			UIManager::show("ui_battle_unit-D38UG");
 			break;
@@ -363,13 +363,13 @@ void GameRTS::register_event(Event event, void* details) {
 			load_level_dynamically("data/levels/ui/10-ui-battle-unit.json", to_string(battle->battle_id));
 			UIManager::get_panel("ui_battle_unit-" + to_string(battle->battle_id))->set_location(battle->province->get_location().x - (battle->province->get_size().x), battle->province->get_location().y);
 			battles.push_back(battle);
-			log_t("Started battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->get_name(), CON_NORMAL " and " CON_RED, battle->defender_units[0]->get_name(), CON_NORMAL);
+			log_t("Started battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->name, CON_NORMAL " and " CON_RED, battle->defender_units[0]->name, CON_NORMAL);
 			break;
 		case BATTLE_END:
 			battle = static_cast<BattleInformation*>(details);
 			UIManager::hide("ui_battle_unit-" + to_string(battle->battle_id));
 			battles.erase(remove(battles.begin(), battles.end(), battle), battles.end());
-			log_t("Ending battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->get_name(), CON_NORMAL " and " CON_RED, battle->defender_units[0]->get_name(), CON_NORMAL);
+			log_t("Ending battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->name, CON_NORMAL " and " CON_RED, battle->defender_units[0]->name, CON_NORMAL);
 			delete battle;
 			break;
 		default:
@@ -421,11 +421,11 @@ void GameRTS::update_properties() {
 
 		for (Moveable* m : objects) {
 			if (m->has_flag(THEMED)) {
-				m->set_colour(player_nation->get_colour().set_alpha(m->get_colour_ref().get_w()));
+				m->set_colour(player_nation->get_colour().set_alpha(m->colour.get_w()));
 			}
 		}
 
-		log_t("Player is now controlling nation " CON_RED, player_nation->get_name(), CON_NORMAL " (" CON_RED, player_nation->identifier, CON_NORMAL ")");
+		log_t("Player is now controlling nation " CON_RED, player_nation->name, CON_NORMAL " (" CON_RED, player_nation->identifier, CON_NORMAL ")");
 	}
 
 	if (mouse->debug_control_scheme) {
@@ -438,7 +438,7 @@ void GameRTS::update_properties() {
 		if (get_button(GLFW_MOUSE_BUTTON_RIGHT)) {
 			Vector2 new_size = Vector2(abs(game->mouse_position.x - cursor_position.x), abs(game->mouse_position.y - cursor_position.y));
 			selected_object->set_size(new_size.x, new_size.y);
-			t_Notification->set_content("Set size of " + game->selected_object->get_name() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
+			t_Notification->set_content("Set size of " + game->selected_object->name + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
 	}
 
@@ -449,7 +449,7 @@ void GameRTS::update_properties() {
 }
 
 
-void GameRTS::update_objects(const float& modifier) {
+void GameRTS::update_objects(float modifier) {
     // sort(objects.begin(), objects.end(), [](Moveable* a, Moveable* b) {
 	//		  return a->get_priority() < b->get_priority();
 	// }); // Temp, use z values for priorities instead in a Vector3

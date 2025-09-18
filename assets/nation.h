@@ -18,7 +18,6 @@ class Nation : public Moveable {
 	enum NATION_FLAGS { AT_WAR, LOSING_MONEY, IN_DEBT, UNLANDED };
 
 	private:
-		Colour colour_ = Colour(255, 255, 255);
 		Province* capital_;
 		vector<Province*> provinces_;
 		vector<Unit*> units_;

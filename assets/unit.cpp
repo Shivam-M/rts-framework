@@ -20,14 +20,14 @@ void Unit::set_path(vector<Province*> path) {
 	path_ = path;
 	target_ = path_.at(0);
 	state = State::Travelling;
-	log_t("Set path for unit " CON_RED, get_name(), CON_NORMAL " (" CON_RED, identifier, CON_NORMAL "):");
+	log_t("Set path for unit " CON_RED, name, CON_NORMAL " (" CON_RED, identifier, CON_NORMAL "):");
 
 	for (Province* province : path) {
-		ColourShift colourshift = ColourShift(province->get_colour(), province->get_colour().set_alpha(150));
+		ColourShift colourshift = ColourShift(province->colour, province->get_colour().set_alpha(150));
 		colourshift.speed = 0.02f;
 		colourshift.conditionalise(&PathCount);
 		province->set_colour_shift(colourshift);
-		log_t("* " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ")");
+		log_t("* " CON_RED, province->name, CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ")");
 	}
 }
 
@@ -105,7 +105,7 @@ void Unit::evaluate() {
 		case State::Sieging:
 			province->progress_siege(skill * random_float());
 			if (province->siege_progress >= 100) {
-				province->set_blend(siege_lines);
+				province->blend = siege_lines;
 				province->set_gradient_colour(get_colour().set_alpha(200));
 			}
 			break;
@@ -123,7 +123,7 @@ void Unit::evaluate() {
 				target_->register_unit(this);
 				target_ = nullptr;
 
-				log_t("Unit " CON_RED, get_name(), CON_NORMAL " (" CON_RED, identifier, CON_NORMAL ") arrived at province " CON_RED, province->get_name(), CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ")");
+				log_t("Unit " CON_RED, name, CON_NORMAL " (" CON_RED, identifier, CON_NORMAL ") arrived at province " CON_RED, province->name, CON_NORMAL " (" CON_RED, province->identifier, CON_NORMAL ")");
 
 				if (!path_.empty()) {
 					advance_path();
@@ -148,7 +148,7 @@ void Unit::evaluate() {
 			if (province->nation == nation) break;
 
 			if (province->besieger == nullptr || province->besieger == this) {
-				province->initiate_siege(this, get_colour());
+				province->initiate_siege(this, colour);
 				state = State::Sieging;
 			}
 			break;

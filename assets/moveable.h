@@ -36,6 +36,7 @@ enum {
     PARTICLES =         1 << 20,
     TEXT_BACKGROUND =   1 << 21,
     THEMED =            1 << 22,
+	TOOLTIP =			1 << 23,
     UNSAVEABLE =        1 << 24,
     UI =                1 << 25,
     UNDER_PANEL =       1 << 26,
@@ -47,8 +48,9 @@ struct ColourFilter {
 	enum class Mode { Addition, Multiplication, Replacement };
 	Mode mode;
 	Colour colour;
+	bool enabled;
 
-	ColourFilter(const Colour& c, const Mode& m) : colour(c), mode(m) {}
+	ColourFilter(const Colour& c, const Mode& m, const bool& e = true) : colour(c), mode(m), enabled(e) {}
 };
 
 struct ColourShift {
@@ -86,109 +88,87 @@ struct Blend {
 	Blend(int typ, float spd, float sze, Vector2 dir, bool fxd) : type(typ), speed(spd), size(sze), direction(dir), fixed(fxd) {}
 };
 
-enum BUTTON_ACTION {PAUSE_GAME, SWITCH_NATION, CHANGE_MAP_VIEW, CHANGE_CONTROLS, SAVE_GAME, TEST_FONTS, TOGGLE_TOOLTIP, HIRE_UNIT, UI_DEBUG_TOGGLE, DECLARE_WAR, DEBUG, OTHER, PAUSE_SIMULATION};
+enum Action {PauseGame, SwitchNation, ToggleMapView, ToggleControls, SaveGame, DebugFonts, ToggleTooltip, HireUnit, ToggleDebugUI, DeclareWar, Debug, Other, PauseSimulation};
 
 class Moveable {
+	private:
+		int flags_ = ENABLED;
+		bool shifting_colour_ = false;
+		int script_line_ = 0;
+		float script_timer_ = 0;
+		vector<string>* script = nullptr;
+		Action button_action_ = Other;
+		Vector2 text_offset_;
+		Texture* texture_ = nullptr;
+		Texture* secondary_texture_ = nullptr;
+
+		void tick_timer(float modifier);
+
 	public:
 		string name = "Generic Moveable";
-		Texture* texture = nullptr;
-		Texture* secondary_texture = nullptr;
 		Text* text = nullptr;
-		vector<string>* script = nullptr;
 		vector<Vector2> points;
-		float priority = 0.0f;
 		string metadata = "";
 		Moveable* parent = nullptr;
 		Blend blend;
 
-		float script_timer = 0;
-		int script_line = 0;
-		int flags = ENABLED;
-		BUTTON_ACTION button_action = OTHER;
-
 		Vector2 acceleration;
 		Vector2 velocity;
 		Vector2 location;
-		Vector2 text_offset;
 		Vector2 size;
 
-		ColourShift colour_shift;
-		Colour colour = Colour("FFFFFF");
-		deque<ColourFilter*> filters;
+		Colour colour = COLOUR_WHITE;
 		Colour gradient_colour = COLOUR_NULL;
-		Colour evaluated_colour = COLOUR_NULL;
-		Colour default_colour = colour;
+		Colour evaluated_colour = Colour(100, 255, 100);
+		ColourShift colour_shift;
+		ColourFilter hover_filter = ColourFilter(Colour(1, 1, 1, 0.75), ColourFilter::Mode::Multiplication, false);
+		deque<ColourFilter*> filters;
 
-		bool shifting_colour = false, is_active = true, hover_tooltip = false;
+		bool is_active = true;
 
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
 
-		const float& get_priority() { return priority; }
-		virtual vector<Vector2> get_points() { return points; }
-		Text* get_text() { return text; }
-		Texture* get_texture() { return texture; }
-		Texture* get_secondary_texture() { return secondary_texture; }
-		string& get_name() { return name; }
+		vector<Vector2> get_points() const { return points; }
+		Texture* get_texture() { return texture_; }
+		Texture* get_secondary_texture() { return secondary_texture_; }
 	
-		Vector2 get_acceleration() { return acceleration; }
-		Vector2 get_velocity() { return velocity; }
-		Vector2 get_location() { return location; }
-		Vector2 get_size() { return size; }
-		Vector2 get_centre() { return Vector2(location.x + size.x / 2, location.y + size.y / 2); }
-		Vector2 get_text_offset() { return text_offset; }
-
-		Colour& get_colour_ref() { return colour; }
-		Colour get_colour() { return colour; }
-		Colour& get_evaluated_colour() { return evaluated_colour; }
-		Colour& get_gradient_colour_ref() { return gradient_colour; }
-		Colour* get_gradient_colour_p() { 
-			if (gradient_colour == colour or gradient_colour == COLOUR_NULL) return nullptr;
-			else return &gradient_colour;
-		}
-		Colour get_gradient_colour() { return gradient_colour; }
-		Colour get_default_colour() { return default_colour; }
-
-		Blend& get_blend() { return blend; }
-
-		const int& get_flags() { return flags; }
-		void add_flag(const int& f) { flags |= f; }
-		void remove_flag(const int& f) { flags &= ~f; }
-		bool has_flag(const int& f) { return flags & f; }
-
-		void set_text(Text* t) { text = t; }
-		void set_text_offset(float x, float y);
-		void set_texture(Texture* tex) { add_flag(TEXTURED); texture = tex; }
-		void set_secondary_texture(Texture* tex) { add_flag(TEXTURED); secondary_texture = tex; }
-		void set_name(string n) { name = n; }
-		void set_priority(float p) { priority = p; }
-		virtual void set_acceleration(float x, float y) { acceleration.set(x, y); }
-		virtual void set_velocity(float x, float y) { velocity.set(x, y); }
-		virtual void set_location(float x, float y) { location.set(x, y); }
+		
+		virtual Vector2 get_centre() { return Vector2(location.x + size.x / 2, location.y + size.y / 2); }
+		const Vector2& get_velocity() const { return velocity; }
+		const Vector2& get_size() const { return size; }
+		const Vector2& get_acceleration() const { return acceleration; }
+		virtual const Vector2& get_location() { return location; }
 		virtual void set_size(float x, float y) { size.set(x, y); }
-		
-		BUTTON_ACTION get_button_action() { return button_action; }
-		void set_button_action(BUTTON_ACTION action) { add_flag(BUTTON); button_action = action; }
+		virtual void set_acceleration(float x, float y) { acceleration.set(x, y); }
+		virtual void set_location(float x, float y) { location.set(x, y); }
 
+		Colour get_colour() const { return colour; }
+		const Colour& get_evaluated_colour() { return evaluated_colour; }
 		void stop_colour_shift();
-		void set_colour_shift(ColourShift col_shift) {
-			colour_shift = col_shift;
-			shifting_colour = true;
-			// filters.emplace_front(new ColourFilter(colour_shift.evaluate(), ColourFilter::Mode::Replacement));
-		}
-		void set_colour(Colour col) { colour = col; default_colour = col; }
-		void set_default_colour(Colour col) { default_colour = col; }
-		void set_gradient_colour(Colour col) { gradient_colour = col; }
-		void reset_colour() { colour = default_colour; }
-		void shift_colour();
-		void set_blend(Blend b) { blend = b; }
-		void tick_timer(const float& modifier);
-		void load_script(string script_path);
+		void set_colour_shift(const ColourShift& col_shift);
+		void shift_colour(float modifier = 1.0f);
+		void set_colour(const Colour& col) { colour = col; }
+		void set_gradient_colour(const Colour& gradient) { gradient_colour = gradient; }
+
+		const int& get_flags() const { return flags_; }
+		void add_flag(int flag) { flags_ |= flag; }
+		void remove_flag(int flag) { flags_ &= ~flag; }
+		bool has_flag(int flag) const { return flags_ & flag; }
+
+		void set_text_offset(float x, float y);
+		void set_texture(Texture* texture) { add_flag(TEXTURED); texture_ = texture; }
+		void set_secondary_texture(Texture* secondary_texture) { add_flag(TEXTURED); secondary_texture_ = secondary_texture; }
+		void set_velocity(float x, float y) { velocity.set(x, y); }
 		
-		// Change to new button class override
+		const Action& get_button_action() const { return button_action_; }
+		void set_button_action(Action action) { add_flag(BUTTON); button_action_ = action; }
+
+		void load_script(const string& script_path);
+		
 		virtual void on_hover();
 		virtual void on_hover_stop();
 
-		void common(const float& modifier);
-		virtual void update(const float& modifier = 1.0);
+		void common(float modifier);
+		virtual void update(float modifier = 1.0);
 };

@@ -35,7 +35,7 @@ int Nation::get_army_size() {
 void Nation::add_unit(Unit* unit) {
 	units_.push_back(unit);
 	unit->nation = this;
-	unit->set_colour(get_colour());
+	unit->set_colour(colour);
 }
 
 void Nation::evaluate() {

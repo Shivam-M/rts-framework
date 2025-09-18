@@ -41,11 +41,11 @@ void Audio::set_volume(const float volume) {
 
 ////////////////////////////// Sound
 
-// TODO: Deal with cleanup after sound finishes if it only has a one-time use (ma_sound_set_end_callback)
+// TODO: Deal with cleanup after sound_ finishes if it only has a one-time use (ma_sound_set_end_callback)
 
 void Sound::load(const string file) {
 	log_t("Loading sound... " CON_RED, file);
-	if (ma_sound_init_from_file(&Audio::engine, file.c_str(), 0, NULL, NULL, &sound) != MA_SUCCESS) {
+	if (ma_sound_init_from_file(&Audio::engine, file.c_str(), 0, NULL, NULL, &sound_) != MA_SUCCESS) {
 		log_t(CON_RED "ERROR! Failed to load sound");
 		return;
 	}
@@ -57,7 +57,7 @@ void Sound::play() {
 		log_t("Suppressing playback of " CON_RED + file_ + CON_NORMAL + " because the audio engine is disabled.");
 		return;
 	}
-	ma_sound_start(&sound);
+	ma_sound_start(&sound_);
 }
 
 void Sound::play(const float volume) {
@@ -66,15 +66,15 @@ void Sound::play(const float volume) {
 }
 
 void Sound::pause() {
-	ma_sound_stop(&sound);
+	ma_sound_stop(&sound_);
 }
 
 void Sound::stop() {
-	ma_sound_seek_to_pcm_frame(&sound, 0);
+	ma_sound_seek_to_pcm_frame(&sound_, 0);
 }
 
 void Sound::set_volume(const float volume) {
-	ma_sound_set_volume(&sound, volume);
+	ma_sound_set_volume(&sound_, volume);
 	volume_ = volume;
 }
 

@@ -71,7 +71,7 @@ void GameSidescroller::check_collision() {
 	player->set_velocity(player->get_velocity().x, GRAVITY);
 }
 
-void GameSidescroller::update_objects(const float& modifier) {
+void GameSidescroller::update_objects(float modifier) {
 	double x_location = player->get_location().x, movement = 0;
 	if ((traversed && x_location <= 0.3f) || x_location >= 0.65f)
 		if (x_location >= 0.65f) {
@@ -99,16 +99,7 @@ void GameSidescroller::update_objects(const float& modifier) {
 		t->location.x -= movement;
 	}
 
-	vector<Moveable*> temp;
-	for (Moveable* m : objects) !m->is_active ? temp.push_back(m) : m->update(modifier);
-
-	for (Moveable* t : temp) {
-		objects.erase(remove(objects.begin(), objects.end(), t), objects.end());
-		delete t;
-	}
-
-	for (Moveable* q : queue_objects) objects.push_back(q);
-	queue_objects.clear();
+	Game::update_objects(modifier);
 }
 
 int GameSidescroller::game_loop() {

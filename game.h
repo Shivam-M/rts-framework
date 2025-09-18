@@ -70,7 +70,7 @@ class Game {
 		
 		virtual int game_loop();
 		virtual void initialise_extended();
-		virtual void update_objects(const float& modifier = 1.0f);
+		virtual void update_objects(float modifier = 1.0f);
 		virtual void update_statistics(const int& frames, const int& updates);
 		virtual void update_properties();
 		virtual void update_cursor();

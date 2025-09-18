@@ -33,8 +33,8 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 			if (game->selected_object) {
 				game->selected_object->set_location(game->cursor_position.x, game->cursor_position.y);
-				game->t_Notification->set_content("Set location of " + game->selected_object->get_name() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
-				log_t("Set location of " + game->selected_object->get_name() + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
+				game->t_Notification->set_content("Set location of " + game->selected_object->name + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
+				log_t("Set location of " + game->selected_object->name + " to " + to_string(game->cursor_position.x) + ", " + to_string(game->cursor_position.y));
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 			game->original_position = game->cursor_position;
@@ -42,8 +42,8 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 			game->t_Notification->set_content("");
 
 			if (game->selected_object) {
-				game->t_Notification->set_content("Selected " + game->selected_object->get_name());
-				log_t("Selected " CON_RED + game->selected_object->get_name());
+				game->t_Notification->set_content("Selected " + game->selected_object->name);
+				log_t("Selected " CON_RED + game->selected_object->name);
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 			game->mouse_position = GLFW_PRESS ? game->cursor_position : 0;
@@ -56,8 +56,8 @@ void Mouse::callback(GLFWwindow* window, int button, int action, int mods) {
 			game->selected_object = game->hovered_object;
 
 			if (game->selected_object) {
-				game->t_Notification->set_content("Selected " + game->selected_object->get_name());
-				log_t("Selected " CON_RED + game->selected_object->get_name());
+				game->t_Notification->set_content("Selected " + game->selected_object->name);
+				log_t("Selected " CON_RED + game->selected_object->name);
 			}
 		} else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 			Moveable* moveable = game->get_object_under_mouse();

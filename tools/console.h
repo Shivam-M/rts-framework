@@ -13,16 +13,16 @@ class Text;
 class Console {
 	private:
 		Game* game = nullptr;
-		Moveable* entry_box = nullptr;
-		Moveable* debug_box = nullptr;
-		Text* debug_text = nullptr;
-		Text* feedback_text = nullptr;
-		TextEntry* entry_text = nullptr;
-		vector<Moveable*> console_moveables;
+		Moveable* entry_background_ = nullptr;
+		Moveable* debug_background_ = nullptr;
+		Text* debug_text_ = nullptr;
+		Text* feedback_text_ = nullptr;
+		TextEntry* entry_text_ = nullptr;
+		vector<Moveable*> bundle_;
 		bool visible_ = false;
 
 	public:
-		Console(Game* g) : game(g) {}
+		Console(Game* instance) : game(instance) {}
 
 		void build();
 		void toggle();

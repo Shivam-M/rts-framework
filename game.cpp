@@ -134,6 +134,10 @@ void Game::initialise_extended() {
 void Game::debug_mode() {
 	global_filter->colour.w_ *= 0.1f;
 	// UIManager::toggle("ui_menu_pause");
+
+	if (selected_object) {
+		selected_object = selected_object;
+	}
 }
 
 void Game::toggle_debug() {
@@ -181,12 +185,12 @@ void Game::update_properties() {
 		if (get_button(GLFW_MOUSE_BUTTON_RIGHT)) {
 			Vector2 new_size = Vector2(abs(game->mouse_position.x - cursor_position.x), abs(game->mouse_position.y - cursor_position.y));
 			selected_object->set_size(new_size.x, new_size.y);
-			t_Notification->set_content("Set size of " + game->selected_object->get_name() + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
+			t_Notification->set_content("Set size of " + game->selected_object->name + " to " + to_string(new_size.x) + ", " + to_string(new_size.y));
 		}
 	}
 }
 
-void Game::update_objects(const float& modifier) {
+void Game::update_objects(float modifier) {
 	erase_if(objects, [modifier](Moveable* moveable) {
 		if (!moveable->is_active) {
 			delete moveable;

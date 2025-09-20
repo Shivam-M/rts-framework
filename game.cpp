@@ -42,13 +42,14 @@ Game::Game(int argc, char** argv) {
 
 	glfwSetWindowPos(window, 100, 100);
 	glfwMakeContextCurrent(window);
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
 	glClearColor(0.155f, 0.155f, 0.155f, 0.f);
 
-	glewExperimental = GL_TRUE;
-	glewInit();
 	srand(time(nullptr));
 
 	log_t("\033[1;31mOpenGL Version: ", glGetString(GL_VERSION));
+	log_t("\033[1;31mGLFW Version: ", glfwGetVersionString());
 
 	render = new Render(window, &objects, &text_objects);
 	keyboard = new Keyboard(this);

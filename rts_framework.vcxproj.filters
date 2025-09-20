@@ -84,6 +84,9 @@
     <ClCompile Include="assets\panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\colour.h">

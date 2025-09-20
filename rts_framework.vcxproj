@@ -118,7 +118,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib; glew32s.lib;opengl32.lib;freeglut.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libraries/;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -140,7 +140,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>libraries/;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib; glew32s.lib;opengl32.lib;freeglut.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;freetype.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -149,6 +149,7 @@
     <ClCompile Include="assets\panel.cpp" />
     <ClCompile Include="assets\province.cpp" />
     <ClCompile Include="assets\unit.cpp" />
+    <ClCompile Include="include\glad.c" />
     <ClCompile Include="io\audio.cpp" />
     <ClCompile Include="tools\ui_manager.cpp" />
     <ClCompile Include="assets\moveable.cpp" />

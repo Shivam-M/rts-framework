@@ -13,7 +13,6 @@ set(PROJECT_LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries)
 include_directories(
     include
     include/freetype
-    include/GL
     include/GLFW
     include/glm
 )
@@ -23,6 +22,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     io/*.cpp
     tools/*.cpp
     *.cpp
+    *c
 )
 
 list(FILTER SOURCES EXCLUDE REGEX "/build/")
@@ -41,7 +41,6 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS
 find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(PkgConfig REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(fmt REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
 
@@ -52,13 +51,11 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     OpenGL::GL
     ${GLFW_LIBRARIES}
-    ${GLEW_LIBRARIES}
     Freetype::Freetype
     fmt::fmt
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${GLFW_INCLUDE_DIRS}
-    ${GLEW_INCLUDE_DIRS}
     ${FREETYPE_INCLUDE_DIRS}
 )

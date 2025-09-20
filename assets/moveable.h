@@ -139,9 +139,9 @@ class Moveable {
 		const Vector2& get_size() const { return size; }
 		const Vector2& get_acceleration() const { return acceleration; }
 		virtual const Vector2& get_location() { return location; }
-		virtual void set_size(float x, float y) { size.set(x, y); }
-		virtual void set_acceleration(float x, float y) { acceleration.set(x, y); }
-		virtual void set_location(float x, float y) { location.set(x, y); }
+		virtual void set_size(float x, float y) { size = { x, y }; }
+		virtual void set_acceleration(float x, float y) { acceleration = { x, y }; }
+		virtual void set_location(float x, float y) { location = { x, y }; }
 
 		Colour get_colour() const { return colour; }
 		const Colour& get_evaluated_colour() { return evaluated_colour; }
@@ -159,7 +159,7 @@ class Moveable {
 		void set_text_offset(float x, float y);
 		void set_texture(Texture* texture) { add_flag(TEXTURED); texture_ = texture; }
 		void set_secondary_texture(Texture* secondary_texture) { add_flag(TEXTURED); secondary_texture_ = secondary_texture; }
-		void set_velocity(float x, float y) { velocity.set(x, y); }
+		void set_velocity(float x, float y) { velocity = { x, y }; }
 		
 		const Action& get_button_action() const { return button_action_; }
 		void set_button_action(Action action) { add_flag(BUTTON); button_action_ = action; }

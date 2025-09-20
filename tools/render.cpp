@@ -138,12 +138,12 @@ void Render::draw_batched_quads() {
 
         // glUniform1f(uniformPriorityQuad, quad_data.priority);
         glUniform1f(uniformRadiusQuad, quad_data.radius);
-        glUniform4f(uniformColourQuad, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
+        glUniform4f(uniformColourQuad, colour->r / 255.0f, colour->g / 255.0f, colour->b / 255.0f, colour->a / 255.0f);
         
         if (colour_gradient) {
-            glUniform4f(uniformColourSecondaryQuad, colour_gradient->x_ / 255.0f, colour_gradient->y_ / 255.0f, colour_gradient->z_ / 255.0f, colour_gradient->w_ / 255.0f);
+            glUniform4f(uniformColourSecondaryQuad, colour_gradient->r / 255.0f, colour_gradient->g / 255.0f, colour_gradient->b / 255.0f, colour_gradient->a / 255.0f);
         } else {
-            glUniform4f(uniformColourSecondaryQuad, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
+            glUniform4f(uniformColourSecondaryQuad, colour->r / 255.0f, colour->g / 255.0f, colour->b / 255.0f, colour->a / 255.0f);
         }
 
         glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
@@ -217,7 +217,7 @@ void Render::draw_batched_textures() {
         const Colour* secondary_colour = texture_data.secondary_colour;
         const Blend* blend = texture_data.blend;
 
-        glUniform4f(uniformColour, colour->x_ / 255.0f, colour->y_ / 255.0f, colour->z_ / 255.0f, colour->w_ / 255.0f);
+        glUniform4f(uniformColour, colour->r / 255.0f, colour->g / 255.0f, colour->b / 255.0f, colour->a / 255.0f);
         glUniform1i(uniformType, blend->type);
 
         if (blend->type != 0) {
@@ -228,7 +228,7 @@ void Render::draw_batched_textures() {
         }
 
         if (secondary_colour) {
-            glUniform4f(uniformColourSecondary, secondary_colour->x_ / 255.0f, secondary_colour->y_ / 255.0f, secondary_colour->z_ / 255.0f, secondary_colour->w_ / 255.0f);
+            glUniform4f(uniformColourSecondary, secondary_colour->r / 255.0f, secondary_colour->g / 255.0f, secondary_colour->b / 255.0f, secondary_colour->a / 255.0f);
         }
 
         glBindTexture(GL_TEXTURE_2D, texture_data.texture->data);
@@ -262,18 +262,14 @@ void Render::render_window() {
             skipped_moveables++;
         else if ((moveable->location.x + moveable->size.x <= 0) || (moveable->location.y + moveable->size.y <= 0) || (moveable->location.x >= 1) || (moveable->location.y >= 1))
             culled_moveables++;
-        else render_moveable(moveable);
+        else
+            render_moveable(moveable);
     }
 
     skipped_count = skipped_moveables;
     culled_count = culled_moveables;   
-    
-    // glDepthMask(GL_FALSE);
-    
-    // glDisable(GL_DEPTH_TEST);
-    draw_batched_textures();
-    
-    // glEnable(GL_DEPTH_TEST);    
+
+    draw_batched_textures();  
     draw_batched_quads();
 
     draw_times[0] = glfwGetTime() - time_shapes;
@@ -295,7 +291,7 @@ void Render::render_window() {
         text_location.x -= text_dimensions.x * (background_scale - 1) / (2 * background_scale);
         text_location.y -= text_dimensions.y * (background_scale * 1.5 - 1) / (2 * background_scale * 1.5);
 
-        text_background_colour.set_alpha(min(text->colour.get_w(), 200.f));
+        text_background_colour.a = min(text->colour.a, 200.f);
         draw_quad(text_location, text_dimensions, &text_background_colour, &text_background_colour, 0.0f, false);
     }
 
@@ -312,9 +308,6 @@ void Render::render_window() {
     }
     TextRenderer::reset_shader();
     draw_times[1] = glfwGetTime() - time_text;
-
-    // glEnable(GL_DEPTH_TEST);
-    // draw_batched_quads();
 
     glfwSwapBuffers(window_);
 

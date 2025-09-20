@@ -86,10 +86,10 @@ void Loader::parse_common(Moveable* moveable) {
 	moveable->name = get_string("name");
 	moveable->set_size(get_float("width"), get_float("height"));
 	moveable->set_location(get_float("x"), get_float("y"));
-	moveable->set_colour(Colour::hex_to_rgb(get_string("colour"), (get_float("alpha"))));
+	moveable->set_colour(Colour::from_hex(get_string("colour"), (get_float("alpha"))));
 	moveable->metadata = get_string("metadata");
 	if (get_string("alt_colour") != "") {
-	 	moveable->set_gradient_colour(Colour::hex_to_rgb(get_string("alt_colour"), (get_float("alt_alpha"))));
+	 	moveable->set_gradient_colour(Colour::from_hex(get_string("alt_colour"), (get_float("alt_alpha"))));
 	}
 	if (get_string("texture", "NULL") != "NULL") {
 		moveable->set_texture(Image::get_image(get_string("texture")));
@@ -112,7 +112,7 @@ void Loader::parse_common(Moveable* moveable) {
 
 ParticleGroup* Loader::parse_stars(vector<Moveable*>* queue) { // TODO PARSE VALUES
 	Moveable star = Moveable({}, { 0.0025f, 0.0025f * (16.0f / 9.0f) }, Colour(255, 255, 255, 150), Colour(255, 255, 255, 150));
-	ColourShift colourshift = ColourShift(star.get_colour(), Colour(255, 255, 255, 0));
+	ColourShift colourshift = ColourShift(star.colour, Colour(255, 255, 255, 0));
 	colourshift.speed = 0.05f;
 	colourshift.with_gradient = true;
 	colourshift.fade_to_death = true;
@@ -169,10 +169,10 @@ Moveable* Loader::parse_button() {
 	float x_offset = (button->size.x - (dimensions.x / WINDOW_WIDTH)) / 2.0f;
 	float y_offset = (button->size.y + (dimensions.y / WINDOW_HEIGHT)) / 2.0f;
 
-	text->colour.set_alpha(200);
+	text->colour.a = 200;
 
 	if (get_string("alt_colour") != "") {
-		button->set_colour(Colour::hex_to_rgb(get_string("alt_colour"), (get_float("alt_alpha"))));
+		button->set_colour(Colour::from_hex(get_string("alt_colour"), (get_float("alt_alpha"))));
 	}
 	button->text = text;
 	button->set_text_offset(x_offset, y_offset);
@@ -282,7 +282,7 @@ Nation* Loader::parse_nation() {
 		Unit* unit = unit_map[(int)element];
 		if (unit == nullptr) continue;
 		nation->add_unit(unit);
-		unit->set_colour(nation->get_colour().set_alpha(200));
+		unit->set_colour(nation->colour.with_alpha(200));
 		// unit->initialise();
 		log_t("Assigned unit " CON_RED, unit->name, CON_NORMAL " (" CON_RED, unit->identifier, CON_NORMAL ") to nation " CON_RED, nation->name, CON_NORMAL " (" CON_RED, nation->identifier, CON_NORMAL ")");
 	}
@@ -349,8 +349,8 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, con
 		Moveable* background = new Moveable(
 			Vector2(),
 			Vector2(1.0, 1.0),
-			Colour(level_data["background"], level_data["background_alpha"]),
-			Colour(level_data["alt_background"], level_data["alt_background_alpha"])
+			Colour(static_cast<string>(level_data["background"]), level_data["background_alpha"]),
+			Colour(static_cast<string>(level_data["alt_background"]), level_data["alt_background_alpha"])
 		);
 		background->add_flag(UNEDITABLE);
 		background->name = "Background " + to_string(identifier);
@@ -445,10 +445,10 @@ void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects
 			{"y", m->location.y },
 			{"width", m->size.x },
 			{"height", m->size.y },
-			{"colour", m->colour.get_hex() },
-			{"alt_colour", m->gradient_colour.get_hex() },
-			{"alpha", m->colour.get_w() / 255.0f},
-			{"alt_alpha", m->gradient_colour.get_w() / 255.0f},
+			{"colour", m->colour.as_hex() },
+			{"alt_colour", m->gradient_colour.as_hex() },
+			{"alpha", m->colour.a / 255.0f},
+			{"alt_alpha", m->gradient_colour.a / 255.0f},
 			{"name", m->name},
 			{"flags", m->get_flags() }
 		};
@@ -504,8 +504,8 @@ void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects
 			{"y", t->location.y },
 			{"width", t->size.x },
 			{"height", t->size.y },
-			{"colour", t->colour.get_hex() },
-			{"alpha", t->colour.get_w() / 255.0f},
+			{"colour", t->colour.as_hex() },
+			{"alpha", t->colour.a / 255.0f},
 			{"name", t->name}
 		};
 		if (t->has_flag(TEXT)) {

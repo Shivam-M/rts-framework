@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class Colour;
+struct Colour;
 struct Vector2;
 
 struct Character {

@@ -92,7 +92,7 @@ void GameRTS::initialise_rts_game() {
 	player_nation = nations[0];
 	for (Moveable* moveable : objects) {
 		if (moveable->has_flag(THEMED)) {
-			moveable->set_colour(player_nation->get_colour().set_alpha(moveable->get_colour().get_w()));
+			moveable->set_colour(player_nation->colour.with_alpha(moveable->colour.a));
 		}
 	}
 }
@@ -247,13 +247,8 @@ void GameRTS::hover_unit(Unit* unit) {
 }
 
 void GameRTS::update_cursor() {  // tied to update rate
-	double x, y;
-	glfwGetCursorPos(window, &x, &y);
-	float relx = x / render->resolution.x;
-	float rely = y / render->resolution.y;
-	cursor_position.set(relx, rely);
-	cursor_->location.x = relx;
-	cursor_->location.y = rely;
+	Game::update_cursor();
+	cursor_->location = cursor_position;
 }
 
 void GameRTS::execute_action(int action, Moveable* button) {  // keep option for action-only
@@ -284,9 +279,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			// queue action to be executed in getObjectUnderMouse() instead of cycling through moveables again?
 			for (Moveable* moveable : objects) {
 				if (moveable->has_flag(PROVINCE)) {
-					Colour colour = moveable->get_colour();
-					colour.set_alpha(!value_view ? 200 : 75 + (reinterpret_cast<Province*>(moveable)->value) * 200);
-					moveable->set_colour(colour);
+					moveable->set_colour(moveable->colour.with_alpha((!value_view ? 200 : 75 + (reinterpret_cast<Province*>(moveable)->value) * 200)));
 				}
 			}
 			break;
@@ -419,9 +412,9 @@ void GameRTS::update_properties() {
 		player_nation = reinterpret_cast<Province*>(selected_object)->nation;
 		picking_nation = false;
 
-		for (Moveable* m : objects) {
-			if (m->has_flag(THEMED)) {
-				m->set_colour(player_nation->get_colour().set_alpha(m->colour.get_w()));
+		for (Moveable* moveable : objects) {
+			if (moveable->has_flag(THEMED)) {
+				moveable->set_colour(player_nation->colour.with_alpha(moveable->colour.a));
 			}
 		}
 

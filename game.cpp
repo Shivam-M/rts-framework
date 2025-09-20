@@ -133,7 +133,7 @@ void Game::initialise_extended() {
 }
 
 void Game::debug_mode() {
-	global_filter->colour.w_ *= 0.1f;
+	global_filter->colour.a *= 0.1f;
 	// UIManager::toggle("ui_menu_pause");
 
 	if (selected_object) {
@@ -169,7 +169,7 @@ void Game::update_statistics(const int& f, const int& u) {
 void Game::update_cursor() {
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	cursor_position.set(x / render->resolution.x, y / render->resolution.y);
+	cursor_position = { (float)x / render->resolution.x, (float)y / render->resolution.y };
 }
 
 void Game::update_properties() {

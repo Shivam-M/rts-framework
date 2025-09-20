@@ -64,10 +64,9 @@ Text* Panel::get_text_by_name(const string& name) {
 
 void Panel::fade() {
     for (Moveable* mv : bundle_) {
-        // ColourShift entrance = ColourShift(mv->get_colour().set_alpha(0), mv->get_default_colour());
-        ColourShift entrance = ColourShift(mv->get_colour().set_alpha(0), mv->get_colour());
+        ColourShift entrance = ColourShift(mv->colour.with_alpha(0), mv->colour);
         entrance.speed = 0.0075f;
-        mv->colour = mv->get_colour().set_alpha(0);
+        mv->colour.a = 0;
         entrance.loop = false;
         // entrance.reswap();
         entrance.direction = ColourShift::Direction::Up;
@@ -78,7 +77,10 @@ void Panel::fade() {
 void Panel::fade_out() {
     for (Moveable* mv : bundle_) {
         // mv->set_colour(mv->get_default_colour());
-        ColourShift entrance = ColourShift(mv->colour, mv->get_colour().set_alpha(0));
+        Colour original_colour = mv->colour;
+        Colour transparent_colour = original_colour;
+        transparent_colour.a = 0;
+        ColourShift entrance = ColourShift(mv->colour, mv->colour.with_alpha(0));
         entrance.direction = ColourShift::Direction::Up;
         entrance.speed = 0.0075f;
         entrance.loop = false;

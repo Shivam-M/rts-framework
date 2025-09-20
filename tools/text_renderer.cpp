@@ -117,7 +117,7 @@ void TextRenderer::render_text(Font* ft_font, const float& x, const float& y, st
     }
 
     if (lastBoundColour != colour) {
-        glUniform4f(uniformColour, colour.x_ / 255.0f, colour.y_ / 255.0f, colour.z_ / 255.0f, colour.w_ / 255.0f);
+        glUniform4f(uniformColour, colour.r / 255.0f, colour.g / 255.0f, colour.b / 255.0f, colour.a / 255.0f);
         lastBoundColour = colour;
     }
 

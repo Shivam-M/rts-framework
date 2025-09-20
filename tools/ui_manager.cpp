@@ -92,7 +92,7 @@ void UIManager::map_province(Panel* panel, void* moveable) { // TODO: check if c
     Nation* nation = province->nation;
 
 	panel->get_text_by_name("ui_province_tooltip_name")->set_content(province->name);
-	panel->get_text_by_name("ui_province_tooltip_name")->set_colour(province->get_colour().set_alpha(255));
+	panel->get_text_by_name("ui_province_tooltip_name")->set_colour(province->colour.with_alpha(255));
     panel->get_text_by_name("ui_province_tooltip_owned_by")->set_content("Owned by: " + nation->name);
     panel->get_text_by_name("ui_province_tooltip_value")->set_content(format("Value: {:.2f}", province->value));
     panel->get_text_by_name("ui_province_tooltip_terrain")->set_content("Terrain: " + province->get_terrain_name());
@@ -111,7 +111,7 @@ void UIManager::map_nation(Panel* panel, void* moveable) {
     Nation* nation = static_cast<Nation*>(moveable);
 
     panel->get_text_by_name("ui_nation_tooltip_name")->set_content(nation->name);
-    panel->get_text_by_name("ui_nation_tooltip_name")->set_colour(nation->get_colour().set_alpha(150));
+    panel->get_text_by_name("ui_nation_tooltip_name")->set_colour(nation->colour.with_alpha(150));
     panel->get_text_by_name("ui_nation_tooltip_capital")->set_content("Capital: " + nation->get_capital()->name);
     panel->get_text_by_name("ui_nation_tooltip_treasury")->set_content(format("Treasury: {:.2f}", nation->money));
     panel->get_text_by_name("ui_nation_tooltip_army_size")->set_content(format("Army Size: {}", static_cast<int>(nation->get_army().size())));
@@ -122,7 +122,7 @@ void UIManager::map_unit(Panel* panel, void* moveable) {
     Nation* nation = unit->nation;
 
 	panel->get_text_by_name("ui_unit_tooltip_name")->set_content(unit->name);
-	panel->get_text_by_name("ui_unit_tooltip_name")->set_colour(unit->get_colour().set_alpha(255));
+	panel->get_text_by_name("ui_unit_tooltip_name")->set_colour(unit->colour.with_alpha(255));
 	panel->get_text_by_name("ui_unit_tooltip_owned_by")->set_content("Owned by: " + (nation ? nation->name : "Independent"));  
 	panel->get_text_by_name("ui_unit_tooltip_value")->set_content(format("Skill: {:.2f}", unit->skill));
 	panel->get_text_by_name("ui_unit_tooltip_terrain")->set_content(format("Size: {}", unit->amount));

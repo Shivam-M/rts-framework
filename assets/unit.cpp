@@ -23,7 +23,7 @@ void Unit::set_path(vector<Province*> path) {
 	log_t("Set path for unit " CON_RED, name, CON_NORMAL " (" CON_RED, identifier, CON_NORMAL "):");
 
 	for (Province* province : path) {
-		ColourShift colourshift = ColourShift(province->colour, province->get_colour().set_alpha(150));
+		ColourShift colourshift = ColourShift(province->colour, province->colour.with_alpha(150));
 		colourshift.speed = 0.02f;
 		colourshift.conditionalise(&PathCount);
 		province->set_colour_shift(colourshift);
@@ -106,7 +106,7 @@ void Unit::evaluate() {
 			province->progress_siege(skill * random_float());
 			if (province->siege_progress >= 100) {
 				province->blend = siege_lines;
-				province->set_gradient_colour(get_colour().set_alpha(200));
+				province->set_gradient_colour(colour.with_alpha(200));
 			}
 			break;
 		case State::Travelling:

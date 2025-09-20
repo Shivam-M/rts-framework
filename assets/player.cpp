@@ -14,7 +14,7 @@ void Player::jump() {
 
 void Player::set_acceleration(float x, float y) {
 	is_stopping = false;
-	acceleration.set(x, y);
+	acceleration = { x, y };
 	is_facing_right_ = true ? acceleration.x >= 0 : false;
 }
 

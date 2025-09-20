@@ -11,7 +11,7 @@
 using namespace std;
 
 void Moveable::set_text_offset(float x, float y) {
-	text_offset_.set(x, y);
+	text_offset_ = { x, y };
 	if (text) text->set_location(location.x + text_offset_.x, location.y + text_offset_.y);
 }
 
@@ -43,10 +43,10 @@ void Moveable::tick_timer(float modifier) {
 	else if (action == "Y") location.y = stof(data);
 	else if (action == "WIDTH") size.x = stof(data);
 	else if (action == "HEIGHT") size.y = stof(data);
-	else if (action == "COLOUR") set_colour(Colour::hex_to_rgb(data));
-	else if (action == "ALPHA") colour.set_alpha(stof(data));
-	else if (action == "GRADIENT") set_gradient_colour(Colour::hex_to_rgb(data));
-	else if (action == "GRADIENT_ALPHA") gradient_colour.set_alpha(stof(data));
+	else if (action == "COLOUR") set_colour(Colour::from_hex(data));
+	else if (action == "ALPHA") colour.a = stof(data);
+	else if (action == "GRADIENT") set_gradient_colour(Colour::from_hex(data));
+	else if (action == "GRADIENT_ALPHA") gradient_colour.a = stof(data);
 	else if (action == "JUMP") script_line_ = stoi(data);
 	else if (action == "TEXTURE") set_texture(Image::get_image(data));
 	// TODO else if (action == "COLOUR_SHIFT");
@@ -84,13 +84,13 @@ void Moveable::shift_colour(float modifier) {
 	}
 
 	if (colour_shift.fade_to_death) {
-		if (colour.get_w() <= 0) {
+		if (colour.a <= 0) {
 			add_flag(DISABLED);
 			stop_colour_shift();
 		}
 	}
 
-	if (colour_shift.fade_to_death && evaluated_colour.get_w() <= 0) add_flag(DISABLED);
+	if (colour_shift.fade_to_death && evaluated_colour.a <= 0) add_flag(DISABLED);
 	if (colour_shift.condition && *colour_shift.condition != colour_shift.target) stop_colour_shift();
 }
 

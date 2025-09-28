@@ -66,8 +66,9 @@ void GameRTS::initialise_extended() {
 	cursor_ = new Moveable();
 	cursor_->set_texture(Image::get_image("data/images/cursor.png"));
 	cursor_->set_size(0.04 * (9 / 16.0), 0.04);
-	cursor_->add_flag(FIXED_POS);
+	cursor_->add_flag(FIXED_POS | CURSOR);
 
+	render->cursor = cursor_;
 	register_object(cursor_);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -152,7 +153,7 @@ void GameRTS::pause_game() {
 	sound->play(0.025f);
 }
 
-void GameRTS::update_statistics(const int& frames, const int& updates) {
+void GameRTS::update_statistics(int frames, int updates) {
 	Game::update_statistics(frames, updates);
 
 	string nation_string = "-- [X]";
@@ -233,7 +234,7 @@ Moveable* GameRTS::get_object_under_mouse() {
 	}
 	
 	hovered_object = object;
-	return object;
+	return hovered_object;
 }
 
 void GameRTS::hover_province(Province* province) {
@@ -255,7 +256,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 	static int index_font;
 	static vector<string> files_font;
 	Unit* hired_unit;
-	War war;
+	War* war;
 	Level* level = nullptr;
 
 	log_t("Executing button action: " CON_RED, action);
@@ -295,6 +296,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 				unit_text->alignment = Text::Alignment::Centre;
 				unit_text->add_flag(TEXT_BACKGROUND | UNSAVEABLE);
 				unit_text->remove_flag(FIXED_POS);
+				unit_text->set_background(new Moveable());
 				hired_unit->name = player_nation->name + " Hired Unit";
 				hired_unit->set_size(0.02125f, 0.0375f);
 				hired_unit->text = unit_text;
@@ -302,6 +304,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 				hired_unit->initialise();
 				register_object(hired_unit);
 				register_object(unit_text);
+				register_object(unit_text->get_background());
 			}
 			break;
 		case DebugFonts:
@@ -331,13 +334,15 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			UIManager::toggle("ui_information_header");
 			break;
 		case DeclareWar:
-			war.attacker = player_nation;
-			war.defender = viewed_nation;
-			war.war_goal = TAKE_KEY_PROVINCE;
-			war.war_goal_target.target_province = viewed_nation->get_capital();
-			UIManager::assign_values("ui_war_declaration", &war);
+			war = new War();
+			war->attacker = player_nation;
+			war->defender = viewed_nation;
+			war->war_goal = TAKE_KEY_PROVINCE;
+			war->war_goal_target.target_province = viewed_nation->get_capital();
+			register_event(WAR_START, war);
+			// UIManager::assign_values("ui_war_declaration", &war);
 			UIManager::hide("ui_nation_tooltip");
-			UIManager::show("ui_war_declaration");
+			// UIManager::show("ui_war_declaration");
 			break;
 		case Debug:
 			load_level_dynamically("data/levels/ui/10-ui-battle-unit.json", "D38UG");
@@ -350,6 +355,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 
 void GameRTS::register_event(Event event, void* details) {
 	BattleInformation* battle;
+	War* war;
 	switch (event) {
 		case BATTLE_START:
 			battle = static_cast<BattleInformation*>(details);
@@ -365,6 +371,15 @@ void GameRTS::register_event(Event event, void* details) {
 			log_t("Ending battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->name, CON_NORMAL " and " CON_RED, battle->defender_units[0]->name, CON_NORMAL);
 			delete battle;
 			break;
+		case WAR_START:
+			war = static_cast<War*>(details);
+			load_level_dynamically("data/levels/ui/06-ui-war-declaration.json", to_string(war->war_id));
+			// UIManager::get_panel("ui_battle_unit-" + to_string(battle->battle_id))->set_location(battle->province->get_location().x - (battle->province->get_size().x), battle->province->get_location().y);
+			wars.push_back(war);
+			log_t("Started war " CON_RED, war->war_id, CON_NORMAL " between " CON_RED, war->attacker->name, CON_NORMAL " and " CON_RED, war->defender->name, CON_NORMAL);
+			break;
+		case WAR_END:
+			break;
 		default:
 			log_t("Unsupported event: " CON_RED, event);
 			break;
@@ -379,6 +394,10 @@ void GameRTS::update_properties() {
 	
 	for (BattleInformation* battle: battles) {
 		UIManager::assign_values("ui_battle_unit-" + to_string(battle->battle_id), battle, &UIManager::map_battle);
+	}
+
+	for (War* war : wars) {
+		UIManager::assign_values("ui_war_declaration-" + to_string(war->war_id), war, &UIManager::map_war_declaration);
 	}
 
 	if (get_button(GLFW_MOUSE_BUTTON_MIDDLE)) {
@@ -400,7 +419,8 @@ void GameRTS::update_properties() {
 				drag_offset = cursor_position - draggable_panel->location;
 				dragged_object = draggable_panel;
 			}
-			draggable_panel->location = cursor_position - drag_offset;
+			Vector2 loc = cursor_position - drag_offset;
+			draggable_panel->set_location(loc.x, loc.y);
 		} else {
 			dragged_object = nullptr;
 		}

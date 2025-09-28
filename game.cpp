@@ -153,7 +153,7 @@ void Game::toggle_debug() {
 	t_Notification->set_content("Updated control scheme to: " + to_string(mouse->debug_control_scheme));
 }
 
-void Game::update_statistics(const int& f, const int& u) {
+void Game::update_statistics(int f, int u) {
 	if (console->visible()) {
 #ifdef _WIN32
 		PROCESS_MEMORY_COUNTERS memCounter;
@@ -297,7 +297,7 @@ Moveable* Game::get_object_under_mouse() {
 	}
 
 	hovered_object = object;
-	return object;
+	return hovered_object;
 }
 
 int Game::game_loop() {

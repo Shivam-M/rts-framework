@@ -13,9 +13,10 @@ class Province;
 class Unit;
 
 enum WarGoal {TAKE_KEY_PROVINCE, TAKE_MULTIPLE_PROVINCES, DEFEAT_ARMY, VASSALISE};
-enum Event {BATTLE_START, BATTLE_END};
+enum Event {BATTLE_START, BATTLE_END, WAR_START, WAR_END};
 
 static int BattleID = 0;
+static int WarID = 0;
 
 struct War {
 	Nation* attacker;
@@ -33,6 +34,7 @@ struct War {
 	vector<Province*>* provinces_sieged_by_defender;
 	int get_province_swing() { return provinces_sieged_by_attacker->size() - provinces_sieged_by_defender->size(); }
 	int army_swing = 0;
+	int war_id = WarID++;
 };
 
 struct HeaderInformation {
@@ -95,6 +97,7 @@ class GameRTS : Game {
 		static GameRTS* instance;
 		vector<Nation*> nations;
 		vector<BattleInformation*> battles;
+		vector<War*> wars;
 		Nation* player_nation = nullptr;
 		Nation* viewed_nation = nullptr;
 		Date date = { 800, 1, 1 };
@@ -107,7 +110,7 @@ class GameRTS : Game {
 		int game_loop() override;
 		void initialise_extended() override;
 		void update_objects(float modifier = 1.0f) override;
-		void update_statistics(const int& frames, const int& updates) override;
+		void update_statistics(int frames, int updates) override;
 		void update_properties() override;
 		void update_cursor() override;
 		Moveable* get_object_under_mouse() override;

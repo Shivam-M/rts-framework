@@ -71,7 +71,7 @@ class Game {
 		virtual int game_loop();
 		virtual void initialise_extended();
 		virtual void update_objects(float modifier = 1.0f);
-		virtual void update_statistics(const int& frames, const int& updates);
+		virtual void update_statistics(int frames, int updates);
 		virtual void update_properties();
 		virtual void update_cursor();
 		virtual Moveable* get_object_under_mouse();
@@ -85,8 +85,8 @@ class Game {
 		void register_object(Text* text_object);
 		void debug_mode();
 		void toggle_debug();
-		void set_button(const int& button, const int& state) { button_map[button] = state; }
-		const int& get_button(const int& button) { return button_map[button]; }
+		void set_button(int button, int state) { button_map[button] = state; }
+		const int& get_button(int button) { return button_map[button]; }
 
 		Player* get_player() { return player; }
 

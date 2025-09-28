@@ -91,7 +91,7 @@ void Panel::fade_out() {
 
 void Panel::set_location(float x, float y) {
     for (Moveable* moveable : bundle_) {
-        Vector2 new_location = moveable->get_location();
+        Vector2 new_location = moveable->location;
         new_location.x += -location.x + x;
         new_location.y += -location.y + y;
         moveable->set_location(new_location.x, new_location.y);

@@ -133,6 +133,8 @@ void UIManager::map_war_declaration(Panel* panel, void* war_details) {
     Nation* attacker_nation = war->attacker;
     Nation* defender_nation = war->defender;
 
+    panel->get_moveable_by_name("ui_war_declaration_background")->set_colour(attacker_nation->colour * Colour(0.25, 0.25, 0.25, 1.25));
+    panel->get_moveable_by_name("ui_war_declaration_background")->set_gradient_colour(defender_nation->colour * Colour(0.25, 0.25, 0.25, 1.25));
 	panel->get_text_by_name("ui_war_declaration_attackers_text")->set_content(attacker_nation->name);
     panel->get_text_by_name("ui_war_declaration_attackers_allies")->set_content("None");
 	panel->get_text_by_name("ui_war_declaration_defenders_text")->set_content(defender_nation->name);

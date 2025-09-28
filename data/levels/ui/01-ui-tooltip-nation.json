@@ -109,7 +109,8 @@
       "type": "BUTTON",
       "width": 0.375,
       "x": 0.04,
-      "y": 0.7
+      "y": 0.7,
+      "fixed": true
     }
   ]
 }

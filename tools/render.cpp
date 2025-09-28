@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int BUFFER_SIZE = 512 * 4 * 10;
+constexpr int BUFFER_SIZE = 512 * 4 * 10;
 
 GLuint shared_VAO, shared_VBO;
 GLuint shader_textured, shader_coloured;
@@ -188,7 +188,7 @@ void Render::render_window() {
     int culled_moveables = 0;
 
     for (Moveable* moveable: *objects_) {
-        if (moveable->get_flags() & (DISABLED | PARTICLES | PANEL | NO_RENDER))
+        if (moveable->get_flags() & (DISABLED | PARTICLES | PANEL | NO_RENDER | CURSOR))
             skipped_moveables++;
         else if ((moveable->location.x + moveable->size.x <= 0) || (moveable->location.y + moveable->size.y <= 0) || (moveable->location.x >= 1) || (moveable->location.y >= 1))
             culled_moveables++;
@@ -214,6 +214,11 @@ void Render::render_window() {
     TextRenderer::reset_shader();
 
     draw_times[1] = glfwGetTime() - time_text;
+
+    if (cursor) {
+        render_moveable(cursor);
+        draw_batched_textures();
+    }
 
     glfwSwapBuffers(window_);
 }

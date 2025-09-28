@@ -45,6 +45,7 @@ void Unit::inflict_fatalities(int fatalities) {
 		add_flag(DISABLED);
 		state = State::Dead;
 		text->add_flag(DISABLED);
+		text->get_background()->add_flag(DISABLED);
 		if (province->besieger == this) {
 			province->besieger = nullptr;
 		}
@@ -56,11 +57,13 @@ void Unit::finish_battle() {
 		GameRTS::instance->register_event(BATTLE_END, battle_);
 		battle_ = nullptr;
 		text->remove_flag(DISABLED);
+		text->get_background()->remove_flag(DISABLED);
 	}
 }
 
 void Unit::receive_battle(Unit* unit, BattleInformation* battle_info) {
 	text->add_flag(DISABLED);
+	text->get_background()->add_flag(DISABLED);
 	state = State::Fighting;
 	enemy_ = unit;
 	battle_ = battle_info;
@@ -68,6 +71,7 @@ void Unit::receive_battle(Unit* unit, BattleInformation* battle_info) {
 
 void Unit::initiate_battle(Unit* unit) {
 	text->add_flag(DISABLED);
+	text->get_background()->add_flag(DISABLED);
 	state = State::Fighting;
 	battle_ = new BattleInformation();
 	battle_->attacker_units.push_back(this);

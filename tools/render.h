@@ -52,6 +52,7 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		bool fullscreen_ = false;
 
 	public:
+		Moveable* cursor = nullptr;
 		Vector2 resolution = { WINDOW_WIDTH, WINDOW_HEIGHT };
 		Vector2 offsets;
 		float scale = 1.00;

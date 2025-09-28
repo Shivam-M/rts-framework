@@ -5,6 +5,9 @@
 #include <vector>
 #include <string>
 
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
+
 using namespace std;
 
 class Moveable;
@@ -14,32 +17,25 @@ struct Texture;
 struct Blend;
 struct Font;
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
-
-struct CommonUniforms { int colour, colour_secondary, projection; };
+struct CommonUniforms { int projection; };
 struct QuadUniforms : CommonUniforms { int radius; };
-struct TextureUniforms : CommonUniforms { int texture, time, type, speed, size, direction; };
+struct TextureUniforms : CommonUniforms { int time, type, speed, size, direction; };
 
-struct QuadData {
+struct CommonData { // todo: maybe skip this step and use moveables directly if no more use for loose draw calls
 	Vector2 location{};
 	Vector2 size{};
 	Colour* colour = nullptr;
-	Colour* gradient = nullptr;
-	float radius = 0.0f;
+	Colour* colour_secondary = nullptr;
 	bool fixed_position = false;
-	QuadData() = default;
 };
 
-struct TextureData {
-	Vector2 location{};
-	Vector2 size{};
-	Colour* colour = nullptr;
-	Colour* secondary_colour = nullptr;
+struct QuadData : CommonData {
+	float radius = 0.0f;
+};
+
+struct TextureData : CommonData {
 	Texture* texture = nullptr;
 	Blend* blend = nullptr;
-	bool fixed_position = false;
-	TextureData() = default;
 };
 
 class Render { // TODO: Switch from immediate mode to direct mode rendering -- update: mostly done
@@ -73,7 +69,7 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 			quad_data.location = location;
 			quad_data.size = size;
 			quad_data.colour = colour;
-			quad_data.gradient = gradient;
+			quad_data.colour_secondary = gradient;
 			quad_data.radius = radius;
 			quad_data.fixed_position = fixed_position;
 		}
@@ -86,15 +82,15 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 			texture_data.texture = texture;
 			texture_data.colour = colour;
 			texture_data.fixed_position = fixed_position;
-			texture_data.secondary_colour = secondary_colour;
+			texture_data.colour_secondary = secondary_colour;
 			texture_data.blend = blend;
 		}
 
 		void draw_custom(vector<Vector2>* points, Colour* colour, Colour* gradient);
 
-		void draw_text(const Vector2& location, const string& message, Font* font, const Colour& colour, float scale = 1.0f) const;
+		void draw_text(const Vector2& location, const string& message, Font* font, const Colour& colour, float scale, bool fixed) const;
 
-		void fill_vertex_buffer(int& count, const Vector2& location, const Vector2& size, bool fixed_position) const;
+		void fill_vertex_buffer(int& count, const Vector2& location, const Vector2& size, bool fixed_position, Colour* colour, Colour* colour_secondary) const;
 
 		void render_moveable(Moveable* moveable);
 		void render_window();

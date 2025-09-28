@@ -30,7 +30,7 @@ class TextRenderer {
         static void setup();
         static void init_shader();
         static void reset_shader();
-        static void render_text(Font* ft_font, float x, float y, const string& text, const Colour& colour, float scale = 1.0f);
+        static void render_text(Font* ft_font, const Vector2& position, const string& text, const Colour& colour, float scale = 1.0f);
         static void calculate_text_dimensions(Font* ft_font, const string& text, float scale, Vector2& dimensions);
         static Font* load_font(const string& font_name, int height, float scale = 1.0f);    
 };

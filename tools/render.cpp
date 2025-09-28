@@ -6,9 +6,11 @@
 
 using namespace std;
 
+const int BUFFER_SIZE = 512 * 4 * 10;
+
 GLuint shared_VAO, shared_VBO;
 GLuint shader_textured, shader_coloured;
-GLfloat vertex_buffer[512 * 4 * 2];
+GLfloat vertex_buffer[BUFFER_SIZE];
 
 TextureUniforms uniforms_textured;
 QuadUniforms uniforms_coloured;
@@ -19,9 +21,6 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     shader_textured = compile_shader("shaders/textured.vert", "shaders/textured.frag");
     glUseProgram(shader_textured);
 
-    uniforms_textured.colour = glGetUniformLocation(shader_textured, "colour");
-    uniforms_textured.colour_secondary = glGetUniformLocation(shader_textured, "colourSecondary");
-    uniforms_textured.texture = glGetUniformLocation(shader_textured, "texturePrimary");
     uniforms_textured.time = glGetUniformLocation(shader_textured, "time");
     uniforms_textured.type = glGetUniformLocation(shader_textured, "type");
     uniforms_textured.speed = glGetUniformLocation(shader_textured, "speed");
@@ -34,22 +33,23 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
 
     glGenVertexArrays(1, &shared_VAO);
     glBindVertexArray(shared_VAO);
-    
+
     glGenBuffers(1, &shared_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, shared_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 512 * 4 * 2, NULL, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * BUFFER_SIZE, NULL, GL_STREAM_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);  // todo: move colour/secondary_colour here
-
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(0));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(6 * sizeof(float)));
 
     // --
 
     shader_coloured = compile_shader("shaders/coloured.vert", "shaders/coloured.frag");
     glUseProgram(shader_coloured);
 
-    uniforms_coloured.colour = glGetUniformLocation(shader_coloured, "colour");
-    uniforms_coloured.colour_secondary = glGetUniformLocation(shader_coloured, "colourSecondary");
     uniforms_coloured.radius = glGetUniformLocation(shader_coloured, "radius");
     uniforms_coloured.projection = glGetUniformLocation(shader_coloured, "projection");
 
@@ -60,11 +60,7 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     glUseProgram(0);
 }
 
-void Render::draw_text(const Vector2& location, const string& message, Font* font, const Colour& colour, float font_scale) const {
-    TextRenderer::render_text(font, location.x * resolution.x, (location.y) * resolution.y, message, colour, font_scale);
-}
-
-void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vector2& size, bool fixed_position) const { // ideally move logic to moveable class
+void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vector2& size, bool fixed_position, Colour* colour, Colour* secondary) const { // ideally move logic to moveable class
     float sf = fixed_position ? 1.0f : scale;
     float ox = fixed_position ? 0.0f : offsets.x;
     float oy = fixed_position ? 0.0f : offsets.y;
@@ -74,10 +70,29 @@ void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vecto
     float w = size.x * sf * WINDOW_WIDTH;
     float h = size.y * sf * WINDOW_HEIGHT;
 
-    vertex_buffer[count++] = x;       vertex_buffer[count++] = y + h; // top left
-    vertex_buffer[count++] = x;       vertex_buffer[count++] = y;     // bottom left
-    vertex_buffer[count++] = x + w;   vertex_buffer[count++] = y;     // bottom right
-    vertex_buffer[count++] = x + w;   vertex_buffer[count++] = y + h; // top right
+    Vector4 normalised_colour = *colour / 255.0f;
+    Vector4 normalised_colour_secondary = *secondary / 255.0f;
+    Vector2 vertex_corner_positions[4] = {
+        { x,     y + h },
+        { x,     y     },
+        { x + w, y     },
+        { x + w, y + h }
+    };
+
+    for (const auto& position : vertex_corner_positions) {
+        vertex_buffer[count++] = position.x;
+        vertex_buffer[count++] = position.y;
+
+        vertex_buffer[count++] = normalised_colour.x;
+        vertex_buffer[count++] = normalised_colour.y;
+        vertex_buffer[count++] = normalised_colour.z;
+        vertex_buffer[count++] = normalised_colour.w;
+
+        vertex_buffer[count++] = normalised_colour_secondary.x;
+        vertex_buffer[count++] = normalised_colour_secondary.y;
+        vertex_buffer[count++] = normalised_colour_secondary.z;
+        vertex_buffer[count++] = normalised_colour_secondary.w;
+    }
 }
 
 void Render::draw_batched_quads() {
@@ -88,20 +103,15 @@ void Render::draw_batched_quads() {
     int vertex_count = 0;
     for (int i = 0; i < quad_count_; i++) {
         const QuadData& quad_data = batched_quads_[i];
-        fill_vertex_buffer(vertex_count, quad_data.location, quad_data.size, quad_data.fixed_position);
+        fill_vertex_buffer(vertex_count, quad_data.location, quad_data.size, quad_data.fixed_position, quad_data.colour, quad_data.colour_secondary);
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_count * sizeof(GLfloat), vertex_buffer);
 
     for (int i = 0; i < quad_count_; i++) {
         const QuadData& quad_data = batched_quads_[i];
-        const Colour* colour = quad_data.colour;
-        const Colour* secondary = quad_data.gradient ? quad_data.gradient : colour;
 
-        glUniform1f(uniforms_coloured.radius, quad_data.radius);
-        glUniform4f(uniforms_coloured.colour, colour->r / 255.0f, colour->g / 255.0f, colour->b / 255.0f, colour->a / 255.0f);
-        glUniform4f(uniforms_coloured.colour_secondary, secondary->r / 255.f, secondary->g / 255.f, secondary->b / 255.f, secondary->a / 255.f);
-
+        glUniform1f(uniforms_coloured.radius, quad_data.radius); // todo: probably remove
         glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
     }
 
@@ -116,7 +126,7 @@ void Render::draw_batched_textures() {
     int vertex_count = 0;
     for (int i = 0; i < texture_count_; i++) {
         const TextureData& texture_data = batched_textures_[i];
-        fill_vertex_buffer(vertex_count, texture_data.location, texture_data.size, texture_data.fixed_position);
+        fill_vertex_buffer(vertex_count, texture_data.location, texture_data.size, texture_data.fixed_position, texture_data.colour, texture_data.colour_secondary);
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_count * sizeof(GLfloat), vertex_buffer);
@@ -125,11 +135,8 @@ void Render::draw_batched_textures() {
 
     for (int i = 0; i < texture_count_; i++) {
         const TextureData& texture_data = batched_textures_[i];
-        const Colour* colour = texture_data.colour;
-        const Colour* secondary_colour = texture_data.secondary_colour;
         const Blend* blend = texture_data.blend;
 
-        glUniform4f(uniforms_textured.colour, colour->r / 255.0f, colour->g / 255.0f, colour->b / 255.0f, colour->a / 255.0f);
         glUniform1i(uniforms_textured.type, blend->type);
 
         if (blend->type != 0) {
@@ -139,15 +146,16 @@ void Render::draw_batched_textures() {
             glUniform2f(uniforms_textured.direction, blend->direction.x, blend->direction.y);
         }
 
-        if (secondary_colour) {
-            glUniform4f(uniforms_textured.colour_secondary, secondary_colour->r / 255.0f, secondary_colour->g / 255.0f, secondary_colour->b / 255.0f, secondary_colour->a / 255.0f);
-        }
-
         glBindTexture(GL_TEXTURE_2D, texture_data.texture->data);
         glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
     }
 
     texture_count_ = 0;
+}
+
+void Render::draw_text(const Vector2& location, const string& message, Font* font, const Colour& colour, float scale, bool fixed) const {
+    const Vector2& position = fixed ? location : location * this->scale + this->offsets;
+    TextRenderer::render_text(font, position * resolution, message, colour, fixed ? scale : scale * this->scale);
 }
 
 void Render::draw_custom(vector<Vector2>* points, Colour* colour, Colour* gradient) {
@@ -173,7 +181,7 @@ void Render::render_moveable(Moveable* moveable) {
 }
 
 void Render::render_window() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     float time_shapes = glfwGetTime();
     int skipped_moveables = 0;
@@ -201,9 +209,7 @@ void Render::render_window() {
     TextRenderer::init_shader();
     for (Text* text : *text_objects_) {
         if (text->has_flag(DISABLED)) continue;
-        const Vector2& location = text->has_flag(FIXED_POS) ? text->get_location() : text->get_location() * this->scale + this->offsets;
-        float scale = text->has_flag(FIXED_POS) ? text->get_scale() : text->get_scale() * this->scale;
-        draw_text(location, text->get_content(), text->get_font(), text->evaluated_colour, scale);
+        draw_text(text->get_location(), text->get_content(), text->get_font(), text->evaluated_colour, text->get_scale(), text->has_flag(FIXED_POS));
     }
     TextRenderer::reset_shader();
 

@@ -2,21 +2,21 @@
 
 out vec4 FragColour;
 
-uniform vec4 colour;
-uniform vec4 colourSecondary;
+in vec2 TextureCoords;
+in vec4 Colour;
+in vec4 ColourSecondary;
+
 uniform float radius;
 
-in vec2 TextureCoords;
-
 void main() {
-	if (radius > 0.0) {
+    if (radius > 0.0) {
         vec2 p = abs(TextureCoords - 0.5) - (0.5 - radius);
         if (length(max(p, 0.0)) > radius) discard;
     }
     
-    if (colour == colourSecondary) {
-        FragColour = colour;
+    if (Colour == ColourSecondary) {
+        FragColour = Colour;
     } else {
-        FragColour = mix(colour, colourSecondary, TextureCoords.x);
+        FragColour = mix(Colour, ColourSecondary, TextureCoords.x);
     }
-}
+} 

@@ -117,7 +117,7 @@ void TextRenderer::flush_batch() {
     }
 }
 
-void TextRenderer::render_text(Font* ft_font, float x, float y, string const& text, const Colour& colour, float scale) {
+void TextRenderer::render_text(Font* ft_font, const Vector2& position, string const& text, const Colour& colour, float scale) {
     if (texture_last_bound != ft_font->texture) {
         if (vertex_index_batch > 0) flush_batch();
         glBindTexture(GL_TEXTURE_2D, ft_font->texture);
@@ -130,8 +130,8 @@ void TextRenderer::render_text(Font* ft_font, float x, float y, string const& te
     float b = colour.b * NORMALISED;
     float a = colour.a * NORMALISED;
 
-    float baseline_y = floor(y + 0.5f);
-    float current_x = x;
+    float baseline_y = floor(position.y + 0.5f);
+    float current_x = position.x;
 
     int vertex_index = vertex_index_batch;
 

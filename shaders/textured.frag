@@ -2,11 +2,11 @@
 
 in vec2 TextureCoords;
 in vec2 ScreenPosition;
+in vec4 Colour;
+in vec4 ColourSecondary;
 out vec4 FragColour;
 
 uniform sampler2D texturePrimary;
-uniform vec4 colour;
-uniform vec4 colourSecondary;
 
 // Blend:
 uniform int type;
@@ -41,8 +41,8 @@ void main() {
     vec4 textured_base = texture(texturePrimary, TextureCoords);
 
     if (type == 0) {
-        FragColour = textured_base * colour;
+        FragColour = textured_base * Colour;
     } else {
-        FragColour = textured_base * mix(colour, colourSecondary, get_blend());
+        FragColour = textured_base * mix(Colour, ColourSecondary, get_blend());
     }
 }

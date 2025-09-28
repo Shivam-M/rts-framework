@@ -34,7 +34,7 @@ void Text::set_scale(float scale) {
 }
 
 void Text::update_common() {
-	dimensions = TextRenderer::calculate_text_dimensions(font_, content_, scale_);
+	TextRenderer::calculate_text_dimensions(font_, content_, scale_, dimensions);
 }
 
 void Text::update(float modifier) {
@@ -49,4 +49,23 @@ void Text::update(float modifier) {
 			aligned_location.x -= dimensions.x / WINDOW_WIDTH;
 			break;
 	}
+
+	if (!background_) return;
+
+	const Colour BACKGROUND_COLOUR = Colour(40, 40, 40, 200);
+	const float BACKGROUND_SCALE = 1.05f;
+
+	Vector2 text_dimensions = dimensions / Vector2(1280, 720);
+	Vector2 text_location = get_location();
+
+	text_location.y -= text_dimensions.y;
+	text_dimensions *= {BACKGROUND_SCALE, BACKGROUND_SCALE * (16.0 / 9.0)};
+
+	text_location.x -= text_dimensions.x * (BACKGROUND_SCALE - 1) / (2 * BACKGROUND_SCALE);
+	text_location.y -= text_dimensions.y * (BACKGROUND_SCALE * 1.5 - 1) / (2 * BACKGROUND_SCALE * 1.5);
+
+	background_->set_colour(BACKGROUND_COLOUR);
+	background_->set_gradient_colour(BACKGROUND_COLOUR);
+	background_->location = text_location;
+	background_->size = text_dimensions;
 }

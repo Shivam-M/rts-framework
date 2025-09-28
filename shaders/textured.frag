@@ -1,14 +1,12 @@
 #version 330 core
 
 in vec2 TextureCoords;
-in vec2 ScreenPos;
+in vec2 ScreenPosition;
 out vec4 FragColour;
 
 uniform sampler2D texturePrimary;
-uniform sampler2D textureSecondary;
 uniform vec4 colour;
 uniform vec4 colourSecondary;
-uniform bool useSecondTexture;
 
 // Blend:
 uniform int type;
@@ -26,7 +24,7 @@ float get_blend() {
             float wave = sin(dot(TextureCoords, direction) * 6.2831 * size - time * speed) * 0.5 + 0.5;
             return clamp(TextureCoords.x + wave, 0.0, 1.0);
         case 2:  // Pulse
-            float stripePosition = mod(dot(ScreenPos * (1.0f / 1280), normalize(direction)) * (100.0 / size) + time * speed, 2);
+            float stripePosition = mod(dot(ScreenPosition * (1.0f / 1280), normalize(direction)) * (100.0 / size) + time * speed, 2);
             return step(1.0, stripePosition);
         case 3:  // Stripe
             float stripe = mod(TextureCoords.y * 10.0 + time, 2.0);
@@ -41,10 +39,9 @@ float get_blend() {
 
 void main() {
     vec4 textured_base = texture(texturePrimary, TextureCoords);
-    vec4 textured_colour = textured_base * colour;
 
     if (type == 0) {
-        FragColour = textured_colour;
+        FragColour = textured_base * colour;
     } else {
         FragColour = textured_base * mix(colour, colourSecondary, get_blend());
     }

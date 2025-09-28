@@ -18,6 +18,7 @@ class Text: public Moveable {
 	private:
 		float scale_ = 1.0f;
 		Font* font_ = nullptr;
+		Moveable* background_ = nullptr;
 
 	protected:
 		string content_;
@@ -30,11 +31,13 @@ class Text: public Moveable {
 		Text();
 		Text(Vector2 location, Font* font, Colour colour, string content = "", float scale = 1.f);
 
+		Moveable* get_background() { return background_; }
 		const Vector2& get_location() override;
 		Font* get_font() { return font_; }
 		virtual const string& get_content(bool raw = false) { return content_; }
 		const float& get_scale() const { return scale_; }
 
+		void set_background(Moveable* background) { add_flag(TEXT_BACKGROUND); background_ = background; }
 		void set_font(Font* font);
 		void set_content(const string& content);
 		void set_scale(float scale);

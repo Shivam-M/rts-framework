@@ -1,6 +1,7 @@
 {
   "level_name": "Units",
   "no_background": true,
+  "offset_positions": false,
   "variables": {
     "g_colour": "FF00FF"
   },

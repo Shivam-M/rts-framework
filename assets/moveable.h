@@ -100,7 +100,6 @@ class Moveable {
 		Action button_action_ = Other;
 		Vector2 text_offset_;
 		Texture* texture_ = nullptr;
-		Texture* secondary_texture_ = nullptr;
 
 		void tick_timer(float modifier);
 
@@ -131,8 +130,6 @@ class Moveable {
 
 		vector<Vector2> get_points() const { return points; }
 		Texture* get_texture() { return texture_; }
-		Texture* get_secondary_texture() { return secondary_texture_; }
-	
 		
 		virtual Vector2 get_centre() { return Vector2(location.x + size.x / 2, location.y + size.y / 2); }
 		const Vector2& get_velocity() const { return velocity; }
@@ -158,7 +155,6 @@ class Moveable {
 
 		void set_text_offset(float x, float y);
 		void set_texture(Texture* texture) { add_flag(TEXTURED); texture_ = texture; }
-		void set_secondary_texture(Texture* secondary_texture) { add_flag(TEXTURED); secondary_texture_ = secondary_texture; }
 		void set_velocity(float x, float y) { velocity = { x, y }; }
 		
 		const Action& get_button_action() const { return button_action_; }

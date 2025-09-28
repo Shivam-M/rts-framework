@@ -76,6 +76,8 @@ class Game {
 		virtual void update_cursor();
 		virtual Moveable* get_object_under_mouse();
 
+		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 		bool is_cursor_on_texture(Moveable* moveable, const Vector2& cursor_position);
 		void load_levels(string level_directory);
 		void load_level_dynamically(const string& level_path, const string& instance_name = "");

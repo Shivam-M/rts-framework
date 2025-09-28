@@ -165,7 +165,8 @@ Moveable* Loader::parse_button() {
 	Text* text = parse_text();
 	parse_common(button);
 
-	Vector2 dimensions = TextRenderer::calculate_text_dimensions(text->get_font(), text->get_content(), text->get_scale());
+	Vector2 dimensions;
+	TextRenderer::calculate_text_dimensions(text->get_font(), text->get_content(), text->get_scale(), dimensions);
 	float x_offset = (button->size.x - (dimensions.x / WINDOW_WIDTH)) / 2.0f;
 	float y_offset = (button->size.y + (dimensions.y / WINDOW_HEIGHT)) / 2.0f;
 
@@ -241,9 +242,6 @@ Province* Loader::parse_province() {
 		if (get_string("texture", "NULL") != "NULL") province->set_texture(Image::get_image(get_string("texture", "NULL")));
 	}
 
-	/*Blend blend = Blend(2, 1.0f, 1.0f, Vector2(-1.f, -1.5f), false);
-	province->set_blend(blend);*/
-
 	return province;
 }
 
@@ -254,11 +252,12 @@ Unit* Loader::parse_unit() {
 	Font* font = Fonts::get_font("data/fonts/Cinzel-Bold.ttf", 16, true); // (189, 195, 199, 250)
 	Text* unit_text = new Text(unit->get_location(), font, Colour(220, 221, 225, 200), unit->name, 0.5f);
 	unit_text->alignment = Text::Alignment::Centre;
+	unit_text->set_background(new Moveable());
+
 	unit_text->add_flag(TEXT_BACKGROUND | UNSAVEABLE);
 	unit_text->remove_flag(FIXED_POS);
 	unit->text = unit_text;
 	unit->set_text_offset(0, -0.0025);
-	// unit->location.x -= 1; // Offset x by -1 (sidescroller levelling) -- unused?
 
 	unit_map[get_int("id")] = unit;
 	return unit;
@@ -413,6 +412,7 @@ Level* Loader::load_level(string f, vector <Moveable*>* q, vector<Text*>* t, con
 		} else if (type == "UNIT") {
 			Unit* unit = parse_unit();
 			level->objects.push_back(unit);
+			level->objects.push_back(unit->text->get_background());
 			level->text_objects.push_back(unit->text);
 		} else {
 			level->objects.push_back(parse_moveable());
@@ -459,7 +459,7 @@ void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects
 			Text* t = m->text;
 			moveable_data["font"] = Fonts::get_properties(t->get_font()).first;
 			moveable_data["font_custom"] = (int)(Fonts::get_properties(t->get_font()).second);
-			moveable_data["size"] = t->get_font()->h;
+			moveable_data["size"] = t->get_font()->height;
 			moveable_data["content"] = t->get_content();
 			moveable_data["scale"] = t->get_scale();
 		}
@@ -512,7 +512,7 @@ void Loader::write_objects(vector<Moveable*> objects, vector<Text*> text_objects
 			moveable_data["type"] = "TEXT";
 			moveable_data["font"] = Fonts::get_properties(t->get_font()).first;
 			moveable_data["font_custom"] = (int)(Fonts::get_properties(t->get_font()).second);
-			moveable_data["size"] = t->get_font()->h;
+			moveable_data["size"] = t->get_font()->height;
 			moveable_data["content"] = t->get_content();
 			moveable_data["scale"] = t->get_scale();
 		}

@@ -25,7 +25,7 @@ map<string, MappingFunction> UIManager::method_mappings_ = {
     {"ui_battle_unit",          &UIManager::map_battle}
 };
 
-void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies, const float& starting_strength);
+void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies, float starting_strength);
 void set_war_details_for_allies(Panel* panel, const string& side, int strength, int provinces, const vector<Nation*>& allies);
 
 void UIManager::register_panel(const string& ui_name, Panel* ui_panel) {
@@ -171,7 +171,7 @@ void UIManager::map_battle(Panel* panel, void* battle_details) {
     set_battle_details_for_allies(panel, "2", information->defender_units, information->total_defender_starting_strength);
 }
 
-void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies, const float& starting_strength) {
+void set_battle_details_for_allies(Panel* panel, const string& side, const vector<Unit*>& allies, float starting_strength) {
     int total_amount = 0;
     
     for (Unit* ally: allies) {

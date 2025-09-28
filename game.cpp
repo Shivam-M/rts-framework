@@ -80,11 +80,18 @@ Game::Game(int argc, char** argv) {
 	glfwSetKeyCallback(window, keyboard->callback);
 	glfwSetMouseButtonCallback(window, mouse->callback);
 	glfwSetScrollCallback(window, mouse->scroll_callback);
-	// glfwSetWindowSizeCallback(window, NULL);
+	glfwSetFramebufferSizeCallback(window, this->framebuffer_size_callback);
 
 	Audio::init();
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_,  " seconds " CON_NORMAL "to load the base game.");
+}
+
+void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+	glViewport(0, 0, width, height);
+
+	game->render->resolution.x = static_cast<float>(width);
+	game->render->resolution.y = static_cast<float>(height);
 }
 
 void Game::load_levels(string level_directory) {

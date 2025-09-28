@@ -9,35 +9,41 @@
 
 using namespace std;
 
-GLuint VAO, VBO, TextShader;
-int AtlasWidth = 4096, AtlasHeight = 4096;
-GLuint uniformColour, uniformPriority;
+const int ATLAS_WIDTH = 1024, ATLAS_HEIGHT = 1024;
+GLuint VAO, VBO, shader_text;
+GLuint texture_last_bound = -1;
+float vertices[4096 * 6 * 8];
+int vertex_index_batch = 0;
 
-void TextRenderer::setup() {
-    TextShader = compile_shader("shaders/text.vert", "shaders/text.frag");
+void TextRenderer::setup() { // todo: use EBOs to reduce buffer size and/or switch from GL_TRIANGLES
+    shader_text = compile_shader("shaders/text.vert", "shaders/text.frag");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT), 0.0f);
 
-    glUseProgram(TextShader);
-    glUniformMatrix4fv(glGetUniformLocation(TextShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-    uniformColour = glGetUniformLocation(TextShader, "characterColour");
-    uniformPriority = glGetUniformLocation(TextShader, "z_value");
-    glUseProgram(0);
+    glUseProgram(shader_text);
+    glUniformMatrix4fv(glGetUniformLocation(shader_text, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4 * 128, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 8 * 4096, NULL, GL_DYNAMIC_DRAW);
+
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glUseProgram(0);
 }
 
-Font* TextRenderer::load_font(string font_path, int height, float scale) {
+Font* TextRenderer::load_font(const string& font_path, int height, float scale) {
     Font* ft_font = new Font();
     FT_Library library;
     FT_Face face;
+    GLuint texture_atlas;
 
     if (FT_Init_FreeType(&library)) {
         log_t(CON_RED "ERROR! FreeType initialisation failed");
@@ -52,40 +58,40 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
     FT_Set_Char_Size(face, height << 6, height << 6, 96, 96);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    GLuint atlasTexture;
-    glGenTextures(1, &atlasTexture);
-    glBindTexture(GL_TEXTURE_2D, atlasTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, AtlasWidth, AtlasHeight, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+    glGenTextures(1, &texture_atlas);
+    glBindTexture(GL_TEXTURE_2D, texture_atlas);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ATLAS_WIDTH, ATLAS_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int x = 0, y = 0, maxHeight = 0;
+    int x = 0, y = 0, max_height = 0;
     for (unsigned char c = 0; c < 128; c++) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
             log_t(CON_RED "ERROR! Failed to load font glyph");
             continue;
         }
 
-        if (x + face->glyph->bitmap.width > AtlasWidth) {
+        if (x + face->glyph->bitmap.width > ATLAS_WIDTH) {
             x = 0;
-            y += maxHeight;
-            maxHeight = 0;
+            y += max_height;
+            max_height = 0;
         }
 
-        maxHeight = max(maxHeight, (int)face->glyph->bitmap.rows);
+        max_height = max(max_height, (int)face->glyph->bitmap.rows);
 
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
-        float u0 = x / (float)AtlasWidth;
-        float v0 = y / (float)AtlasHeight;
-        float u1 = (x + face->glyph->bitmap.width) / (float)AtlasWidth;
-        float v1 = (y + face->glyph->bitmap.rows) / (float)AtlasHeight;
+        float u0 = x / (float)ATLAS_WIDTH;
+        float v0 = y / (float)ATLAS_HEIGHT;
+        float u1 = (x + face->glyph->bitmap.width) / (float)ATLAS_WIDTH;
+        float v1 = (y + face->glyph->bitmap.rows) / (float)ATLAS_HEIGHT;
 
-        ft_font->characters[c] = Character {
-            atlasTexture,
+        ft_font->characters[c] = Character{
+            texture_atlas,
             static_cast<unsigned int>(face->glyph->advance.x),
+            static_cast<float>(face->glyph->advance.x)/ 64.0f,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             glm::vec4(u0, v0, u1, v1)
@@ -94,8 +100,8 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
         x += face->glyph->bitmap.width * 1.5;
     }
 
-    ft_font->texture = atlasTexture;
-    ft_font->h = height;
+    ft_font->texture = texture_atlas;
+    ft_font->height = height;
 
     glBindTexture(GL_TEXTURE_2D, 0);
     FT_Done_Face(face);
@@ -103,100 +109,78 @@ Font* TextRenderer::load_font(string font_path, int height, float scale) {
     return ft_font;
 }
 
-GLuint lastBoundTexture = -1;
-Colour lastBoundColour = Colour(0, 0, 0, 0);
-float vertices[1024 * 6 * 4 * 2];
-float xpos, ypos, w, h;
-size_t vertexIndex = 0;
-void TextRenderer::render_text(Font* ft_font, const float& x, const float& y, string const& text, const Colour& colour, const float& scale) {
-    // glUniform1f(uniformPriority, priority);
+void TextRenderer::flush_batch() {
+    if (vertex_index_batch > 0) {
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_index_batch * sizeof(float), vertices);
+        glDrawArrays(GL_TRIANGLES, 0, vertex_index_batch / 8);
+        vertex_index_batch = 0;
+    }
+}
 
-    if (lastBoundTexture != ft_font->texture) {
+void TextRenderer::render_text(Font* ft_font, float x, float y, string const& text, const Colour& colour, float scale) {
+    if (texture_last_bound != ft_font->texture) {
+        if (vertex_index_batch > 0) flush_batch();
         glBindTexture(GL_TEXTURE_2D, ft_font->texture);
-        lastBoundTexture = ft_font->texture;
+        texture_last_bound = ft_font->texture;
     }
 
-    if (lastBoundColour != colour) {
-        glUniform4f(uniformColour, colour.r / 255.0f, colour.g / 255.0f, colour.b / 255.0f, colour.a / 255.0f);
-        lastBoundColour = colour;
-    }
+    static constexpr float NORMALISED = 1.0f / 255.0f;
+    float r = colour.r * NORMALISED;
+    float g = colour.g * NORMALISED;
+    float b = colour.b * NORMALISED;
+    float a = colour.a * NORMALISED;
 
     float baseline_y = floor(y + 0.5f);
     float current_x = x;
 
+    int vertex_index = vertex_index_batch;
+
     for (const char& c : text) {
-        Character& ch = ft_font->characters[c];
+        const auto& ch = ft_font->characters[c];
 
-        xpos = current_x + ch.bearing.x * scale;
-        ypos = baseline_y - ch.bearing.y * scale;
+        float xpos = current_x + ch.bearing.x * scale;
+        float ypos = baseline_y - ch.bearing.y * scale;
 
-        w = ch.size.x * scale;
-        h = ch.size.y * scale;
+        float w = ch.size.x * scale;
+        float h = ch.size.y * scale;
 
-        vertices[vertexIndex++] = xpos;
-        vertices[vertexIndex++] = ypos + h;
-        vertices[vertexIndex++] = ch.uv.x;
-        vertices[vertexIndex++] = ch.uv.w;
+        float* v = &vertices[vertex_index];
 
-        vertices[vertexIndex++] = xpos;
-        vertices[vertexIndex++] = ypos;
-        vertices[vertexIndex++] = ch.uv.x;
-        vertices[vertexIndex++] = ch.uv.y;
+        v[0] = xpos;      v[1] = ypos + h;  v[2] = ch.uv.x;  v[3] = ch.uv.w;  v[4] = r;  v[5] = g;  v[6] = b;  v[7] = a;
+        v[8] = xpos;      v[9] = ypos;      v[10] = ch.uv.x; v[11] = ch.uv.y; v[12] = r; v[13] = g; v[14] = b; v[15] = a;
+        v[16] = xpos + w; v[17] = ypos;     v[18] = ch.uv.z; v[19] = ch.uv.y; v[20] = r; v[21] = g; v[22] = b; v[23] = a;
 
-        vertices[vertexIndex++] = xpos + w;
-        vertices[vertexIndex++] = ypos;
-        vertices[vertexIndex++] = ch.uv.z;
-        vertices[vertexIndex++] = ch.uv.y;
+        v[24] = xpos;     v[25] = ypos + h; v[26] = ch.uv.x; v[27] = ch.uv.w; v[28] = r; v[29] = g; v[30] = b; v[31] = a;
+        v[32] = xpos + w; v[33] = ypos;     v[34] = ch.uv.z; v[35] = ch.uv.y; v[36] = r; v[37] = g; v[38] = b; v[39] = a;
+        v[40] = xpos + w; v[41] = ypos + h; v[42] = ch.uv.z; v[43] = ch.uv.w; v[44] = r; v[45] = g; v[46] = b; v[47] = a;
 
-        vertices[vertexIndex++] = xpos;
-        vertices[vertexIndex++] = ypos + h;
-        vertices[vertexIndex++] = ch.uv.x;
-        vertices[vertexIndex++] = ch.uv.w;
-
-        vertices[vertexIndex++] = xpos + w;
-        vertices[vertexIndex++] = ypos;
-        vertices[vertexIndex++] = ch.uv.z;
-        vertices[vertexIndex++] = ch.uv.y;
-
-        vertices[vertexIndex++] = xpos + w;
-        vertices[vertexIndex++] = ypos + h;
-        vertices[vertexIndex++] = ch.uv.z;
-        vertices[vertexIndex++] = ch.uv.w;
-
-        current_x += (ch.advance >> 6) * scale;
+        vertex_index += 48;
+        current_x += ch.advance_pixels * scale;
     }
 
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertexIndex * sizeof(float), vertices);
-    glDrawArrays(GL_TRIANGLES, 0, vertexIndex / 4);
-    vertexIndex = 0;
+    vertex_index_batch = vertex_index;
 }
 
-Vector2 TextRenderer::calculate_text_dimensions(Font* ft_font, const string& text, const float& scale) {
-    float width = 0.0f, height = 0.0f;
-
-    Vector2 dimensions;
-
+void TextRenderer::calculate_text_dimensions(Font* ft_font, const string& text, float scale, Vector2& dimensions) {
+    dimensions.x = 0;
     for (const char& c : text) {
-        const Character& ch = ft_font->characters[c];
+        const auto& ch = ft_font->characters[c];
         dimensions.x += (ch.advance >> 6) * scale;
         dimensions.y = max(dimensions.y, ch.size.y * scale);
     }
-
-    return dimensions;
 }
 
 void TextRenderer::init_shader() {
-    glUseProgram(TextShader);
+    glUseProgram(shader_text);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    vertex_index_batch = 0;
+    texture_last_bound = -1;
 }
 
 void TextRenderer::reset_shader() {
+    flush_batch();
     glBindVertexArray(0);
-    /*
-    glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    */
 }

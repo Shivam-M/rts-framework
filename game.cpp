@@ -35,7 +35,11 @@ Game::Game(int argc, char** argv) {
 	if (!glfwInit()) return;
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+#ifdef __aarch64__
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#else
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+#endif
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	if (!(window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Generic Game", NULL, NULL))) { glfwTerminate(); return; }
@@ -45,6 +49,8 @@ Game::Game(int argc, char** argv) {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	glClearColor(0.155f, 0.155f, 0.155f, 0.f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	srand(time(nullptr));
 

@@ -4,6 +4,16 @@
 
 using namespace std;
 
+// workaround
+#ifdef __aarch64__
+template<>
+struct hash<Province*> {
+	size_t operator()(Province* const& p) const noexcept {
+		return reinterpret_cast<uintptr_t>(p);
+	}
+};
+#endif
+
 Province::Province(int id) : identifier(id) {}
 
 void Province::initiate_siege(Unit* unit, Colour siege_colour) {

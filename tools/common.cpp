@@ -7,20 +7,20 @@ void log_impl(ostream& os) {
 }
 
 float random_float() {
-	return ((double)rand() / (RAND_MAX));
+	return static_cast<float>(rand()) / (RAND_MAX);
 }
 
-string read_file(const string& filename) {
-    ifstream file(filename, ios::binary | ios::ate);
-    if (!file) return 0;
+static string read_file(const string& filename) {
+    ifstream file(filename, ios::binary);
 
-    streamsize size = file.tellg();
-    file.seekg(0, ios::beg);
+    if (!file) {
+        log_t(CON_RED "ERROR! Failed to open file ", filename.c_str());
+        return {};
+    }
 
-    string buffer(size, '\0');
-    if (!file.read(&buffer[0], size)) return 0;
-
-    return buffer;
+    ostringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
 }
 
 GLuint compile_shader(const char* vertex_shader_path, const char* fragment_shader_path) {
@@ -39,7 +39,7 @@ GLuint compile_shader(const char* vertex_shader_path, const char* fragment_shade
 
     if (!success) {
         glGetShaderInfoLog(vertex_shader, 512, NULL, info);
-        log_t(CON_RED "ERROR! Failed to compile vertex shader - %s\n", info);
+        log_t(CON_RED "ERROR! Failed to compile vertex shader:\n", info);
     }
 
     unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -52,7 +52,7 @@ GLuint compile_shader(const char* vertex_shader_path, const char* fragment_shade
 
     if (!success) {
         glGetShaderInfoLog(fragment_shader, 512, NULL, info);
-        log_t(CON_RED "ERROR! Failed to compile fragment shader - %s\n", info);
+        log_t(CON_RED "ERROR! Failed to compile fragment shader:\n", info);
     }
 
     unsigned int program = glCreateProgram();
@@ -64,7 +64,7 @@ GLuint compile_shader(const char* vertex_shader_path, const char* fragment_shade
 
     if (!success) {
         glGetProgramInfoLog(program, 512, NULL, info);
-        log_t("Failed to link shaders - %s\n", info);
+        log_t("Failed to link shaders: \n", info);
     }
 
     glDeleteShader(vertex_shader);

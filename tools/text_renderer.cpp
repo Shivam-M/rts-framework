@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const int ATLAS_WIDTH = 1024, ATLAS_HEIGHT = 1024;
+static constexpr int ATLAS_WIDTH = 1024, ATLAS_HEIGHT = 1024;
 GLuint VAO, VBO, shader_text;
 GLuint texture_last_bound = -1;
 float vertices[4096 * 6 * 8];
@@ -67,7 +67,7 @@ Font* TextRenderer::load_font(const string& font_path, int height, float scale) 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int x = 0, y = 0, max_height = 0;
-    for (unsigned char c = 0; c < 128; c++) {
+    for (unsigned char c = ft_font->CHAR_START; c < 128; c++) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
             log_t(CON_RED "ERROR! Failed to load font glyph");
             continue;
@@ -88,7 +88,7 @@ Font* TextRenderer::load_font(const string& font_path, int height, float scale) 
         float u1 = (x + face->glyph->bitmap.width) / (float)ATLAS_WIDTH;
         float v1 = (y + face->glyph->bitmap.rows) / (float)ATLAS_HEIGHT;
 
-        ft_font->characters[c] = Character{
+        ft_font->characters[c - ft_font->CHAR_START] = Character{
             texture_atlas,
             static_cast<unsigned int>(face->glyph->advance.x),
             static_cast<float>(face->glyph->advance.x)/ 64.0f,
@@ -136,7 +136,7 @@ void TextRenderer::render_text(Font* ft_font, const Vector2& position, string co
     int vertex_index = vertex_index_batch;
 
     for (const char& c : text) {
-        const auto& ch = ft_font->characters[c];
+        const auto& ch = ft_font->characters[c - ft_font->CHAR_START];
 
         float xpos = current_x + ch.bearing.x * scale;
         float ypos = baseline_y - ch.bearing.y * scale;
@@ -164,7 +164,7 @@ void TextRenderer::render_text(Font* ft_font, const Vector2& position, string co
 void TextRenderer::calculate_text_dimensions(Font* ft_font, const string& text, float scale, Vector2& dimensions) {
     dimensions.x = 0;
     for (const char& c : text) {
-        const auto& ch = ft_font->characters[c];
+        const auto& ch = ft_font->characters[c - ft_font->CHAR_START];
         dimensions.x += (ch.advance >> 6) * scale;
         dimensions.y = max(dimensions.y, ch.size.y * scale);
     }

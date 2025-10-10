@@ -70,8 +70,8 @@ void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vecto
     float w = size.x * sf * WINDOW_WIDTH;
     float h = size.y * sf * WINDOW_HEIGHT;
 
-    Vector4 normalised_colour = *colour / 255.0f;
-    Vector4 normalised_colour_secondary = *secondary / 255.0f;
+    Colour normalised_colour = *colour / 255.0f;
+    Colour normalised_colour_secondary = *secondary / 255.0f;
     Vector2 vertex_corner_positions[4] = {
         { x,     y + h },
         { x,     y     },
@@ -187,7 +187,7 @@ void Render::render_window() {
     int skipped_moveables = 0;
     int culled_moveables = 0;
 
-    for (Moveable* moveable: *objects_) {
+    for (Moveable* moveable: *objects_) {  // todo: cull panel objects + text
         if (moveable->get_flags() & (DISABLED | PARTICLES | PANEL | NO_RENDER | CURSOR))
             skipped_moveables++;
         else if ((moveable->location.x + moveable->size.x <= 0) || (moveable->location.y + moveable->size.y <= 0) || (moveable->location.x >= 1) || (moveable->location.y >= 1))

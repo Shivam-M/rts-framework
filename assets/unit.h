@@ -23,7 +23,7 @@ class Unit: public Moveable {
 		BattleInformation* battle_ = nullptr;
 
 	public:
-		enum class State { Normal, Sieging, Travelling, Fighting, Dead };
+		enum class State : uint8_t { Normal, Sieging, Travelling, Fighting, Dead };
 
 		int identifier = -1;
 		int amount = 1;

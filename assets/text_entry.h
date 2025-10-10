@@ -8,8 +8,8 @@ using namespace std;
 
 class TextEntry : public Text {
     private:
-		const char CURSOR_CHAR = '|';
-		const unsigned int CURSOR_FLASH_SPEED = 500;
+		static constexpr char CURSOR_CHAR = '|';
+        static constexpr unsigned short CURSOR_FLASH_SPEED = 500;
         bool cursor_visible_ = true;
         string display_content_;
 

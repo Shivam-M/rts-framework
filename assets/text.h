@@ -13,15 +13,15 @@ struct Font;
 
 class Text: public Moveable {
 	public:
-		enum class Alignment { Left, Centre, Right };
+		enum class Alignment : uint8_t { Left, Centre, Right };
 
 	private:
-		float scale_ = 1.0f;
 		Font* font_ = nullptr;
 		Moveable* background_ = nullptr;
 
 	protected:
 		string content_;
+		float scale_ = 1.0f;
 
 	public:
 		Alignment alignment = Alignment::Left;

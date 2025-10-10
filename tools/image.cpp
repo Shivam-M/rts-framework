@@ -131,8 +131,6 @@ void Image::load_image(const string& path) {
     texture->image = stbi_load(path.c_str(), &texture->width, &texture->height, &texture->composition, STBI_rgb_alpha);
     texture->path = path;
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, texture->data);
     // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

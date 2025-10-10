@@ -180,8 +180,8 @@ void set_battle_details_for_allies(Panel* panel, const string& side, const vecto
         total_amount += ally->amount;
     }
 
-    float const MAX_BAR_WIDTH = 0.1f;
-    float const BAR_HEIGHT = 0.012f;
+    static float constexpr MAX_BAR_WIDTH = 0.1f;
+    static float constexpr BAR_HEIGHT = 0.012f;
     float ratio = total_amount / starting_strength;
     float width = MAX_BAR_WIDTH * ratio;
     float x_position_offset = side == "1" ? -width : 0;

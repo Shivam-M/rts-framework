@@ -13,15 +13,16 @@ struct Character {
     unsigned int texture_id;
     unsigned int advance;
     float advance_pixels;
-    glm::ivec2 size;
-    glm::ivec2 bearing;
+    glm::u8vec2 size;
+    glm::i8vec2 bearing;
     glm::vec4 uv;
 };
 
 struct Font {
+    static constexpr unsigned char CHAR_START = 32;  // first printable ascii character
     float height;
     unsigned int texture;
-    Character characters[128];
+    Character characters[96];  // add extended ascii support in the future
 };
 
 class TextRenderer {

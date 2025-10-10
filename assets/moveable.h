@@ -46,23 +46,23 @@ enum {
 };
 
 struct ColourFilter {
-	enum class Mode { Addition, Multiplication, Replacement };
+	enum class Mode : uint8_t { Addition, Multiplication, Replacement };
+	bool enabled;
 	Mode mode;
 	Colour colour;
-	bool enabled;
 
 	ColourFilter(const Colour& c, const Mode& m, const bool& e = true) : colour(c), mode(m), enabled(e) {}
 };
 
 struct ColourShift {
-	enum class Direction { Up, Down };
-	Direction direction = Direction::Down;
+	enum class Direction : uint8_t { Up, Down };
 	Colour first, second, evaluated;
 	float speed = 0.1f;
 	float progress = 0.0f;
 	int* condition = nullptr;
 	int target = -1;
 	bool loop = true, fade_to_death = false, with_gradient = false;
+	Direction direction = Direction::Down;
 
 	ColourShift() = default;
 	ColourShift(const Colour& f, const Colour& s) : first(f), second(s) {}
@@ -79,7 +79,7 @@ struct ColourShift {
 };
 
 struct Blend {
-	int type = 0;
+	uint8_t type = 0;
 	bool fixed = false;
 	float speed = 1.0f;
 	float size = 1.0f;
@@ -89,16 +89,16 @@ struct Blend {
 	Blend(int typ, float spd, float sze, Vector2 dir, bool fxd) : type(typ), speed(spd), size(sze), direction(dir), fixed(fxd) {}
 };
 
-enum Action {PauseGame, SwitchNation, ToggleMapView, ToggleControls, SaveGame, DebugFonts, ToggleTooltip, HireUnit, ToggleDebugUI, DeclareWar, Debug, Other, PauseSimulation};
+enum Action : uint8_t { PauseGame, SwitchNation, ToggleMapView, ToggleControls, SaveGame, DebugFonts, ToggleTooltip, HireUnit, ToggleDebugUI, DeclareWar, Debug, Other, PauseSimulation };
 
 class Moveable {
 	private:
 		int flags_ = ENABLED;
+		Action button_action_ = Other;
 		bool shifting_colour_ = false;
-		int script_line_ = 0;
+		uint8_t script_line_ = 0;
 		float script_timer_ = 0;
 		vector<string>* script = nullptr;
-		Action button_action_ = Other;
 		Vector2 text_offset_;
 		Texture* texture_ = nullptr;
 
@@ -111,6 +111,7 @@ class Moveable {
 		string metadata = "";
 		Moveable* parent = nullptr;
 		Blend blend;
+		bool is_active = true;
 
 		Vector2 acceleration;
 		Vector2 velocity;
@@ -124,14 +125,12 @@ class Moveable {
 		ColourFilter hover_filter = ColourFilter(Colour(1, 1, 1, 0.75), ColourFilter::Mode::Multiplication, false);
 		deque<ColourFilter*> filters;
 
-		bool is_active = true;
-
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
 
 		vector<Vector2> get_points() const { return points; }
 		Texture* get_texture() { return texture_; }
-		
+
 		virtual Vector2 get_centre() { return Vector2(location.x + size.x / 2, location.y + size.y / 2); }
 		const Vector2& get_velocity() const { return velocity; }
 		const Vector2& get_size() const { return size; }
@@ -142,7 +141,7 @@ class Moveable {
 		virtual void set_location(float x, float y) { location = { x, y }; }
 
 		Colour get_colour() const { return colour; }
-		const Colour& get_evaluated_colour() { return evaluated_colour; }
+		const Colour& get_evaluated_colour() const { return evaluated_colour; }
 		void stop_colour_shift();
 		void set_colour_shift(const ColourShift& col_shift);
 		void shift_colour(float modifier = 1.0f);
@@ -157,12 +156,12 @@ class Moveable {
 		void set_text_offset(float x, float y);
 		void set_texture(Texture* texture) { add_flag(TEXTURED); texture_ = texture; }
 		void set_velocity(float x, float y) { velocity = { x, y }; }
-		
+
 		const Action& get_button_action() const { return button_action_; }
 		void set_button_action(Action action) { add_flag(BUTTON); button_action_ = action; }
 
 		void load_script(const string& script_path);
-		
+
 		virtual void on_hover();
 		virtual void on_hover_stop();
 

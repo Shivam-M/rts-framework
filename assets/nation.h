@@ -15,7 +15,7 @@ static float UNIT_COST = 0.02f;
 static int UnitCount = 1000;
 
 class Nation : public Moveable {
-	enum NATION_FLAGS { AT_WAR, LOSING_MONEY, IN_DEBT, UNLANDED };
+	enum NATION_FLAGS : uint8_t { AT_WAR, LOSING_MONEY, IN_DEBT, UNLANDED };
 
 	private:
 		Province* capital_;

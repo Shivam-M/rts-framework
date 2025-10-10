@@ -17,13 +17,12 @@ class Unit;
 static int SiegeID = 0;
 
 class Province : public Moveable {
-	enum class Terrain { Flat, Mountain, Forest, _Count };
-	enum class State { Normal, Besieging, Besieged };
+	enum class Terrain : uint8_t { Flat, Mountain, Forest, _Count };
+	enum class State : uint8_t { Normal, Besieging, Besieged };
 
-	const string TERRAIN_NAMES[static_cast<int>(Terrain::_Count)] = { "Plains", "Mountains", "Forest" };
+	static constexpr const char* TERRAIN_NAMES[static_cast<int>(Terrain::_Count)] = { "Plains", "Mountains", "Forest" };
 
 	private:
-		Terrain terrain_ = Terrain::Flat;
 		vector<Province*> neighbours_;
 		vector<Unit*> units_;
 
@@ -31,10 +30,11 @@ class Province : public Moveable {
 		int identifier = -1;
 		float value = 0.50f;
 		float siege_progress = 0.f;
+		Terrain terrain = Terrain::Flat;
+		State state = State::Normal;
 		Nation* nation = nullptr;
 		Unit* besieger = nullptr;
 		Unit* controller = nullptr;
-		State state = State::Normal;
 
 		Province(int id);
 
@@ -43,7 +43,7 @@ class Province : public Moveable {
 		void progress_siege(float amount);
 		void end_siege();
 
-		const string& get_terrain_name() const { return TERRAIN_NAMES[static_cast<int>(terrain_)]; }
+		const string& get_terrain_name() const { return TERRAIN_NAMES[static_cast<int>(terrain)]; }
 
 		const vector<Province*>& get_neighbours() { return neighbours_; }
 		void register_neighbour(Province* neighbour) { neighbours_.push_back(neighbour); }

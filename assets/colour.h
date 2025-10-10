@@ -32,7 +32,11 @@ struct Vector2 {
 
 
 struct Vector4 {
-	float x, y, z, w;
+	union {
+		struct { float x, y, z, w; };
+		struct { float r, g, b, a; };
+		float data[4];
+	};
 
 	constexpr Vector4(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f) : x(x), y(y), z(z), w(w) {}
 	float magnitude() const { return x * x + y * y + z * z + w * w; }
@@ -74,17 +78,11 @@ struct Vector4 {
 struct Colour : public Vector4 {
 	using Vector4::Vector4;
 
-	float& r = x;
-	float& g = y;
-	float& b = z;
-	float& a = w;
-
 	static Colour from_hex(const string& hex, float alpha = 1.0f);
 	static string to_hex(const Colour& rgb);
 
 	Colour(const string& hex, float alpha = 255.0f) : Colour(from_hex(hex, alpha)) {}
-	Colour(const Colour& other) : Vector4(other), r(x), g(y), b(z), a(w) {}
-	Colour(const Vector4& vector) : Vector4(vector), r(x), g(y), b(z), a(w) {}
+	Colour(const Vector4& vector) : Vector4(vector) {};
 
 	Colour& operator=(const Colour& other) { Vector4::operator=(other); return *this; }
 

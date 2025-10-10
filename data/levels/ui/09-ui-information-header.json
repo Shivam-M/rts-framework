@@ -141,7 +141,7 @@
       "alt_alpha": 0.5,
       "alt_colour": "&colour",
       "colour": "&colour",
-      "content": "||",
+      "content": "",
       "flags": 4203664,
       "font": "data/fonts/MedievalSharp-Book.ttf",
       "font_custom": 1,

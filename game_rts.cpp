@@ -328,7 +328,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			break;
 		case ToggleDebugUI:
 			UIManager::toggle("ui_war_indicator");
-			UIManager::toggle("ui_war_declaration");
+			// UIManager::toggle("ui_war_declaration");
 			UIManager::toggle("ui_event_choice");
 			UIManager::toggle("ui_unit_hire");
 			UIManager::toggle("ui_information_header");
@@ -492,7 +492,6 @@ int GameRTS::game_loop() {
 #endif
 
 	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
 
 		current_time = glfwGetTime();
 		limit = 1.0f / update_rate;
@@ -511,6 +510,7 @@ int GameRTS::game_loop() {
 			updates++;
 			delta_time--;
 			update_time_ = glfwGetTime() - update_time;
+			glfwPollEvents();
 		}
 
 		if (fps_limit == 0 || glfwGetTime() - last_frame_time >= (1.0f / fps_limit)) {

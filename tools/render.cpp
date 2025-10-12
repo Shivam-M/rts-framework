@@ -2,11 +2,12 @@
 
 #include "../assets/text.h"
 #include "../tools/text_renderer.h"
+#include "../tools/image.h"
 #include "../tools/common.h"
 
 using namespace std;
 
-constexpr int BUFFER_SIZE = 512 * 4 * 10;
+constexpr int BUFFER_SIZE = 256 * 6 * 10;
 
 GLuint shared_VAO, shared_VBO;
 GLuint shader_textured, shader_coloured;
@@ -50,7 +51,6 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     shader_coloured = compile_shader("shaders/coloured.vert", "shaders/coloured.frag");
     glUseProgram(shader_coloured);
 
-    uniforms_coloured.radius = glGetUniformLocation(shader_coloured, "radius");
     uniforms_coloured.projection = glGetUniformLocation(shader_coloured, "projection");
 
     glUniformMatrix4fv(uniforms_coloured.projection, 1, GL_FALSE, glm::value_ptr(projection));
@@ -60,7 +60,7 @@ Render::Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* te
     glUseProgram(0);
 }
 
-void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vector2& size, bool fixed_position, Colour* colour, Colour* secondary) const { // ideally move logic to moveable class
+void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vector2& size, bool fixed_position, Colour* colour, Colour* secondary) const {
     float sf = fixed_position ? 1.0f : scale;
     float ox = fixed_position ? 0.0f : offsets.x;
     float oy = fixed_position ? 0.0f : offsets.y;
@@ -72,14 +72,14 @@ void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vecto
 
     Colour normalised_colour = *colour / 255.0f;
     Colour normalised_colour_secondary = *secondary / 255.0f;
-    Vector2 vertex_corner_positions[4] = {
-        { x,     y + h },
-        { x,     y     },
-        { x + w, y     },
-        { x + w, y + h }
-    };
 
-    for (const auto& position : vertex_corner_positions) {
+    Vector2 v0 = { x,     y + h };
+    Vector2 v1 = { x,     y };
+    Vector2 v2 = { x + w, y };
+    Vector2 v3 = { x + w, y + h };
+    Vector2 vertices[6] = { v0, v1, v2, v2, v3, v0 };  // two triangles
+
+    for (const auto& position : vertices) {
         vertex_buffer[count++] = position.x;
         vertex_buffer[count++] = position.y;
 
@@ -95,6 +95,7 @@ void Render::fill_vertex_buffer(int& count, const Vector2& location, const Vecto
     }
 }
 
+
 void Render::draw_batched_quads() {
     glUseProgram(shader_coloured);
     glBindVertexArray(shared_VAO);
@@ -107,13 +108,7 @@ void Render::draw_batched_quads() {
     }
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_count * sizeof(GLfloat), vertex_buffer);
-
-    for (int i = 0; i < quad_count_; i++) {
-        const QuadData& quad_data = batched_quads_[i];
-
-        glUniform1f(uniforms_coloured.radius, quad_data.radius); // todo: probably remove
-        glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
-    }
+    glDrawArrays(GL_TRIANGLES, 0, quad_count_ * 6);
 
     quad_count_ = 0;
 }
@@ -147,7 +142,7 @@ void Render::draw_batched_textures() {
         }
 
         glBindTexture(GL_TEXTURE_2D, texture_data.texture->data);
-        glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
+        glDrawArrays(GL_TRIANGLES, i * 6, 6);
     }
 
     texture_count_ = 0;
@@ -172,11 +167,11 @@ void Render::render_moveable(Moveable* moveable) {
     if (moveable->has_flag(CUSTOM)) {
         // draw_custom(moveable->get_points(), moveable->get_colour_ref(), moveable->get_gradient_colour_ref());
     } else if (moveable->has_flag(CURVED)) {
-        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->evaluated_colour, &moveable->gradient_colour, 0.025f, moveable->has_flag(FIXED_POS));
+        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->evaluated_colour, &moveable->gradient_colour, moveable->has_flag(FIXED_POS));
     } else if (moveable->has_flag(TEXTURED)) {
         draw_texture(moveable->get_location(), moveable->get_size(), moveable->get_texture(), &moveable->evaluated_colour, &moveable->blend, moveable->has_flag(FIXED_POS), &moveable->gradient_colour);
     } else {
-        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->evaluated_colour, &moveable->gradient_colour, 0.0f, moveable->has_flag(FIXED_POS));
+        draw_quad(moveable->get_location(), moveable->get_size(), &moveable->evaluated_colour, &moveable->gradient_colour, moveable->has_flag(FIXED_POS));
     }
 }
 
@@ -197,7 +192,7 @@ void Render::render_window() {
     }
 
     skipped_count = skipped_moveables;
-    culled_count = culled_moveables;   
+    culled_count = culled_moveables;
 
     draw_batched_textures();  
     draw_batched_quads();

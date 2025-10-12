@@ -18,7 +18,7 @@ struct Blend;
 struct Font;
 
 struct CommonUniforms { int projection; };
-struct QuadUniforms : CommonUniforms { int radius; };
+struct QuadUniforms : CommonUniforms {};
 struct TextureUniforms : CommonUniforms { int time, type, speed, size, direction; };
 
 struct CommonData { // todo: maybe skip this step and use moveables directly if no more use for loose draw calls
@@ -29,9 +29,7 @@ struct CommonData { // todo: maybe skip this step and use moveables directly if 
 	bool fixed_position = false;
 };
 
-struct QuadData : CommonData {
-	float radius = 0.0f;
-};
+struct QuadData : CommonData {};
 
 struct TextureData : CommonData {
 	Texture* texture = nullptr;
@@ -44,8 +42,8 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		vector<Moveable*>* objects_ = nullptr;
 		vector<Text*>* text_objects_ = nullptr;
 
-		QuadData batched_quads_[512];
-		TextureData batched_textures_[512];
+		QuadData batched_quads_[256];
+		TextureData batched_textures_[256];
 		
 		int quad_count_ = 0;
 		int texture_count_ = 0;
@@ -65,13 +63,12 @@ class Render { // TODO: Switch from immediate mode to direct mode rendering -- u
 		Render(GLFWwindow* window, vector<Moveable*>* objects, vector<Text*>* text_objects);
 
 		void draw_batched_quads();
-		void draw_quad(const Vector2& location, const Vector2& size, Colour* colour, Colour* gradient, float radius = 0.0f, bool fixed_position = false) {
+		void draw_quad(const Vector2& location, const Vector2& size, Colour* colour, Colour* gradient, bool fixed_position = false) {
 			QuadData& quad_data = batched_quads_[quad_count_++];
 			quad_data.location = location;
 			quad_data.size = size;
 			quad_data.colour = colour;
 			quad_data.colour_secondary = gradient;
-			quad_data.radius = radius;
 			quad_data.fixed_position = fixed_position;
 		}
 

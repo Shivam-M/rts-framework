@@ -92,4 +92,6 @@ class Game {
 
 		Game() : Game(0, nullptr) {}
 		Game(int, char**);
+		~Game();
+
 };

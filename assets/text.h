@@ -28,6 +28,7 @@ class Text: public Moveable {
 		Vector2 aligned_location;
 		Vector2 dimensions;
 
+		virtual ~Text() {};
 		Text();
 		Text(Vector2 location, Font* font, Colour colour, string content = "", float scale = 1.f);
 

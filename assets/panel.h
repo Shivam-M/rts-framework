@@ -11,6 +11,7 @@ class Panel: public Moveable {
 		vector<Moveable*> bundle_;
 
 	public:
+		virtual ~Panel() {};
 		Panel();
 
 		void show(bool with_fade = false);

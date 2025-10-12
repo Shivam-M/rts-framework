@@ -23,7 +23,7 @@ void Audio::init() {
 	log_t("Loaded miniaudio engine successfully.");
 }
 
-void Audio::uninit() {
+void Audio::cleanup() {
 	ma_engine_uninit(&engine);
 }
 
@@ -49,6 +49,7 @@ void Sound::load(const string file) {
 		log_t(CON_RED "ERROR! Failed to load sound");
 		return;
 	}
+	ma_sound_set_end_callback(&sound_, on_end, this);  // todo
 	file_ = file;
 }
 

@@ -13,6 +13,8 @@ class ParticleGroup : public Moveable {
 		int amount_;
 
 	public:
+		virtual ~ParticleGroup() {};
+
 		ParticleGroup(Vector2 loc, Vector2 sze, Moveable moveable, int amount, vector<Moveable*>* queue = nullptr) : template_moveable_(moveable), amount_(amount) {
 			add_flag(PARTICLES);
 			location = loc;

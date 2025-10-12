@@ -31,3 +31,9 @@ pair<string, int> Fonts::get_properties(Font* font) { // Temp
 	}
 	return { "", -1 };
 }
+
+void Fonts::cleanup() {
+	for (auto& [path_size, font] : fonts) {
+		delete font;
+	}
+}

@@ -15,7 +15,7 @@ class Audio {
 		static bool enabled;
 
 		static void init();
-		static void uninit();
+		static void cleanup();
 		static void enable();
 		static void disable();
 		static void stop();
@@ -45,4 +45,8 @@ class Sound {
 		void stop();
 		void set_volume(const float volume);
 		const float& get_volume() const;
+
+		static void on_end(void* sound, ma_sound* ma_sound) {  // todo: prime candidate for unique ptrs...
+			// delete static_cast<Sound*>(sound);
+		}
 };

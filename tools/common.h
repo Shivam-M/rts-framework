@@ -38,13 +38,6 @@
 #define WINDOW_HEIGHT 720
 
 using namespace std;
-
-struct Texture {
-	GLuint data = 0;
-	int width = 0, height = 0, composition = 0;
-	unsigned char* image = nullptr;
-	string path;
-};
  
 void log_impl(ostream& os);
 

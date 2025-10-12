@@ -146,3 +146,9 @@ Texture* Image::get_image(const string& path) {
 	load_image(path);
     return images[path];
 }
+
+void Image::cleanup() {
+    for (auto& [path, texture] : Image::images) {
+        delete texture;
+    }
+}

@@ -125,6 +125,7 @@ class Moveable {
 		ColourFilter hover_filter = ColourFilter(Colour(1, 1, 1, 0.75), ColourFilter::Mode::Multiplication, false);
 		deque<ColourFilter*> filters;
 
+		virtual ~Moveable() { if (script) delete script; };
 		Moveable() {}
 		Moveable(Vector2 loc, Vector2 sze, Colour col, Colour grd) : location(loc), size(sze), colour(col), gradient_colour(grd) {}
 

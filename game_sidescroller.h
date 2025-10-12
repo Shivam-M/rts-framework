@@ -14,6 +14,7 @@ class GameSidescroller : Game {
 		void update_objects(float modifier = 1.0f) override;
 		int game_loop() override;
 
+		virtual ~GameSidescroller() {}
 		GameSidescroller() : Game() {}
 		GameSidescroller(int a, char** b) : Game(a, b) {}
 };

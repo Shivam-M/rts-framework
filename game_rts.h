@@ -124,6 +124,7 @@ class GameRTS : Game {
 		void execute_action(int action, Moveable* button = nullptr);
 		void register_event(Event event, void* details = nullptr);
 
+		virtual ~GameRTS() {}
 		GameRTS();
 		GameRTS(int a, char** b);
 };

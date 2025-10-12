@@ -537,11 +537,6 @@ int GameRTS::game_loop() {
 		}
 	} glfwTerminate();
 
-	for (const auto& p : Image::images) {
-		delete[] p.second->image;
-		delete p.second;
-	}
-
 #ifdef DEBUG_PROFILING
 	float average = accumulate(temp_profiling_u.begin(), temp_profiling_u.end(), 0.0) / temp_profiling_u.size();
 	cout << "Average update time: " << average * 1000 << endl;

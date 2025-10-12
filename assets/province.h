@@ -36,6 +36,7 @@ class Province : public Moveable {
 		Unit* besieger = nullptr;
 		Unit* controller = nullptr;
 
+		virtual ~Province() {};
 		Province(int id);
 
 		void evaluate() {}

@@ -233,7 +233,7 @@ Province* Loader::parse_province() {
 
 	parse_common(province);
 	province->set_texture(Image::get_image("data/generated/" + to_string(province->identifier) + "_province.png"));
-	province->text = new Text(province->get_location(), font, Colour(189, 195, 199, 150), province->name);
+	// province->text = new Text(province->get_location(), font, Colour(189, 195, 199, 150), province->name);  // could overload new operator and store global moveable list
 	province->add_flag(PROVINCE);
 	province->value = get_float("value");
 	province_map[province->identifier] = province;

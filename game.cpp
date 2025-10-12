@@ -5,6 +5,7 @@
 
 #include "game.h"
 
+#include "assets/text_entry.h"
 #include "assets/text.h"
 #include "assets/panel.h"
 #include "tools/console.h"
@@ -91,6 +92,22 @@ Game::Game(int argc, char** argv) {
 	Audio::init();
 
 	log_t("Took " CON_RED, glfwGetTime() - launch_time_,  " seconds " CON_NORMAL "to load the base game.");
+}
+
+Game::~Game() {
+	for (Moveable* moveable : objects) delete moveable;
+	for (Text* text : text_objects) delete text;
+
+	delete mouse;
+	delete keyboard;
+	delete console;
+	delete render;
+	delete loader;
+	delete global_filter;
+
+	Audio::cleanup();
+	Fonts::cleanup();
+	Image::cleanup();
 }
 
 void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -206,7 +223,7 @@ void Game::update_properties() {
 
 void Game::update_objects(float modifier) {
 	erase_if(objects, [modifier](Moveable* moveable) {
-		if (!moveable->is_active) {
+		if (!moveable || !moveable->is_active) {
 			delete moveable;
 			return true;
 		}
@@ -215,7 +232,7 @@ void Game::update_objects(float modifier) {
 	});
 
 	erase_if(text_objects, [modifier](Text* text) {
-		if (!text->is_active) {
+		if (!text || !text->is_active) {
 			delete text;
 			return true;
 		}
@@ -306,6 +323,8 @@ Moveable* Game::get_object_under_mouse() {
 	return hovered_object;
 }
 
+#include "tools/text_renderer.h"
+
 int Game::game_loop() {
 	int frames = 0, updates = 0, frame_count = 0;
 	float average_frames = 0.f;
@@ -357,11 +376,6 @@ int Game::game_loop() {
 #endif
 		}
 	} glfwTerminate();
-
-	for (const auto& p : Image::images) {
-		delete[] p.second->image;
-		delete p.second;
-	}
 
 #ifdef DEBUG_PROFILING
 	float average = accumulate(temp_profiling_u.begin(), temp_profiling_u.end(), 0.0) / temp_profiling_u.size();

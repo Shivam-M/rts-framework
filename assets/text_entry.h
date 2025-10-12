@@ -14,8 +14,9 @@ class TextEntry : public Text {
         string display_content_;
 
 	public:
-        TextEntry() = default;
-		TextEntry(Vector2 location, Font* font, Colour colour, string content = "", float scale = 1.f) : Text(location, font, colour, content, scale) {}
+        virtual ~TextEntry() {}
+        TextEntry() : Text() {}
+        TextEntry(Vector2 location, Font* font, Colour colour, string content = "", float scale = 1.f) : Text(location, font, colour, content, scale) {}
 
 		void input(const int& character) {
 			if (character >= 255 and character != 259) return;

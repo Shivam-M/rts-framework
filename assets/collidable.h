@@ -33,5 +33,6 @@ class Collidable : public Moveable {
 			}
 		}
 
+		virtual ~Collidable() {};
 		Collidable() { add_flag(COLLIDABLE); }
 };

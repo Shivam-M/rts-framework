@@ -17,6 +17,7 @@ class Player: public Moveable {
 		bool is_facing_right_ = true;
 
 	public:
+		virtual ~Player() {};
 		Player();
 
 		void replenish_jump();

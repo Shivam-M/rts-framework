@@ -28,6 +28,7 @@ class Nation : public Moveable {
 		float income = 0.00f;
 		float outgoings = 0.00f;
 
+		virtual ~Nation() {};
 		Nation(int id, Province* capital = nullptr) : identifier(id), capital_(capital) { add_flag(NATION); }
 
 		void evaluate();

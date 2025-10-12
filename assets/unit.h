@@ -33,6 +33,7 @@ class Unit: public Moveable {
 		Nation* nation = nullptr;
 		State state = State::Normal;
 
+		virtual ~Unit() {};
 		Unit(int id, Nation* owner_nation, int size, float skill_factor = 1.00f, Province* starting_province = nullptr);
 
 		void initialise();

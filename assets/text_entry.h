@@ -5,13 +5,16 @@
 #include <chrono>
 
 using namespace std;
+using namespace chrono;
 
 class TextEntry : public Text {
     private:
-		static constexpr char CURSOR_CHAR = '|';
-        static constexpr unsigned short CURSOR_FLASH_SPEED = 500;
+		inline static constexpr char CURSOR_CHAR = '|';
+        inline static constexpr unsigned short CURSOR_FLASH_SPEED = 500;
+
         bool cursor_visible_ = true;
         string display_content_;
+        steady_clock::time_point last_flash_ = steady_clock::now();
 
 	public:
         virtual ~TextEntry() {}
@@ -29,17 +32,15 @@ class TextEntry : public Text {
 		}
 
         void flash_cursor() {
-            static auto last_flash = chrono::steady_clock::now();
-            auto now = chrono::steady_clock::now();
-            if (chrono::duration_cast<chrono::milliseconds>(now - last_flash).count() > CURSOR_FLASH_SPEED) {
+            auto now = steady_clock::now();
+            if (duration_cast<milliseconds>(now - last_flash_).count() > CURSOR_FLASH_SPEED) {
                 cursor_visible_ = !cursor_visible_;
-                last_flash = now;
+                last_flash_ = now;
             }
         }
 
         void update(float modifier = 1.0) override {
             Text::update(modifier);
-            Text::common(modifier);
             flash_cursor();
         }
 

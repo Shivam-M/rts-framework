@@ -42,6 +42,8 @@ void Text::update(float modifier) {
 
 	aligned_location = location;
 	switch (alignment) {
+		case Alignment::Left:
+			break;
 		case Alignment::Centre:
 			aligned_location.x -= dimensions.x / WINDOW_WIDTH / 2.0f;
 			break;
@@ -59,7 +61,7 @@ void Text::update(float modifier) {
 	Vector2 text_location = get_location();
 
 	text_location.y -= text_dimensions.y;
-	text_dimensions *= {BACKGROUND_SCALE, BACKGROUND_SCALE * (16.0 / 9.0)};
+	text_dimensions *= {BACKGROUND_SCALE, BACKGROUND_SCALE * (16.0f / 9.0f)};
 
 	text_location.x -= text_dimensions.x * (BACKGROUND_SCALE - 1) / (2 * BACKGROUND_SCALE);
 	text_location.y -= text_dimensions.y * (BACKGROUND_SCALE * 1.5 - 1) / (2 * BACKGROUND_SCALE * 1.5);

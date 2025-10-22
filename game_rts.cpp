@@ -309,7 +309,7 @@ void GameRTS::execute_action(int action, Moveable* button) {  // keep option for
 			break;
 		case DebugFonts:
 			if (files_font.size() == 0) {
-				string path = ".\\data\\fonts";
+				string path = "./data/fonts";
 				for (const auto& file : fs::directory_iterator(path))
 					files_font.push_back(file.path().string());
 			}

@@ -156,6 +156,8 @@ void Unit::evaluate() {
 				state = State::Sieging;
 			}
 			break;
+		case State::Dead:  // todo: cleanup death here, still gets evaluated
+			break;
 	}
 
 	if (text) {

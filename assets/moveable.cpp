@@ -58,14 +58,14 @@ void Moveable::load_script(const string& path) {
 	string line;
 	fstream in(path);
 	while (getline(in, line))
-		if (line.size() > 0)
+		if (line.size() > 0) {
 			if (script) {
 				script->push_back(line);
-			} 
-			else {
+			} else {
 				script = new vector<string>();
 				script->push_back(line);
 			}
+		}
 }
 
 void Moveable::shift_colour(float modifier) {

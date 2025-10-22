@@ -167,7 +167,7 @@ void Game::debug_mode() {
 	// UIManager::toggle("ui_menu_pause");
 
 	if (selected_object) {
-		selected_object = selected_object;
+		log_t("debug");
 	}
 }
 

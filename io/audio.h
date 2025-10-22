@@ -36,7 +36,7 @@ class Sound {
 			load(file);
 			set_volume(volume);
 		};
-		~Sound() { if (&sound_) ma_sound_uninit(&sound_); }
+		~Sound() { ma_sound_uninit(&sound_); }
 
 		void load(const string file);
 		void play();

@@ -73,11 +73,14 @@ void GameSidescroller::check_collision() {
 
 void GameSidescroller::update_objects(float modifier) {
 	double x_location = player->get_location().x, movement = 0;
-	if ((traversed && x_location <= 0.3f) || x_location >= 0.65f)
+	if ((traversed && x_location <= 0.3f) || x_location >= 0.65f) {
 		if (x_location >= 0.65f) {
 			if (!traversed) traversed = true;
 			movement = x_location - 0.65f;
-		} else movement = -(0.3f - x_location);
+		} else {
+			movement = -(0.3f - x_location);
+		}
+	}
 
 	for (Moveable* m : objects) {
 		if (m->get_flags() & FIXED_POS) continue;

@@ -44,9 +44,9 @@ void log_impl(ostream& os);
 template <typename First, typename... Rest>
 void log_impl(ostream& os, First&& first, Rest&&... rest) {
 	ostringstream ss;
-	ss << forward<First>(first);
+	ss << std::forward<First>(first);
 	os << ss.str();
-	log_impl(os, forward<Rest>(rest)...);
+	log_impl(os, std::forward<Rest>(rest)...);
 }
 
 template <typename... Args>
@@ -56,7 +56,7 @@ void log_t(Args&&... args) {
     LOCALTIME(&tm, &t);
 
 	cout << put_time(&tm, "\033[1;91m[%d-%m-%Y %H:%M:%S] \033[0m- ");
-	log_impl(cout, forward<Args>(args)...);
+	log_impl(cout, std::forward<Args>(args)...);
 }
 
 float random_float();

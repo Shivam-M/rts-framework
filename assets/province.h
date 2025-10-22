@@ -20,7 +20,7 @@ class Province : public Moveable {
 	enum class Terrain : uint8_t { Flat, Mountain, Forest, _Count };
 	enum class State : uint8_t { Normal, Besieging, Besieged };
 
-	static constexpr const char* TERRAIN_NAMES[static_cast<int>(Terrain::_Count)] = { "Plains", "Mountains", "Forest" };
+	inline static const string TERRAIN_NAMES[static_cast<int>(Terrain::_Count)] = { "Plains", "Mountains", "Forest" };
 
 	private:
 		vector<Province*> neighbours_;

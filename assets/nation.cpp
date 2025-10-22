@@ -57,7 +57,7 @@ Unit* Nation::hire_unit(int size, float skill) {
 	float cost = size * UNIT_COST * skill;
 	if (money <= cost) return nullptr;
 	Unit* unit = new Unit(UnitCount++, this, size, skill, get_capital());
-	money -= -cost;
+	money -= cost;
 	add_unit(unit);
 	return unit;
 }

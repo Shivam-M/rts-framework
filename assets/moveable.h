@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <cstdint>
 
 using namespace std;
 

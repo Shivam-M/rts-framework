@@ -2,6 +2,9 @@
 
 #include "../assets/text.h"
 
+#include <algorithm>
+#include <cstdint>
+
 using namespace std;
 
 Panel::Panel() {

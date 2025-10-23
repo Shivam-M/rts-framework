@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include <cmath>
+
 const auto PI = acos(-1);
 
 Player::Player() {

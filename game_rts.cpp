@@ -357,13 +357,16 @@ void GameRTS::register_event(Event event, void* details) {
 	BattleInformation* battle;
 	War* war;
 	switch (event) {
-		case BATTLE_START:
+		case BATTLE_START: {
 			battle = static_cast<BattleInformation*>(details);
 			load_level_dynamically("data/levels/ui/10-ui-battle-unit.json", to_string(battle->battle_id));
-			UIManager::get_panel("ui_battle_unit-" + to_string(battle->battle_id))->set_location(battle->province->get_location().x - (battle->province->get_size().x), battle->province->get_location().y);
+			Province* battle_province = battle->province;
+			Panel* battle_panel = UIManager::get_panel("ui_battle_unit-" + to_string(battle->battle_id));
+			battle_panel->set_location(battle_province->get_centre().x - battle_panel->get_size().x / 2, battle_province->get_location().y);
 			battles.push_back(battle);
 			log_t("Started battle " CON_RED, battle->battle_id, CON_NORMAL " between " CON_RED, battle->attacker_units[0]->name, CON_NORMAL " and " CON_RED, battle->defender_units[0]->name, CON_NORMAL);
 			break;
+		}
 		case BATTLE_END:
 			battle = static_cast<BattleInformation*>(details);
 			UIManager::hide("ui_battle_unit-" + to_string(battle->battle_id));
